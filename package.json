@@ -7,6 +7,7 @@
     "clean": "rm -rf ./dist",
     "build-ts": "tsc",
     "watch-ts": "tsc -w",
+    "prepublish": "npm run build-ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
