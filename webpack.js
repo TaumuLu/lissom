@@ -1,1 +1,1 @@
-module.exports = require('./dist/webpack/index')
+module.exports = require('./dist/webpack/index').default

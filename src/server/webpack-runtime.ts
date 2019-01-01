@@ -102,6 +102,8 @@ const getAsyncChunks = () => {
 
 // script path function
 function requireChunk(chunkId) {
+  const installedChunkData = installedChunks[chunkId]
+  const isRequire = installedChunkData !== 0
   const { files } = _config.chunks[chunkId]
   const jsChunkAssets = fileterJsAssets(files)
   const cssChunAsstes = fileterCssAssets(files)
@@ -111,7 +113,9 @@ function requireChunk(chunkId) {
       deleteCache(absPath)
     }
     asyncJsChunks.push(getAbsPath(asset))
-    require(absPath)
+    if(isRequire) {
+      require(absPath)
+    }
   })
   cssChunAsstes.forEach((asset) => {
     asyncCssChunks.push(getAbsPath(asset))
@@ -175,11 +179,12 @@ function __webpack_require__(moduleId) {
 // The chunk loading function for additional chunks
 // 当作普通包加载
 __webpack_require__.e = function requireEnsure(chunkId) {
-  const promises = []
+  const promises = [] as any
+  promises._isSyncThen = true
   // JSONP chunk loading for javascript
 
-  const installedChunkData = installedChunks[chunkId]
-  if (installedChunkData !== 0) { // 0 means "already installed".
+  // const installedChunkData = installedChunks[chunkId]
+  // if (installedChunkData !== 0) { // 0 means "already installed".
     // // a Promise means "currently loading".
     // if (installedChunkData) {
     //   promises.push(installedChunkData[2])
@@ -191,8 +196,8 @@ __webpack_require__.e = function requireEnsure(chunkId) {
     //   promises.push(installedChunkData[2] = promise)
 
     // }
-    requireChunk(chunkId)
-  }
+  requireChunk(chunkId)
+  // }
 
   return Promise.all(promises)
 }
