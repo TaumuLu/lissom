@@ -1,0 +1,57 @@
+{
+  "name": "fassr",
+  "version": "1.0.0",
+  "description": "react ssr",
+  "main": "./index.js",
+  "scripts": {
+    "clean": "rm -rf ./dist",
+    "build-ts": "tsc",
+    "watch-ts": "tsc -w",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TaumuLu/fassr.git"
+  },
+  "author": "TaumuLu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TaumuLu/fassr/issues"
+  },
+  "keywords": [
+    "react",
+    "ssr"
+  ],
+  "homepage": "https://github.com/TaumuLu/issues#readme",
+  "dependencies": {
+    "ansi-html": "0.0.7",
+    "etag": "1.8.1",
+    "find-up": "2.1.0",
+    "fresh": "0.5.2",
+    "htmlescape": "1.1.1",
+    "http-status": "1.0.1",
+    "prop-types": "15.6.2",
+    "url": "0.11.0"
+  },
+  "devDependencies": {
+    "@types/koa-router": "^7.0.35",
+    "@types/node": "^10.12.18",
+    "@types/react": "^16.7.18",
+    "@types/react-dom": "^16.0.11",
+    "@types/webpack-sources": "^0.1.5",
+    "babel-eslint": "^10.0.1",
+    "eslint": "^5.9.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-markdown": "^1.0.0-rc.0",
+    "eslint-plugin-react": "^7.11.1",
+    "typescript": "^3.2.2"
+  },
+  "peerDependencies": {
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "koa-router": "^7.0.0",
+    "webpack": "^4.0.0"
+  }
+}

@@ -1,0 +1,40 @@
+export const getEntry = (entries, entry) => {
+  const prependEntry = (entry) => {
+    if (typeof entry === 'function') {
+      return () => Promise.resolve(entry()).then(prependEntry)
+    }
+
+    if (typeof entry === 'object' && !Array.isArray(entry)) {
+      const clone = {}
+      Object.keys(entry).forEach((key) => {
+        clone[key] = entries.concat(entry[key])
+      })
+      return clone
+    }
+    return entries.concat(entry)
+  }
+
+  return prependEntry(entry)
+}
+
+function handleExport(options) {
+  const isES6DefaultExported = typeof options === 'object' && options !== null && typeof options.default !== 'undefined'
+
+  return isES6DefaultExported ? options.default : options
+}
+
+function handleFunction(options, argv) {
+  if (typeof options === 'function') {
+    options = options(argv.env, argv)
+  }
+  return options
+}
+
+export function prepareOptions(options, argv) {
+  argv = argv || {}
+  options = handleExport(options)
+
+  return Array.isArray(options)
+    ? options.map(_options => handleFunction(_options, argv))
+    : handleFunction(options, argv)
+}

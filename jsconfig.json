@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "baseUrl": ".",
+    "paths": {
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "web_modules",
+    "android",
+    "ios",
+    "public",
+    "dist",
+    "vendor"
+  ],
+  "include": [
+    "src"
+  ]
+}
