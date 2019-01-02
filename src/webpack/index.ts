@@ -1,14 +1,17 @@
 import { join } from 'path'
-import { RUNTIME_NAME } from '../lib/constants'
+import { RUNTIME_NAME, JSONP_FUNCTION } from '../lib/constants'
 import { ChunksPlugin, ManifestPlugin, PagesPlugin } from './plugins'
 import { getEntry, prepareOptions } from './utils'
 
 export default (config) => {
-  return (env, argv) => {
-    const options = prepareOptions(config, argv)
+  return (...params) => {
+    const options = prepareOptions(config, ...params)
     const { entry } = options
 
-    // options.output.libraryTarget = 'commonjs2'
+    options.output.libraryTarget = 'umd'
+    options.output.libraryExport = 'default'
+    options.output.umdNamedDefine = true
+    options.output.jsonpFunction = JSONP_FUNCTION
     if (!options.optimization) options.optimization = {}
 
     // 拆分出webpack运行时，避免污染js chunks

@@ -23,18 +23,17 @@ function handleExport(options) {
   return isES6DefaultExported ? options.default : options
 }
 
-function handleFunction(options, argv) {
+function handleFunction(options, ...params) {
   if (typeof options === 'function') {
-    options = options(argv.env, argv)
+    options = options(...params)
   }
   return options
 }
 
-export function prepareOptions(options, argv) {
-  argv = argv || {}
+export function prepareOptions(options, ...params) {
   options = handleExport(options)
 
   return Array.isArray(options)
-    ? options.map(_options => handleFunction(_options, argv))
-    : handleFunction(options, argv)
+    ? options.map(_options => handleFunction(_options, ...params))
+    : handleFunction(options, ...params)
 }

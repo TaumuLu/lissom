@@ -32,11 +32,11 @@ export const getRegSourceStr = (regs) => {
   }, []).join('|')
 }
 
-export const getReg = (regs = []) => {
+export const getReg = (regs = [], matchEnd = true) => {
   const regTpl = getRegSourceStr(regs)
   let regStr = ''
   if (regTpl) {
-    regStr += `(${regTpl})$`
+    regStr += `(${regTpl})${matchEnd ? '$' : ''}`
   }
   return new RegExp(regStr)
 }

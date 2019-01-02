@@ -1,12 +1,14 @@
 import path from 'path'
-import { RUNTIME_NAME } from '../lib/constants'
+import { RUNTIME_NAME, JSONP_FUNCTION } from '../lib/constants'
 import { deleteCache, fileterJsAssets, fileterCssAssets } from './lib/utils'
+import { getReg } from '../lib/utils'
 
 declare global {
   namespace NodeJS {
       interface Global {
-        webpackJsonp: Array<any>,
+        [JSONP_FUNCTION]: Array<any>,
         __SSR_REGISTER_PAGE__: Function
+        window: undefined
       }
   }
 }
@@ -17,6 +19,7 @@ let _config = {
   modules: {},
   requireModules: [],
   excludeModules: [],
+  excludeModuleRegs: [],
 }
 
 const modules = []
@@ -257,8 +260,8 @@ __webpack_require__.p = '/'
 // on error function for async loading
 __webpack_require__.oe = function (err) { console.error(err); throw err }
 
-global.webpackJsonp = []
-let jsonpArray = global.webpackJsonp
+global[JSONP_FUNCTION] = []
+let jsonpArray = global[JSONP_FUNCTION]
 const oldJsonpFunction = jsonpArray.push.bind(jsonpArray)
 jsonpArray.push = webpackJsonpCallback
 jsonpArray = jsonpArray.slice()
@@ -274,6 +277,7 @@ global.__SSR_REGISTER_PAGE__ = function (route, fn) {
   const { page } = fn()
   return page
 }
+global.window = undefined
 
 function getAbsPath(originPath, head = true) {
   const reg = new RegExp(`${head ? '^' : ''}\\/${head ? '' : '$'}`)
@@ -285,7 +289,7 @@ function getAbsPath(originPath, head = true) {
   return originPath
 }
 
-const setWebpackConfig = (config, { dev, requireModules, excludeModules }) => {
+const setWebpackConfig = (config, { dev, requireModules, excludeModules, excludeModuleRegs }) => {
   const { outputPath } = config
   __webpack_require__.p = getAbsPath(outputPath, false)
 
@@ -294,13 +298,20 @@ const setWebpackConfig = (config, { dev, requireModules, excludeModules }) => {
     dev,
     requireModules,
     excludeModules,
+    excludeModuleRegs
   }
 }
 
 // 提供清除webpack modules cache的方法
 const clearModuleCache = (dev) => {
   if (dev) {
-    installedModules = {}
+    Object.keys(installedModules).forEach((moduleId) => {
+      const { name } = _config.modules[moduleId] || {} as any
+      const excludeMatch = !getReg(_config.excludeModuleRegs, false).test(name)
+      if (excludeMatch) {
+        delete installedModules[moduleId]
+      }
+    })
   }
   asyncJsChunks = []
   asyncCssChunks = []

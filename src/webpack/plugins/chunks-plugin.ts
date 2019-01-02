@@ -1,5 +1,5 @@
 import { ConcatSource } from 'webpack-sources'
-import { RUNTIME_NAME } from '../../lib/constants'
+import { RUNTIME_NAME, GLOBAl_VARIABLE } from '../../lib/constants'
 
 const replaceReg = /Promise\.all\(([^()]*)\)/g
 
@@ -10,7 +10,7 @@ export default class ChunksPlugin {
         const source = new ConcatSource()
         // 支持服务端运行和导出
         source.add(chunkHackCode)
-        const replaceStr = modules.children[0].replace(/window/g, 'globalVar')
+        const replaceStr = modules.children[0].replace(/window/g, GLOBAl_VARIABLE)
         modules.children[0] = replaceStr
         source.add(modules)
         source.add('\n})()')
@@ -33,15 +33,13 @@ export default class ChunksPlugin {
   }
 }
 
-const getTypeFunction = `function _getType(context) {
-  return Object.prototype.toString.call(context).slice(8, -1).toLowerCase()
-}`
-
 const chunkHackCode = `(function() {
   if (!Promise._all) {
     Promise._all = Promise.all
     Promise.all = function () {
-      ${getTypeFunction}
+      function _getType(context) {
+        return Object.prototype.toString.call(context).slice(8, -1).toLowerCase()
+      }
       function checkValue(arr) {
         if (arr.length > 0) {
           var hasValue = false
@@ -84,6 +82,8 @@ const chunkHackCode = `(function() {
       return Promise._all.apply(Promise, arguments)
     }
   }
-  var _module = typeof module === "undefined" ? {} : module
-  var globalVar = typeof window === "undefined" ? global : window
-  _module.exports = `
+  var ${GLOBAl_VARIABLE} = typeof window === "undefined" ? global : window
+  return `
+  // var _module = typeof module === "undefined" ? {} : module
+  // var ${GLOBAl_VARIABLE} = typeof window === "undefined" ? global : window
+  // _module.exports =

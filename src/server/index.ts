@@ -6,7 +6,7 @@ import { printAndExit, getReg, suffixRegs } from '../lib/utils'
 import SSRServer from './server'
 
 export default async (config) => {
-  const { excludeRegs, output, ...otherConfig } = Object.assign({}, defaultConfig, config)
+  const { excludePathRegs, output, ...otherConfig } = Object.assign({}, defaultConfig, config)
   if (!output) {
     printAndExit('> output configuration is required')
   }
@@ -25,7 +25,7 @@ export default async (config) => {
   pathRouter.get('*', async (ctx, next) => {
     const ctxPath = ctx.path
     const suffixMatch = getReg(suffixRegs).test(ctxPath)
-    const excludeMatch = !getReg(excludeRegs).test(ctxPath)
+    const excludeMatch = !getReg(excludePathRegs).test(ctxPath)
 
     if (suffixMatch && excludeMatch) {
       const { req, res, query } = ctx

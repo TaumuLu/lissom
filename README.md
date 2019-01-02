@@ -42,7 +42,7 @@ app.use(await ssrRouter({ isSpa: true }))
 | ---- | ---- | ------- | ----------- |
 | isSpa | boolean | true | 是否为单页面模式，映射webpack的entry配置 |
 | output | string | ./public | 服务端读取webpack的打包目录，同webpack配置中的output |
-| excludeRegs | array | [/\\/api\\/.*/] | 正则数组，匹配排除的拦截路由，可传字符串或正则表达式 |
+| excludePathRegs | array | [/\\/api\\/.*/] | 正则数组，匹配排除的拦截路由，可传字符串或正则表达式 |
 | dir | string | '.' | 项目路径 |
 | dev | boolean | process.env.NODE_ENV !== 'production' | 是否为开发模式 |
 | staticMarkup | boolean | false | 是否使用renderToStaticMarkup渲染，默认renderToString |
@@ -50,6 +50,7 @@ app.use(await ssrRouter({ isSpa: true }))
 | quiet | boolean | false | 是否隐藏错误信息 |
 | requireModules | array | ['superagent'] | 服务端不使用打包模块，在node_modules里require的模块 |
 | excludeModules | array | ['babel-polyfill'] | 服务端排除执行的打包模块 |
+| excludeModuleRegs | array | [/node_modules/] | 正则数组，匹配开发模式下排除清理的模块，可传字符串或正则表达式 |
 | clientRender | boolean | true | 客户端是否渲染 |
 
 

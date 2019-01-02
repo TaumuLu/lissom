@@ -29,12 +29,10 @@ export default async function createHtml({ htmlConfig, props, router, Component,
 
   const assetTags = {
     bodyStart: [{
-      attributes: { id: '__ssr__' },
+      attributes: { id: '__ssr__', style: 'height: 100%; display: flex' },
       tagName: 'div',
       innerHTML,
-    }],
-    headEnd: [...cssDefinition],
-    scriptStart: [{
+    }, {
       attributes: { type: scriptType },
       tagName: 'script',
       innerHTML: `
@@ -43,6 +41,7 @@ export default async function createHtml({ htmlConfig, props, router, Component,
         window.__SSR_REGISTER_PAGE__ = function(r,f){__SSR_LOADED_PAGES__.push([r, f()])};
       `,
     }, ...jsDefinition],
+    headEnd: [...cssDefinition],
   }
   const Styles = await loadGetInitialStyles(Component, ctx)
   if (Styles) {
@@ -67,10 +66,10 @@ const htmlReg = getTagRegExp('html')
 const bodyRegStart = getTagRegExp('body')
 const bodyRegEnd = getTagRegExp('body', true)
 const headRegExpEnd = getTagRegExp('head', true)
-const scriptRegStart = getTagRegExp('script')
+// const scriptRegStart = getTagRegExp('script')
 
 const injectAssetsIntoHtml = (html, assetTags) => {
-  const { bodyStart = [], bodyEnd = [], headEnd = [], scriptStart = [] } = Object
+  const { bodyStart = [], bodyEnd = [], headEnd = [] } = Object
     .keys(assetTags)
     .reduce((p, k) => {
       const tags = assetTags[k]
@@ -105,13 +104,13 @@ const injectAssetsIntoHtml = (html, assetTags) => {
     html = html.replace(headRegExpEnd, match => headEnd.join('') + match)
   }
 
-  if (scriptStart.length) {
-    if (scriptRegStart.test(html)) {
-      html = html.replace(scriptRegStart, match => scriptStart.join('') + match)
-    } else {
-      html += scriptStart.join('')
-    }
-  }
+  // if (scriptStart.length) {
+  //   if (scriptRegStart.test(html)) {
+  //     html = html.replace(scriptRegStart, match => scriptStart.join('') + match)
+  //   } else {
+  //     html += scriptStart.join('')
+  //   }
+  // }
 
   return html
 }

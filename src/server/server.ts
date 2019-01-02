@@ -11,11 +11,11 @@ export default class Server {
   config: any
   renderOpts: any
 
-  constructor({ dir, dev, isSpa, quiet, output, requireModules, excludeModules, ...renderOpts }) {
+  constructor({ dir, dev, isSpa, quiet, output, requireModules, excludeModules, excludeModuleRegs, ...renderOpts }) {
     this.dir = resolve(dir)
     this.quiet = quiet
     this.config = loadConfig(output)
-    setWebpackConfig(this.config, { dev, requireModules, excludeModules })
+    setWebpackConfig(this.config, { dev, requireModules, excludeModules, excludeModuleRegs })
 
     this.renderOpts = {
       dev,

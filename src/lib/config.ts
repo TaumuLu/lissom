@@ -19,7 +19,8 @@ const _DEV_ = process.env.NODE_ENV !== 'production'
 export const defaultConfig = {
   isSpa: true,
   output: './public',
-  excludeRegs: [/\/api\/.*/],
+  excludePathRegs: [/\/api\/.*/],
+  excludeModuleRegs: [/node_modules/],
   dir: '.',
   dev: _DEV_,
   staticMarkup: false,
