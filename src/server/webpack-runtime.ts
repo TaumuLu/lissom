@@ -177,6 +177,7 @@ function __webpack_require__(moduleId) {
   // Return the exports of the module
   return module.exports
 }
+__webpack_require__.s = undefined
 
 // This file contains only the entry chunk.
 // The chunk loading function for additional chunks
@@ -273,7 +274,7 @@ parentJsonpFunction = oldJsonpFunction
 // checkDeferredModules()
 
 // __SSR_REGISTER_PAGE__, client use
-global.__SSR_REGISTER_PAGE__ = function (route, fn) {
+global.__SSR_REGISTER_PAGE__ = function (_route, fn) {
   const { page } = fn()
   return page
 }

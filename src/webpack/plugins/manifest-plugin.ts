@@ -1,5 +1,5 @@
 import { RawSource } from 'webpack-sources'
-import { ASSETS_MANIFEST, HTML_WEBPACK_PLUGIN, CONFIG_MANIFEST } from '../../lib/constants'
+import { ASSETS_MANIFEST, HTML_WEBPACK_PLUGIN } from '../../lib/constants'
 import { chunkOnlyConfig } from '../../lib/config'
 
 export default class ManifestPlugin {

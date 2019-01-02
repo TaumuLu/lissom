@@ -21,7 +21,7 @@ export default class ChunksPlugin {
         if (chunk.name === RUNTIME_NAME) {
           const source = new ConcatSource()
           // 替换webpack中的Promise.all参数用于辨别
-          const moduleSource = modules.source().replace(replaceReg, ((match, pos) => {
+          const moduleSource = modules.source().replace(replaceReg, ((_match, pos) => {
             return `Promise.all(${pos} && ${pos}.length === 0 ? { _isSyncThen: true } : ${pos})`
           }))
           source.add(moduleSource)
