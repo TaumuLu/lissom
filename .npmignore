@@ -1,6 +1,7 @@
 demo/
 docs/
 example/
+src/
 
 .vscode
 .idea
@@ -20,3 +21,5 @@ gradlew.bat
 .eslintignore
 .eslintrc.yml
 jsconfig.json
+tsconfig.json
+tslint.json

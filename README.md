@@ -1,6 +1,6 @@
 # lissom
 使用基于webacpk打包的客户端js来完成react的服务端渲染  
-低接入成本，使用简单，最小的原有逻辑改动，可随时关闭  
+轻量级，低接入成本，使用简单，最小的原有逻辑改动，可随时关闭  
 
 ## 安装
 npm install lissom --save
@@ -23,7 +23,7 @@ npm install lissom --save
 // 引入ssr的包装webpack
 const ssrWebpack = require('lissom/webpack')
 
-module.exports = ssrWebpack((env, argv) => {
+module.exports = ssrWebpack(() => {
     ... // 自己的webpack配置，传入函数和对象都可以
 })
 ```
@@ -84,3 +84,4 @@ ssr渲染并不是适用于所有情况，如果使用、最佳实践根据实�
 - [ ] 完善文档
 - [x] 翻新代码，引入ts，使用es6
 - [ ] 优化代码入口，提出公共模式代码
+- [ ] 修复不规范的webpack配置
