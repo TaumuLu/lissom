@@ -1,7 +1,7 @@
 {
-  "name": "fassr",
+  "name": "lissom",
   "version": "1.0.0",
-  "description": "react ssr",
+  "description": "Lightweight React Server Side Rendering Framework",
   "main": "./index.js",
   "scripts": {
     "clean": "rm -rf ./dist",
@@ -12,14 +12,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TaumuLu/fassr.git"
+    "url": "git+https://github.com/TaumuLu/lissom.git"
   },
   "author": "TaumuLu",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/TaumuLu/fassr/issues"
+    "url": "https://github.com/TaumuLu/lissom/issues"
   },
   "keywords": [
+    "server side rendering",
+    "lightweight",
     "react",
     "ssr"
   ],

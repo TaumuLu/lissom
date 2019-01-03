@@ -1,9 +1,9 @@
-# fassr
+# lissom
 使用基于webacpk打包的客户端js来完成react的服务端渲染  
 低接入成本，使用简单，最小的原有逻辑改动，可随时关闭  
 
 ## 安装
-npm install fassr --save
+npm install lissom --save
 
 ## 说明
 服务端使用客户端js来渲染  
@@ -21,7 +21,7 @@ npm install fassr --save
 
 ```javascript
 // 引入ssr的包装webpack
-const ssrWebpack = require('fassr/webpack')
+const ssrWebpack = require('lissom/webpack')
 
 module.exports = ssrWebpack((env, argv) => {
     ... // 自己的webpack配置，传入函数和对象都可以
@@ -31,7 +31,7 @@ module.exports = ssrWebpack((env, argv) => {
 ### 中间件形式引入
 
 ```javascript
-const ssrRouter = require('fassr/trnw-ssr')
+const ssrRouter = require('lissom/trnw-ssr')
 ...
 app.use(await ssrRouter({ isSpa: true }))
 ...
