@@ -27,7 +27,6 @@
     "lib": [
       "esnext",
       "dom",
-      "es2015.promise"
     ],
   },
   "include": [

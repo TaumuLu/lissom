@@ -3,7 +3,7 @@ import { renderToHTML, renderErrorToHTML } from './render'
 import sendHTML from "./send-html";
 import loadConfig from './config'
 import { isResSent } from './lib/utils'
-import { setWebpackConfig } from './webpack-runtime'
+import { setWebpackConfig } from './lib/webpack-runtime'
 
 export default class Server {
   dir: string

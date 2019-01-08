@@ -3,6 +3,8 @@ import { RUNTIME_NAME, JSONP_FUNCTION } from '../lib/constants'
 import { ChunksPlugin, ManifestPlugin, PagesPlugin } from './plugins'
 import { getEntry, prepareOptions } from './utils'
 
+const entries = [join(__dirname, '../client/index.js')]
+
 export default (config) => {
   return (...params) => {
     const options = prepareOptions(config, ...params)
@@ -32,7 +34,7 @@ export default (config) => {
 
     // 打入客户端挂载执行文件
     options.entry = getEntry(
-      [join(__dirname, '../client/index.js')],
+      entries,
       entry
     )
 

@@ -4,20 +4,22 @@ import { ReactComp } from "./types"
 let defaultLoadingComponent = () => null
 
 interface IState {
-  AsyncComponent: ReactComp<any>
+  DynamicComponent: ReactComp<any>
 }
 
-function asyncComponent(config) {
-  const { resolve, LoadingComponent = defaultLoadingComponent } = config
+function Dynamic(config) {
+  const { component: resolveComponent, LoadingComponent = defaultLoadingComponent } = config
+  // 提前执行，支持动态组件中的异步操作
+  const resolveValue = resolveComponent()
 
-  return class DynamicComponent extends Component<any, IState> {
-    mounted: boolean
+  return class DynamicConnect extends Component<any, IState> {
     state: IState
+    mounted: boolean
 
     constructor(props) {
       super(props)
       this.state = {
-        AsyncComponent: null,
+        DynamicComponent: null,
       }
       this.load()
     }
@@ -30,30 +32,28 @@ function asyncComponent(config) {
       this.mounted = false
     }
 
-    setComponent = (module) => {
-      const AsyncComponent = module.default || module
+    setComponent = (mod) => {
+      const DynamicComponent = mod.default || mod
       if (this.mounted) {
-        this.setState({ AsyncComponent })
+        this.setState({ DynamicComponent })
       } else {
-        this.state.AsyncComponent = AsyncComponent
+        this.state = { DynamicComponent }
       }
     }
 
     load() {
-      const value = resolve()
-
-      if (value._isSyncModule) {
-        this.setComponent(value)
+      if (resolveValue._isSyncModule) {
+        this.setComponent(resolveValue)
       } else {
-        value.then(this.setComponent)
+        resolveValue.then(this.setComponent)
       }
     }
 
     render() {
-      const { AsyncComponent } = this.state
-      if (AsyncComponent) {
+      const { DynamicComponent } = this.state
+      if (DynamicComponent) {
         return (
-          <AsyncComponent {...this.props} />
+          <DynamicComponent {...this.props} />
         )
       }
 
@@ -64,18 +64,8 @@ function asyncComponent(config) {
   }
 }
 
-function dynamic(config) {
-  const { component: resolveComponent } = config
-  return asyncComponent({
-    resolve() {
-      return resolveComponent()
-    },
-    ...config,
-  })
-}
-
-dynamic.setDefaultLoadingComponent = (LoadingComponent) => {
+Dynamic.setDefaultLoadingComponent = (LoadingComponent) => {
   defaultLoadingComponent = LoadingComponent
 }
 
-export default dynamic
+export default Dynamic

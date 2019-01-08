@@ -1,7 +1,6 @@
 import path from 'path'
-import { RUNTIME_NAME, JSONP_FUNCTION } from '../lib/constants'
-import { deleteCache, fileterJsAssets, fileterCssAssets } from './lib/utils'
-import { getReg } from '../lib/utils'
+import { RUNTIME_NAME, JSONP_FUNCTION } from '../../lib/constants'
+import { getReg, deleteCache, fileterJsAssets, fileterCssAssets } from './utils'
 
 declare global {
   namespace NodeJS {
@@ -20,6 +19,7 @@ let _config = {
   requireModules: [],
   excludeModules: [],
   excludeModuleRegs: [],
+  asyncModuleId: null
 }
 
 const modules = []
@@ -137,8 +137,13 @@ const getModuleName = (modulePath) => {
   return modulePathList.slice(0, 1).join('/')
 }
 
-const handleModule = (moduleId) => {
+const asyncModuleReg = /lissom\/dist\/lib\/async/
+
+const matchModule = (moduleId) => {
   const { name } = _config.modules[moduleId] || {} as any
+  if(asyncModuleReg.test(name)) {
+    _config.asyncModuleId = moduleId
+  }
   if (name && /node_modules/.test(name)) {
     const modulePath = name.replace('./node_modules/', '')
     const moduleName = getModuleName(modulePath)
@@ -154,13 +159,11 @@ const handleModule = (moduleId) => {
 
 // The require function
 function __webpack_require__(moduleId) {
-  const result = handleModule(moduleId)
-  if (result) return result
-
   // Check if module is in cache
   if (installedModules[moduleId]) {
     return installedModules[moduleId].exports
   }
+
   // Create a new module (and put it into the cache)
   const module = installedModules[moduleId] = {
     i: moduleId,
@@ -168,8 +171,14 @@ function __webpack_require__(moduleId) {
     exports: {},
   }
 
-  // Execute the module function
-  modules[moduleId].call(module.exports, module, module.exports, __webpack_require__)
+  // 缓存进installedModules里，提高性能
+  const result = matchModule(moduleId)
+  if (result) {
+    module.exports = result
+  } else {
+    // Execute the module function
+    modules[moduleId].call(module.exports, module, module.exports, __webpack_require__)
+  }
 
   // Flag the module as loaded
   module.l = true
@@ -290,6 +299,11 @@ function getAbsPath(originPath, head = true) {
   return originPath
 }
 
+function getAsyncModule() {
+  const { asyncModuleId } = _config
+  return installedModules[asyncModuleId]
+}
+
 const setWebpackConfig = (config, { dev, requireModules, excludeModules, excludeModuleRegs }) => {
   const { outputPath } = config
   __webpack_require__.p = getAbsPath(outputPath, false)
@@ -321,5 +335,6 @@ const clearModuleCache = (dev) => {
 export {
   clearModuleCache,
   setWebpackConfig,
-  getAsyncChunks
+  getAsyncChunks,
+  getAsyncModule
 }

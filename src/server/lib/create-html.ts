@@ -1,19 +1,21 @@
-import React from 'react'
 import htmlescape from 'htmlescape'
-import { renderToString, renderToStaticMarkup } from 'react-dom/server'
-import { loadGetInitialStyles } from './lib/utils'
 import { getAsyncChunks } from './webpack-runtime'
 
 const scriptType = 'text/javascript'
 const cssRel = 'stylesheet'
 
-export default async function createHtml({ htmlConfig, props, router, Component, ctx, staticMarkup }) {
+export default async function createHtml({ pageHTML, styleHTML, htmlConfig, router, ssrData }) {
   const { html } = htmlConfig
+  const assetTags = getAssetTags({ pageHTML, styleHTML, router, ssrData })
+
+  return injectAssetsIntoHtml(html, assetTags)
+}
+
+
+const getAssetTags = ({ pageHTML, styleHTML, router, ssrData }) => {
   const { name } = router
-  const data = { props }
-  const render = staticMarkup ? renderToStaticMarkup : renderToString
-  const innerHTML = render(<Component {...props}/>)
   const { asyncJsChunks, asyncCssChunks } = getAsyncChunks()
+
   const jsDefinition = asyncJsChunks.map((src) => {
     return {
       attributes: { type: scriptType, src },
@@ -31,27 +33,25 @@ export default async function createHtml({ htmlConfig, props, router, Component,
     bodyStart: [{
       attributes: { id: '__ssr__', style: 'height: 100%; display: flex' },
       tagName: 'div',
-      innerHTML,
+      innerHTML: pageHTML,
     }, {
       attributes: { type: scriptType },
       tagName: 'script',
       innerHTML: `
-        window.__SSR_DATA__ = ${htmlescape(data)}
+        window.__SSR_DATA__ = ${htmlescape(ssrData)}
         window.__SSR_LOADED_PAGES__ = ['${name}'];
         window.__SSR_REGISTER_PAGE__ = function(r,f){__SSR_LOADED_PAGES__.push([r, f()])};
       `,
     }, ...jsDefinition],
     headEnd: [...cssDefinition],
   }
-  const Styles = await loadGetInitialStyles(Component, ctx)
-  if (Styles) {
+  if (styleHTML) {
     assetTags.headEnd.push({
-      innerHTML: render(Styles),
+      innerHTML: styleHTML,
     } as any)
   }
 
-  const htmlTemplate = injectAssetsIntoHtml(html, assetTags)
-  return htmlTemplate
+  return assetTags
 }
 
 const getTagRegExp = (tag, isEnd = false, flags = 'i') => {

@@ -1,5 +1,9 @@
 import { deleteCache } from './lib/utils'
-import { clearModuleCache } from './webpack-runtime'
+import { clearModuleCache } from './lib/webpack-runtime'
+
+const getRouter = (page, routers) => {
+  return routers[page] || routers.default
+}
 
 const requirePage = (router, dev) => {
   const { existsAts, size } = router
@@ -17,41 +21,20 @@ const requirePage = (router, dev) => {
   }, null)
 }
 
-const getRouter = (page, routers) => {
-  return routers[page] || routers.default
+function interopDefault(mod: any) {
+  return mod.default || mod
 }
 
-function purgeCache(moduleName, excludeModules) {
-  const modPath = require.resolve(moduleName)
-  searchCache(modPath, deleteCache, excludeModules)
-  const mConstructor = module.constructor as any
+async function loadComponents({ router, dev }) {
+  const [Component] = await Promise.all([
+    interopDefault(requirePage(router, dev))
+  ])
 
-  Object.keys(mConstructor._pathCache).forEach((cacheKey) => {
-    if (cacheKey.indexOf(moduleName) > 0) {
-      delete mConstructor._pathCache[cacheKey]
-    }
-  })
-}
-
-function searchCache(modPath, callback, excludeModules = []) {
-  const mod = modPath && require.cache[modPath]
-
-  if (mod !== undefined) {
-    (function traverse(mod) {
-      const id = mod.id
-      const isExclude = excludeModules.some(exmod => id.includes(exmod))
-      if (!isExclude) {
-        mod.children.forEach((child) => {
-          traverse(child)
-        })
-      }
-      callback(mod.id)
-    }(mod))
-  }
+  return { Component }
 }
 
 export {
   getRouter,
   requirePage,
-  purgeCache,
+  loadComponents
 }

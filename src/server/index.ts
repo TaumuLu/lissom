@@ -1,8 +1,8 @@
 import { resolve } from 'path'
 import { existsSync } from 'fs'
 import Router from 'koa-router'
+import { printAndExit, getReg, suffixRegs } from './lib/utils'
 import { defaultConfig } from '../lib/config'
-import { printAndExit, getReg, suffixRegs } from '../lib/utils'
 import SSRServer from './server'
 
 export default async (config) => {

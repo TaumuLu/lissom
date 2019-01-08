@@ -34,6 +34,7 @@
     "htmlescape": "1.1.1",
     "http-status": "1.0.1",
     "prop-types": "15.6.2",
+    "react-is": "^16.7.0",
     "url": "0.11.0"
   },
   "devDependencies": {
