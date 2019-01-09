@@ -1,5 +1,5 @@
 import { join } from 'path'
-import { RUNTIME_NAME, JSONP_FUNCTION } from '../lib/constants'
+import { JSONP_FUNCTION, RUNTIME_NAME } from '../lib/constants'
 import { ChunksPlugin, ManifestPlugin, PagesPlugin } from './plugins'
 import { getEntry, prepareOptions } from './utils'
 

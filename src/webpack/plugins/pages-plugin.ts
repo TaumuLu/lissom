@@ -1,7 +1,7 @@
 import { ConcatSource } from 'webpack-sources'
 
 export default class PagesPlugin {
-  apply(compiler) {
+  public apply(compiler) {
     compiler.hooks.compilation.tap('PagesPlugin', (compilation) => {
       compilation.moduleTemplates.javascript.hooks.render.tap('PagesPluginRenderRegister', (moduleSourcePostModule, module, options) => {
         const { chunk } = options

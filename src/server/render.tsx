@@ -1,9 +1,9 @@
 import React from 'react'
-import { renderToString, renderToStaticMarkup } from 'react-dom/server'
+import { renderToStaticMarkup, renderToString } from 'react-dom/server'
 import createHtml from './lib/create-html'
-import { loadComponents, getRouter } from './require'
-import { normalizePagePath, isResSent, loadGetInitialProps, loadGetInitialStyles } from './lib/utils'
+import { isResSent, loadGetInitialProps, loadGetInitialStyles, normalizePagePath } from './lib/utils'
 import { getAsyncModule } from "./lib/webpack-runtime"
+import { getRouter, loadComponents } from './require'
 
 export function renderToHTML(req, res, pathname, query, opts) {
   return doRender(req, res, pathname, query, opts)

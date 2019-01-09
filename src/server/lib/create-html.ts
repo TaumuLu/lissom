@@ -11,7 +11,6 @@ export default async function createHtml({ pageHTML, styleHTML, htmlConfig, rout
   return injectAssetsIntoHtml(html, assetTags)
 }
 
-
 const getAssetTags = ({ pageHTML, styleHTML, router, ssrData }) => {
   const { name } = router
   const { asyncJsChunks, asyncCssChunks } = getAsyncChunks()

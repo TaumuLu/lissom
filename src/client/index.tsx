@@ -7,10 +7,10 @@ declare global {
     __SSR_DATA__: {
       props: any
       pathname: string
-      asyncProps: Array<any>
+      asyncProps: any[]
       clientRender: boolean
     }
-    __SSR_LOADED_PAGES__: Array<any>
+    __SSR_LOADED_PAGES__: any[]
     __SSR_REGISTER_PAGE__: Function
   }
 }
@@ -18,8 +18,8 @@ declare global {
 if (typeof window !== 'undefined') {
   // 异步延迟至当前入口模块导出后再执行，入口模块为导出的react组件，一定会是同步执行
   Promise.resolve().then(() => {
-    const { __SSR_DATA__: { props, pathname, asyncProps, clientRender = true } } = window
-    if(!clientRender) return void 'noRender'
+    const { props, pathname, asyncProps, clientRender = true } = window.__SSR_DATA__
+    if (!clientRender) return void 0
 
     let isInitialRender = true
     function renderReactElement(reactEl, domEl) {

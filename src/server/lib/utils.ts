@@ -18,9 +18,9 @@ function purgeCache(moduleName, excludeModules) {
 }
 
 function searchCache(modPath, callback, excludeModules = []) {
-  const mod = modPath && require.cache[modPath]
+  const searchMod = modPath && require.cache[modPath]
 
-  if (mod !== undefined) {
+  if (searchMod !== undefined) {
     (function traverse(mod) {
       const id = mod.id
       const isExclude = excludeModules.some(exmod => id.includes(exmod))
@@ -30,7 +30,7 @@ function searchCache(modPath, callback, excludeModules = []) {
         })
       }
       callback(mod.id)
-    }(mod))
+    }(searchMod))
   }
 }
 
@@ -62,7 +62,6 @@ const fileterCssAssets = (originAssets) => {
     return /.css($|\?)/.test(path) && !path.includes(RUNTIME_NAME)
   })
 }
-
 
 export function printAndExit(message, code = 1) {
   if (code === 0) {
@@ -106,7 +105,6 @@ const getReg = (regs = [], matchEnd = true) => {
   }
   return new RegExp(regStr)
 }
-
 
 function isResSent(res) {
   return res.finished || res.headersSent

@@ -2,7 +2,7 @@ import findUp from 'find-up'
 import { existsSync, readFileSync } from 'fs'
 import { resolve } from 'path'
 import { ASSETS_MANIFEST, RUNTIME_NAME } from '../lib/constants'
-import { printAndExit, fileterJsAssets } from './lib/utils'
+import { fileterJsAssets, printAndExit } from './lib/utils'
 
 export default (outputDir) => {
   const assetsManifestPath = findUp.sync(ASSETS_MANIFEST, {

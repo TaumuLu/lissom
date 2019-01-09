@@ -1,12 +1,12 @@
-import { resolve } from 'path'
 import { existsSync } from 'fs'
 import Router from 'koa-router'
-import { printAndExit, getReg, suffixRegs } from './lib/utils'
+import { resolve } from 'path'
 import { defaultConfig } from '../lib/config'
+import { getReg, printAndExit, suffixRegs } from './lib/utils'
 import SSRServer from './server'
 
 export default async (config) => {
-  const { excludePathRegs, output, ...otherConfig } = Object.assign({}, defaultConfig, config)
+  const { excludePathRegs, output, ...otherConfig } = {...defaultConfig, ...config} as any
   if (!output) {
     printAndExit('> output configuration is required')
   }
@@ -15,7 +15,7 @@ export default async (config) => {
     printAndExit(`> No such directory exists as the project root: ${outputDir}`)
   }
   const ssrConfig = { ...otherConfig, output: outputDir }
-  let app = new SSRServer(ssrConfig)
+  const app = new SSRServer(ssrConfig)
 
   const pathRouter = new Router()
   pathRouter.use(async (ctx, next) => {

@@ -1,10 +1,10 @@
 import { ConcatSource } from 'webpack-sources'
-import { RUNTIME_NAME, GLOBAl_VARIABLE } from '../../lib/constants'
+import { GLOBAl_VARIABLE, RUNTIME_NAME } from '../../lib/constants'
 
 const replaceReg = /Promise\.all\(([^()]*)\)/g
 
 export default class ChunksPlugin {
-  apply(compiler) {
+  public apply(compiler) {
     compiler.hooks.compilation.tap('ChunksPlugin', (compilation) => {
       compilation.chunkTemplate.hooks.render.tap('ChunksPluginRenderHack', (modules) => {
         const source = new ConcatSource()

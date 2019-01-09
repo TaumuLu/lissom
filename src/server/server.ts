@@ -1,15 +1,15 @@
 import { resolve } from 'path'
-import { renderToHTML, renderErrorToHTML } from './render'
-import sendHTML from "./send-html";
 import loadConfig from './config'
 import { isResSent } from './lib/utils'
 import { setWebpackConfig } from './lib/webpack-runtime'
+import { renderErrorToHTML, renderToHTML } from './render'
+import sendHTML from "./send-html";
 
 export default class Server {
-  dir: string
-  quiet: boolean
-  config: any
-  renderOpts: any
+  public dir: string
+  public quiet: boolean
+  public config: any
+  public renderOpts: any
 
   constructor({ dir, dev, isSpa, quiet, output, requireModules, excludeModules, excludeModuleRegs, ...renderOpts }) {
     this.dir = resolve(dir)
@@ -24,14 +24,14 @@ export default class Server {
     }
   }
 
-  async render(req, res, pathname, query) {
+  public async render(req, res, pathname, query) {
     const html = await this.renderToHTML(req, res, pathname, query)
     if (isResSent(res)) return null
 
     return sendHTML(req, res, html, req.method, this.renderOpts)
   }
 
-  async renderToHTML(req, res, pathname, query) {
+  public async renderToHTML(req, res, pathname, query) {
     try {
       const out = await renderToHTML(req, res, pathname, query, this.renderOpts)
       return out
@@ -46,7 +46,7 @@ export default class Server {
     }
   }
 
-  async renderErrorToHTML(err, req, res, pathname, query) {
+  public async renderErrorToHTML(err, req, res, pathname, query) {
     return renderErrorToHTML(err, req, res, pathname, query, this.renderOpts)
   }
 }

@@ -1,6 +1,6 @@
 import { RawSource } from 'webpack-sources'
-import { ASSETS_MANIFEST, HTML_WEBPACK_PLUGIN } from '../../lib/constants'
 import { chunkOnlyConfig } from '../../lib/config'
+import { ASSETS_MANIFEST, HTML_WEBPACK_PLUGIN } from '../../lib/constants'
 
 export default class ManifestPlugin {
   // getCssChunkObject(mainChunk) {
@@ -16,7 +16,7 @@ export default class ManifestPlugin {
   //   return obj
   // }
 
-  apply(compiler) {
+  public apply(compiler) {
     // compiler.hooks.thisCompilation.tap('CssChunkPlugin', (compilation) => {
     //   const { mainTemplate } = compilation
     //   mainTemplate.hooks.requireEnsure.tap('CssChunkPluginMap', (source, chunk) => {
@@ -34,20 +34,22 @@ export default class ManifestPlugin {
       stats[HTML_WEBPACK_PLUGIN] = []
       stats.chunks = stats.chunks.reduce((p, chunk) => {
         const { id, entry, initial, names, files, hash } = chunk
-        return Object.assign(p, {
+        return {
+          ...p,
           [id]: {
             entry, initial, names, files, hash,
-          },
-        })
+          }
+        }
       }, {})
       stats.modules = stats.modules.reduce((p, module) => {
         const { id, name, issuerId } = module
-        return Object.assign(p, {
+        return {
+          ...p,
           [id]: {
             name,
             issuerId,
-          },
-        })
+          }
+        }
       }, {})
 
       plugins.map((plugin) => {

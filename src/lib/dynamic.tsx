@@ -13,8 +13,8 @@ function Dynamic(config) {
   const resolveValue = resolveComponent()
 
   return class DynamicConnect extends Component<any, IState> {
-    state: IState
-    mounted: boolean
+    public state: IState
+    public mounted: boolean
 
     constructor(props) {
       super(props)
@@ -24,15 +24,15 @@ function Dynamic(config) {
       this.load()
     }
 
-    componentDidMount() {
+    public componentDidMount() {
       this.mounted = true
     }
 
-    componentWillUnmount() {
+    public componentWillUnmount() {
       this.mounted = false
     }
 
-    setComponent = (mod) => {
+    public setComponent = (mod) => {
       const DynamicComponent = mod.default || mod
       if (this.mounted) {
         this.setState({ DynamicComponent })
@@ -41,7 +41,7 @@ function Dynamic(config) {
       }
     }
 
-    load() {
+    public load() {
       if (resolveValue._isSyncModule) {
         this.setComponent(resolveValue)
       } else {
@@ -49,7 +49,7 @@ function Dynamic(config) {
       }
     }
 
-    render() {
+    public render() {
       const { DynamicComponent } = this.state
       if (DynamicComponent) {
         return (

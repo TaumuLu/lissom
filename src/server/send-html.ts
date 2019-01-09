@@ -1,5 +1,5 @@
-import fresh from 'fresh'
 import generateETag from 'etag'
+import fresh from 'fresh'
 import { isResSent } from './lib/utils'
 
 export default function sendHTML(req, res, html, method, { dev, generateEtags }) {

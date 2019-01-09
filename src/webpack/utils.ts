@@ -1,4 +1,4 @@
-export const getEntry = (entries, entry) => {
+export const getEntry = (entries, initialEntry) => {
   const prependEntry = (entry) => {
     if (typeof entry === 'function') {
       return () => Promise.resolve(entry()).then(prependEntry)
@@ -14,7 +14,7 @@ export const getEntry = (entries, entry) => {
     return entries.concat(entry)
   }
 
-  return prependEntry(entry)
+  return prependEntry(initialEntry)
 }
 
 function handleExport(options) {

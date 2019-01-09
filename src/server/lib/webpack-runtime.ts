@@ -1,11 +1,11 @@
 import path from 'path'
-import { RUNTIME_NAME, JSONP_FUNCTION } from '../../lib/constants'
-import { getReg, deleteCache, fileterJsAssets, fileterCssAssets } from './utils'
+import { JSONP_FUNCTION, RUNTIME_NAME } from '../../lib/constants'
+import { deleteCache, fileterCssAssets, fileterJsAssets, getReg } from './utils'
 
 declare global {
   namespace NodeJS {
       interface Global {
-        [JSONP_FUNCTION]: Array<any>,
+        [JSONP_FUNCTION]: any[],
         __SSR_REGISTER_PAGE__: Function
         window: undefined
       }
@@ -34,7 +34,7 @@ function webpackJsonpCallback(data) {
   // then flag all "chunkIds" as loaded and fire callback
   let moduleId; let chunkId; let i = 0
   const resolves = []
-  for (;i < chunkIds.length; i++) {
+  for (; i < chunkIds.length; i++) {
     chunkId = chunkIds[i]
     if (installedChunks[chunkId]) {
       resolves.push(installedChunks[chunkId][0])
@@ -77,7 +77,7 @@ function checkDeferredModules() {
 }
 
 // The module cache
-let installedModules = {}
+const installedModules = {}
 
 // 服务端不考虑css按需加载
 // // object to store loaded CSS chunks
@@ -116,7 +116,7 @@ function requireChunk(chunkId) {
       deleteCache(absPath)
     }
     asyncJsChunks.push(getAbsPath(asset))
-    if(isRequire) {
+    if (isRequire) {
       require(absPath)
     }
   })
@@ -141,7 +141,7 @@ const asyncModuleReg = /lissom\/dist\/lib\/async/
 
 const matchModule = (moduleId) => {
   const { name } = _config.modules[moduleId] || {} as any
-  if(asyncModuleReg.test(name)) {
+  if (asyncModuleReg.test(name)) {
     _config.asyncModuleId = moduleId
   }
   if (name && /node_modules/.test(name)) {
@@ -248,7 +248,7 @@ __webpack_require__.t = function (value, mode) {
   const ns = Object.create(null)
   __webpack_require__.r(ns)
   Object.defineProperty(ns, 'default', { enumerable: true, value })
-  if (mode & 2 && typeof value !== 'string') for (const key in value) __webpack_require__.d(ns, key, ((key) => { return value[key] }).bind(null, key))
+  if (mode & 2 && typeof value !== 'string') for (const key in value) __webpack_require__.d(ns, key, ((k) => value[k]).bind(null, key))
   return ns
 }
 
@@ -277,7 +277,6 @@ jsonpArray.push = webpackJsonpCallback
 jsonpArray = jsonpArray.slice()
 for (let i = 0; i < jsonpArray.length; i++) webpackJsonpCallback(jsonpArray[i])
 parentJsonpFunction = oldJsonpFunction
-
 
 // run deferred modules from other chunks
 // checkDeferredModules()
