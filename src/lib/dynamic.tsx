@@ -1,7 +1,11 @@
 import React, { Component } from 'react'
 import { ReactComp } from "./types"
+import { checkServer, interopDefault } from "./utils";
 
 let defaultLoadingComponent = () => null
+
+// 服务端判断，只会走一次用于注册动态组件路径
+let isRegister = false
 
 interface IState {
   DynamicComponent: ReactComp<any>
@@ -9,8 +13,13 @@ interface IState {
 
 function Dynamic(config) {
   const { component: resolveComponent, LoadingComponent = defaultLoadingComponent } = config
-  // 提前执行，支持动态组件中的异步操作
-  const resolveValue = resolveComponent()
+  // 服务端提前执行，支持动态组件中的异步操作，用于注册
+  if (!isRegister && checkServer()) {
+    isRegister = true
+    const component = interopDefault(resolveComponent())
+    // 动态组件执行队列移动操作
+    component.move()
+  }
 
   return class DynamicConnect extends Component<any, IState> {
     public state: IState
@@ -33,7 +42,7 @@ function Dynamic(config) {
     }
 
     public setComponent = (mod) => {
-      const DynamicComponent = mod.default || mod
+      const DynamicComponent = interopDefault(mod)
       if (this.mounted) {
         this.setState({ DynamicComponent })
       } else {
@@ -42,6 +51,8 @@ function Dynamic(config) {
     }
 
     public load() {
+      // 两端再次执行注册
+      const resolveValue = resolveComponent()
       if (resolveValue._isSyncModule) {
         this.setComponent(resolveValue)
       } else {

@@ -2,7 +2,7 @@ import React from 'react'
 import { renderToStaticMarkup, renderToString } from 'react-dom/server'
 import createHtml from './lib/create-html'
 import { isResSent, loadGetInitialProps, loadGetInitialStyles, normalizePagePath } from './lib/utils'
-import { getAsyncModule } from "./lib/webpack-runtime"
+import { clearAsyncChunks, getAsyncModule } from "./lib/webpack-runtime"
 import { getRouter, loadComponents } from './require'
 
 export function renderToHTML(req, res, pathname, query, opts) {
@@ -38,8 +38,11 @@ async function doRender(req, res, pathname, query, {
 
   const render = getRender({ staticMarkup })
   const props = await loadGetInitialProps(Component, ctx)
-  // 查找获取所有异步组件的请求
+  // 查找获取所有异步组件的异步操作
   const asyncProps = await getAsyncProps({ ctx, props, pathname })
+  // 清理异步操作中注册的异步chunks
+  clearAsyncChunks()
+  // render时注册的异步chunks才是真正需要加载的
   const pageHTML = render(<Component {...props}/>)
   // 必须放在render组件之后获取
   const Styles = await loadGetInitialStyles(Component, ctx)

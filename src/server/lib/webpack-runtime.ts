@@ -103,6 +103,11 @@ const getAsyncChunks = () => {
   }
 }
 
+const clearAsyncChunks = () => {
+  asyncJsChunks = []
+  asyncCssChunks = []
+}
+
 // script path function
 function requireChunk(chunkId) {
   const installedChunkData = installedChunks[chunkId]
@@ -327,13 +332,13 @@ const clearModuleCache = (dev) => {
       }
     })
   }
-  asyncJsChunks = []
-  asyncCssChunks = []
+  clearAsyncChunks()
 }
 
 export {
   clearModuleCache,
+  clearAsyncChunks,
   setWebpackConfig,
   getAsyncChunks,
-  getAsyncModule
+  getAsyncModule,
 }
