@@ -15,6 +15,7 @@ declare global {
   }
 }
 
+// 客户端挂载dom节点，webpack入口处注入
 if (typeof window !== 'undefined') {
   // 异步延迟至当前入口模块导出后再执行，入口模块为导出的react组件，一定会是同步执行
   Promise.resolve().then(() => {

@@ -17,8 +17,8 @@ let _config = {
   chunks: {},
   modules: {},
   requireModules: [],
-  excludeModules: [],
-  excludeModuleRegs: [],
+  ignoreModules: [],
+  purgeModuleRegs: [],
   asyncModuleId: null
 }
 
@@ -131,7 +131,7 @@ function requireChunk(chunkId) {
 }
 
 // requireModules 服务单需要从node_modules require的模块，解决一些提供服务端和客户端的包，如superagent
-// excludeModules 服务端排除执行模块
+// ignoreModules 服务端排除执行模块
 
 const getModuleName = (modulePath) => {
   const modulePathList = modulePath.split('/')
@@ -152,7 +152,7 @@ const matchModule = (moduleId) => {
   if (name && /node_modules/.test(name)) {
     const modulePath = name.replace('./node_modules/', '')
     const moduleName = getModuleName(modulePath)
-    if (_config.excludeModules.includes(moduleName)) return {}
+    if (_config.ignoreModules.includes(moduleName)) return {}
 
     if (_config.requireModules.includes(moduleName)) {
       const absPath = path.resolve('node_modules', moduleName)
@@ -308,7 +308,7 @@ function getAsyncModule() {
   return installedModules[asyncModuleId]
 }
 
-const setWebpackConfig = (config, { dev, requireModules, excludeModules, excludeModuleRegs }) => {
+const setWebpackConfig = (config, { dev, requireModules, ignoreModules, purgeModuleRegs }) => {
   const { outputPath } = config
   __webpack_require__.p = getAbsPath(outputPath, false)
 
@@ -316,8 +316,8 @@ const setWebpackConfig = (config, { dev, requireModules, excludeModules, exclude
     ...config,
     dev,
     requireModules,
-    excludeModules,
-    excludeModuleRegs
+    ignoreModules,
+    purgeModuleRegs
   }
 }
 
@@ -326,7 +326,7 @@ const clearModuleCache = (dev) => {
   if (dev) {
     Object.keys(installedModules).forEach((moduleId) => {
       const { name } = _config.modules[moduleId] || {} as any
-      const excludeMatch = !getReg(_config.excludeModuleRegs, false).test(name)
+      const excludeMatch = !getReg(_config.purgeModuleRegs, false).test(name)
       if (excludeMatch) {
         delete installedModules[moduleId]
       }

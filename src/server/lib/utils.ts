@@ -5,9 +5,9 @@ function deleteCache(path) {
   delete require.cache[path]
 }
 
-function purgeCache(moduleName, excludeModules) {
+function purgeCache(moduleName, ignoreModules) {
   const modPath = require.resolve(moduleName)
-  searchCache(modPath, deleteCache, excludeModules)
+  searchCache(modPath, deleteCache, ignoreModules)
   const mConstructor = module.constructor as any
 
   Object.keys(mConstructor._pathCache).forEach((cacheKey) => {
@@ -17,13 +17,13 @@ function purgeCache(moduleName, excludeModules) {
   })
 }
 
-function searchCache(modPath, callback, excludeModules = []) {
+function searchCache(modPath, callback, ignoreModules = []) {
   const searchMod = modPath && require.cache[modPath]
 
   if (searchMod !== undefined) {
     (function traverse(mod) {
       const id = mod.id
-      const isExclude = excludeModules.some(exmod => id.includes(exmod))
+      const isExclude = ignoreModules.some(exmod => id.includes(exmod))
       if (!isExclude) {
         mod.children.forEach((child) => {
           traverse(child)

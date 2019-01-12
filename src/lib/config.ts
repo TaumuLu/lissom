@@ -19,14 +19,14 @@ const _DEV_ = process.env.NODE_ENV !== 'production'
 export const defaultConfig = {
   isSpa: true,
   output: './public',
-  excludePathRegs: [/\/api\/.*/],
-  excludeModuleRegs: [/node_modules/],
+  excludeRouteRegs: [/\/api\/.*/],
+  purgeModuleRegs: [/node_modules/],
   dir: '.',
   dev: _DEV_,
   staticMarkup: false,
   generateEtags: true,
   quiet: false,
   requireModules: ['superagent'],
-  excludeModules: ['babel-polyfill'],
+  ignoreModules: ['babel-polyfill'],
   clientRender: true,
 }
