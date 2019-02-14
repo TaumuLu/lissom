@@ -8,7 +8,13 @@
     "build-ts": "tsc",
     "watch-ts": "tsc -w",
     "prepublish": "npm run build-ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "lint-staged"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
   },
   "repository": {
     "type": "git",
@@ -37,6 +43,8 @@
     "url": "0.11.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^7.5.2",
+    "@commitlint/config-conventional": "^7.5.0",
     "@types/node": "^11.9.0",
     "@types/react": "^16.7.18",
     "@types/react-dom": "^16.0.11",
@@ -49,7 +57,10 @@
     "tslint": "^5.12.1",
     "tslint-react": "^3.6.0",
     "typescript": "^3.2.2",
-    "webpack": "^4.29.3"
+    "webpack": "^4.29.3",
+    "husky": "^1.3.1",
+    "lint-staged": "^8.1.4",
+    "prettier": "^1.16.4"
   },
   "peerDependencies": {
     "react": "^16.0.0",
