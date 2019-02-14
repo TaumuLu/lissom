@@ -143,9 +143,13 @@ const getModuleName = (modulePath) => {
 }
 
 const asyncModuleReg = /lissom\/dist\/lib\/async/
+const styleModuleReg = /.(less|css|scss|sass)$/
 
 const matchModule = (moduleId) => {
   const { name } = _config.modules[moduleId] || {} as any
+  // 忽略引入的样式文件
+  if (styleModuleReg.test(name)) return {}
+  // 记录异步模块id
   if (asyncModuleReg.test(name)) {
     _config.asyncModuleId = moduleId
   }
@@ -170,7 +174,7 @@ function __webpack_require__(moduleId) {
   }
 
   // Create a new module (and put it into the cache)
-  const module = installedModules[moduleId] = {
+  const _module = installedModules[moduleId] = {
     i: moduleId,
     l: false,
     exports: {},
@@ -179,17 +183,17 @@ function __webpack_require__(moduleId) {
   // 缓存进installedModules里，提高性能
   const result = matchModule(moduleId)
   if (result) {
-    module.exports = result
+    _module.exports = result
   } else {
     // Execute the module function
-    modules[moduleId].call(module.exports, module, module.exports, __webpack_require__)
+    modules[moduleId].call(_module.exports, _module, _module.exports, __webpack_require__)
   }
 
   // Flag the module as loaded
-  module.l = true
+  _module.l = true
 
   // Return the exports of the module
-  return module.exports
+  return _module.exports
 }
 __webpack_require__.s = undefined
 
@@ -305,7 +309,11 @@ function getAbsPath(originPath, head = true) {
 
 function getAsyncModule() {
   const { asyncModuleId } = _config
-  return installedModules[asyncModuleId]
+  const asyncModule =  installedModules[asyncModuleId]
+  if (asyncModule) {
+    return asyncModule.exports
+  }
+  return null
 }
 
 const setWebpackConfig = (config, { dev, requireModules, ignoreModules, purgeModuleRegs }) => {

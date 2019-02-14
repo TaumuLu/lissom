@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { checkServer } from "./utils";
+import { checkServer } from './utils'
 
 let defaultLoadingComponent = () => null
 

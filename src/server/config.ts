@@ -4,7 +4,7 @@ import { resolve } from 'path'
 import { ASSETS_MANIFEST, RUNTIME_NAME } from '../lib/constants'
 import { fileterJsAssets, printAndExit } from './lib/utils'
 
-export default (outputDir) => {
+export default (outputDir, config) => {
   const assetsManifestPath = findUp.sync(ASSETS_MANIFEST, {
     cwd: outputDir,
   })
@@ -12,9 +12,10 @@ export default (outputDir) => {
   if (!assetsManifestPath || !assetsManifestPath.length) {
     printAndExit('> use ssr webpack config')
   }
+  const { entry } = config
   const assetsManifest = require(assetsManifestPath)
   const { entrypoints, HtmlWebpackPlugin, outputPath, modules, chunks } = assetsManifest
-  const routers = getRouters(entrypoints, outputPath)
+  const routers = getRouters(entrypoints, outputPath, entry)
   const htmlConfig = getHtmlConfig(HtmlWebpackPlugin, outputPath)
 
   return {
@@ -26,7 +27,7 @@ export default (outputDir) => {
   }
 }
 
-const getRouters = (entrypoints, outputPath) => {
+const getRouters = (entrypoints, outputPath, entry) => {
   return Object.keys(entrypoints).reduce((p, key, i) => {
     const { chunks, assets: originAssets } = entrypoints[key]
     const assets = fileterJsAssets(originAssets)
@@ -39,6 +40,9 @@ const getRouters = (entrypoints, outputPath) => {
       size: assets.length,
     }
     if (i === 0) {
+      p._default = router
+    }
+    if (key === entry) {
       p.default = router
     }
     const page = key.charAt(0) === '/' ? key : `/${key}`
@@ -47,7 +51,7 @@ const getRouters = (entrypoints, outputPath) => {
       ...p,
       [page]: router,
     }
-  }, { default: null })
+  }, { default: null, _default: null })
 }
 
 const getHtmlConfig = (HtmlWebpackPlugin, outputPath) => {

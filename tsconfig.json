@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "outDir": "./dist",
-    "target": "es6",
+    "target": "es5",
     "module": "commonjs",
     "allowJs": true,
     "checkJs": true,
@@ -12,29 +12,25 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
-    "paths": {
-      "*": [
-        "node_modules/*",
-        "src/types/*"
-      ]
-    },
+    "lib": ["esnext", "dom"],
+    // "paths": {
+    //   "*": [
+    //     "node_modules/*",
+    //     "src/types/*"
+    //   ]
+    // },
     // "typeRoots": [
     //   "src/@types",
     //   "node_modules/@types"
     // ],
-    "lib": [
-      "esnext",
-      "dom",
-    ],
   },
   "include": [
-    "src/**/*"
+    "./src/**/*"
   ],
   "exclude": [
     "node_modules",
-    "example",
+    "examples",
     "dist",
     "docs",
   ]

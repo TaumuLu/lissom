@@ -3,7 +3,7 @@ import loadConfig from './config'
 import { isResSent } from './lib/utils'
 import { setWebpackConfig } from './lib/webpack-runtime'
 import { renderErrorToHTML, renderToHTML } from './render'
-import sendHTML from "./send-html";
+import sendHTML from './send-html'
 
 export default class Server {
   public dir: string
@@ -11,10 +11,10 @@ export default class Server {
   public config: any
   public renderOpts: any
 
-  constructor({ dir, dev, isSpa, quiet, output, requireModules, ignoreModules, purgeModuleRegs, ...renderOpts }) {
+  constructor({ dir, dev, isSpa, quiet, output, requireModules, ignoreModules, purgeModuleRegs, entry, ...renderOpts }) {
     this.dir = resolve(dir)
     this.quiet = quiet
-    this.config = loadConfig(output)
+    this.config = loadConfig(output, { entry })
     setWebpackConfig(this.config, { dev, requireModules, ignoreModules, purgeModuleRegs })
 
     this.renderOpts = {

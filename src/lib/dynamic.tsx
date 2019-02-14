@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { ReactComp } from "./types"
-import { checkServer, interopDefault } from "./utils";
+import { ReactComp } from './types'
+import { checkServer, interopDefault } from './utils'
 
 let defaultLoadingComponent = () => null
 

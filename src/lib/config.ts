@@ -29,4 +29,5 @@ export const defaultConfig = {
   requireModules: ['superagent'],
   ignoreModules: ['babel-polyfill'],
   clientRender: true,
+  // entry: '',
 }

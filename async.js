@@ -1,1 +1,1 @@
-module.exports = require('./dist/lib/async').default
+module.exports = require('./dist/lib/async')
