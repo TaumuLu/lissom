@@ -21,6 +21,9 @@ npm install lissom --save
 - [动态加载](./docs/动态加载.md)
 - [异步操作](./docs/异步操作.md)
 
+## examples
+[examples](./examples/README.md)
+
 ## 使用
 
 ### webpack配置

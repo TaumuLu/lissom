@@ -1,0 +1,5 @@
+build/
+public/
+vendor/
+lib/
+node_modules/

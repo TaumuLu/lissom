@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <title>React App</title>
+    <style>
+      html, body, #root, .loading-container {
+        display: flex;
+        flex: 1;
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      .loading-container .loading-grid {
+        width: 100px;
+        height: 100px;
+        margin: 300px auto 50px;
+      }
+      .loading-container .loading-grid .loading {
+        width: 33%;
+        height: 33%;
+        background-color: #03a9f4;
+        float: left;
+        -webkit-animation: loadingGridScaleDelay 1.3s infinite ease-in-out;
+                animation: loadingGridScaleDelay 1.3s infinite ease-in-out;
+      }
+
+      .loading-container .loading-grid .loading-item-1 {
+        -webkit-animation-delay: 0.2s;
+                animation-delay: 0.2s;
+      }
+      .loading-container .loading-grid .loading-item-2 {
+        -webkit-animation-delay: 0.3s;
+                animation-delay: 0.3s;
+      }
+      .loading-container .loading-grid .loading-item-3 {
+        -webkit-animation-delay: 0.4s;
+                animation-delay: 0.4s;
+      }
+      .loading-container .loading-grid .loading-item-4 {
+        -webkit-animation-delay: 0.1s;
+                animation-delay: 0.1s;
+      }
+      .loading-container .loading-grid .loading-item-5 {
+        -webkit-animation-delay: 0.2s;
+                animation-delay: 0.2s;
+      }
+      .loading-container .loading-grid .loading-item-6 {
+        -webkit-animation-delay: 0.3s;
+                animation-delay: 0.3s;
+      }
+      .loading-container .loading-grid .loading-item-7 {
+        -webkit-animation-delay: 0s;
+                animation-delay: 0s;
+      }
+      .loading-container .loading-grid .loading-item-8 {
+        -webkit-animation-delay: 0.1s;
+                animation-delay: 0.1s;
+      }
+      .loading-container .loading-grid .loading-item-9 {
+        -webkit-animation-delay: 0.2s;
+                animation-delay: 0.2s;
+      }
+
+      @-webkit-keyframes loadingGridScaleDelay {
+        0%, 70%, 100% {
+          -webkit-transform: scale3D(1, 1, 1);
+                  transform: scale3D(1, 1, 1);
+        } 35% {
+          -webkit-transform: scale3D(0, 0, 1);
+                  transform: scale3D(0, 0, 1);
+        }
+      }
+
+      @keyframes loadingGridScaleDelay {
+        0%, 70%, 100% {
+          -webkit-transform: scale3D(1, 1, 1);
+                  transform: scale3D(1, 1, 1);
+        } 35% {
+          -webkit-transform: scale3D(0, 0, 1);
+                  transform: scale3D(0, 0, 1);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <div id="root">
+      <div class="loading-container">
+          <div class="loading-grid">
+            <div class="loading loading-item-1"></div>
+            <div class="loading loading-item-2"></div>
+            <div class="loading loading-item-3"></div>
+            <div class="loading loading-item-4"></div>
+            <div class="loading loading-item-5"></div>
+            <div class="loading loading-item-6"></div>
+            <div class="loading loading-item-7"></div>
+            <div class="loading loading-item-8"></div>
+            <div class="loading loading-item-9"></div>
+          </div>
+        </div>
+    </div>
+  </body>
+</html>
