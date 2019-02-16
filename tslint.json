@@ -1,28 +1,16 @@
 {
-  "extends": [
-    "tslint:latest",
-    "tslint-react"
-  ],
+  "extends": ["tslint:latest", "tslint-react"],
   "rules": {
     "class-name": true,
-    "comment-format": [
-      true,
-      "check-space"
-    ],
+    "comment-format": [true, "check-space"],
     "curly": false,
-    "indent": [
-      true,
-      "spaces"
-    ],
+    "indent": [true, "spaces"],
     "object-literal-sort-keys": false,
     "interface-name": false,
     "jsdoc-format": true,
     "no-consecutive-blank-lines": true,
     "no-debugger": true,
-    "no-console": [
-      true,
-      "warning"
-    ],
+    "no-console": [true, "warning"],
     "no-duplicate-variable": true,
     "no-eval": true,
     "no-internal-module": true,
@@ -42,18 +30,10 @@
     "jsx-no-lambda": false,
     "no-submodule-imports": false,
     "prefer-for-of": false,
-    "one-line": [
-      true,
-      "check-open-brace",
-      "check-whitespace",
-      "check-catch"
-    ],
+    "one-line": [true, "check-open-brace", "check-whitespace", "check-catch"],
     "trailing-comma": false,
     "arrow-parens": false,
-    "triple-equals": [
-      true,
-      "allow-null-check"
-    ],
+    "triple-equals": [true, "allow-null-check"],
     "max-line-length": false,
     "typedef-whitespace": [
       true,
@@ -65,10 +45,7 @@
         "variable-declaration": "nospace"
       }
     ],
-    "variable-name": [
-      true,
-      "ban-keywords"
-    ],
+    "variable-name": [true, "ban-keywords"],
     "whitespace": [
       true,
       "check-branch",
@@ -89,6 +66,7 @@
       "avoid-template",
       "avoid-escape"
     ],
-    "semicolon": false
+    "semicolon": false,
+    "prefer-conditional-expression": false
   }
 }

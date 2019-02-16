@@ -1,106 +1,116 @@
-import htmlescape from 'htmlescape'
-import { getAsyncChunks } from './webpack-runtime'
+import htmlescape from 'htmlescape';
+import { getAsyncChunks } from './webpack-runtime';
 
-const scriptType = 'text/javascript'
-const cssRel = 'stylesheet'
+const scriptType = 'text/javascript';
+const cssRel = 'stylesheet';
 
-export default async function createHtml({ pageHTML, styleHTML, htmlConfig, router, ssrData }) {
-  const { html } = htmlConfig
-  const assetTags = getAssetTags({ pageHTML, styleHTML, router, ssrData })
+export default async function createHtml({
+  pageHTML,
+  styleHTML,
+  htmlConfig,
+  router,
+  ssrData,
+}) {
+  const { html } = htmlConfig;
+  const assetTags = getAssetTags({ pageHTML, styleHTML, router, ssrData });
 
-  return injectAssetsIntoHtml(html, assetTags)
+  return injectAssetsIntoHtml(html, assetTags);
 }
 
 const getAssetTags = ({ pageHTML, styleHTML, router, ssrData }) => {
-  const { name } = router
-  const { asyncJsChunks, asyncCssChunks } = getAsyncChunks()
+  const { name } = router;
+  const { asyncJsChunks, asyncCssChunks } = getAsyncChunks();
 
-  const jsDefinition = asyncJsChunks.map((src) => {
+  const jsDefinition = asyncJsChunks.map(src => {
     return {
       attributes: { type: scriptType, src },
       tagName: 'script',
-    }
-  })
-  const cssDefinition = asyncCssChunks.map((href) => {
+    };
+  });
+  const cssDefinition = asyncCssChunks.map(href => {
     return {
       attributes: { href, rel: cssRel },
       tagName: 'link',
-    }
-  })
+    };
+  });
 
   const assetTags = {
-    bodyStart: [{
-      attributes: { id: '__ssr__', style: 'height: 100%; display: flex' },
-      tagName: 'div',
-      innerHTML: pageHTML,
-    }, {
-      attributes: { type: scriptType },
-      tagName: 'script',
-      innerHTML: `
+    bodyStart: [
+      {
+        attributes: { id: '__ssr__', style: 'height: 100%; display: flex' },
+        tagName: 'div',
+        innerHTML: pageHTML,
+      },
+      {
+        attributes: { type: scriptType },
+        tagName: 'script',
+        innerHTML: `
         window.__SSR_DATA__ = ${htmlescape(ssrData)}
         window.__SSR_LOADED_PAGES__ = ['${name}'];
-        window.__SSR_REGISTER_PAGE__ = function(r,f){__SSR_LOADED_PAGES__.push([r, f()])};
+        window.__SSR_REGISTER_PAGE__ = function(r,f) { __SSR_LOADED_PAGES__.push([r, f()]) };
       `,
-    }, ...jsDefinition],
+      },
+      ...jsDefinition,
+    ],
     headEnd: [...cssDefinition],
-  }
+  };
   if (styleHTML) {
     assetTags.headEnd.push({
       innerHTML: styleHTML,
-    } as any)
+    } as any);
   }
 
-  return assetTags
-}
+  return assetTags;
+};
 
 const getTagRegExp = (tag, isEnd = false, flags = 'i') => {
-  let tagAfter = '\\s'
+  let tagAfter = '\\s';
   if (tag === 'html') {
-    tagAfter = '[^>]'
+    tagAfter = '[^>]';
   }
-  const regStr = `(<${isEnd ? '\\/' : ''}${tag}${tagAfter}*>)`
-  return new RegExp(regStr, flags)
-}
-const htmlReg = getTagRegExp('html')
-const bodyRegStart = getTagRegExp('body')
-const bodyRegEnd = getTagRegExp('body', true)
-const headRegExpEnd = getTagRegExp('head', true)
+  const regStr = `(<${isEnd ? '\\/' : ''}${tag}${tagAfter}*>)`;
+  return new RegExp(regStr, flags);
+};
+const htmlReg = getTagRegExp('html');
+const bodyRegStart = getTagRegExp('body');
+const bodyRegEnd = getTagRegExp('body', true);
+const headRegExpEnd = getTagRegExp('head', true);
 // const scriptRegStart = getTagRegExp('script')
 
 const injectAssetsIntoHtml = (html, assetTags) => {
-  const { bodyStart = [], bodyEnd = [], headEnd = [] } = Object
-    .keys(assetTags)
-    .reduce((p, k) => {
-      const tags = assetTags[k]
-      return {
-        ...p,
-        [k]: tags.map(createHtmlTag),
-      }
-    }, {}) as any
+  const { bodyStart = [], bodyEnd = [], headEnd = [] } = Object.keys(
+    assetTags
+  ).reduce((p, k) => {
+    const tags = assetTags[k];
+    return {
+      ...p,
+      [k]: tags.map(createHtmlTag),
+    };
+  }, {}) as any;
 
   if (bodyStart.length || bodyEnd.length) {
     if (bodyRegStart.test(html)) {
-      html = html.replace(bodyRegStart, match => match + bodyStart.join(''))
+      html = html.replace(bodyRegStart, match => match + bodyStart.join(''));
     } else {
-      html += bodyStart.join('')
+      html += bodyStart.join('');
     }
     if (bodyRegEnd.test(html)) {
-      html = html.replace(bodyRegEnd, match => bodyEnd.join('') + match)
+      html = html.replace(bodyRegEnd, match => bodyEnd.join('') + match);
     } else {
-      html += bodyEnd.join('')
+      html += bodyEnd.join('');
     }
   }
 
   if (headEnd.length) {
     if (!headRegExpEnd.test(html)) {
       if (!htmlReg.test(html)) {
-        html = `<head></head>${html}`
+        html = `<head></head>${html}`;
       } else {
-        html = html.replace(htmlReg, match => `${match}<head></head>`)
+        html = html.replace(htmlReg, match => `${match}<head></head>`);
       }
     }
 
-    html = html.replace(headRegExpEnd, match => headEnd.join('') + match)
+    html = html.replace(headRegExpEnd, match => headEnd.join('') + match);
   }
 
   // if (scriptStart.length) {
@@ -111,25 +121,32 @@ const injectAssetsIntoHtml = (html, assetTags) => {
   //   }
   // }
 
-  return html
-}
+  return html;
+};
 
-const createHtmlTag = (tagDefinition) => {
-  const { attributes, voidTag = false, closeTag = true, tagName, innerHTML, selfClosingTag = false } = tagDefinition
-  if (!tagName) return innerHTML
+const createHtmlTag = tagDefinition => {
+  const {
+    attributes,
+    voidTag = false,
+    closeTag = true,
+    tagName,
+    innerHTML,
+    selfClosingTag = false,
+  } = tagDefinition;
+  if (!tagName) return innerHTML;
 
   const attributeList = Object.keys(attributes || {})
     .filter(attributeName => attributes[attributeName] !== false)
-    .map((attributeName) => {
+    .map(attributeName => {
       if (attributes[attributeName] === true) {
-        return attributeName
+        return attributeName;
       }
-      return `${attributeName}="${tagDefinition.attributes[attributeName]}"`
-    })
+      return `${attributeName}="${tagDefinition.attributes[attributeName]}"`;
+    });
 
-  const isVoidTag = voidTag !== undefined ? voidTag : !closeTag
-  const isSelfClosingTag = voidTag !== undefined ? voidTag : selfClosingTag
-  return `<${[tagName].concat(attributeList).join(' ')}${isSelfClosingTag ? '/' : ''}>${
-    innerHTML || ''
-  }${isVoidTag ? '' : `</${tagName}>`}`
-}
+  const isVoidTag = voidTag !== undefined ? voidTag : !closeTag;
+  const isSelfClosingTag = voidTag !== undefined ? voidTag : selfClosingTag;
+  return `<${[tagName].concat(attributeList).join(' ')}${
+    isSelfClosingTag ? '/' : ''
+  }>${innerHTML || ''}${isVoidTag ? '' : `</${tagName}>`}`;
+};

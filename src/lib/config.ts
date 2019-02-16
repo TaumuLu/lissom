@@ -12,9 +12,9 @@ export const chunkOnlyConfig = {
   source: false,
   timings: false,
   // version: false,
-}
+};
 
-const _DEV_ = process.env.NODE_ENV !== 'production'
+const _DEV_ = process.env.NODE_ENV !== 'production';
 
 export const defaultConfig = {
   isSpa: true,
@@ -29,5 +29,6 @@ export const defaultConfig = {
   requireModules: ['superagent'],
   ignoreModules: ['babel-polyfill'],
   clientRender: true,
+  // elementId: '',
   // entry: '',
-}
+};

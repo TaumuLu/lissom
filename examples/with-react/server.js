@@ -12,6 +12,7 @@ const ssrConfig = {
   isSpa: true,
   excludeRouteRegs: [/\/(api|public)\/.*/],
   output: './build',
+  elementId: 'root',
 };
 
 async function startServer() {

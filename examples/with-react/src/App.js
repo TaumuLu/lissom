@@ -4,6 +4,11 @@ import logo from './files/logo.svg';
 import './styles/app.less';
 
 export default class App extends Component {
+  onClick = e => {
+    e.preventDefault();
+    console.log(111111);
+  };
+
   render() {
     return (
       <div className="App">
@@ -12,14 +17,9 @@ export default class App extends Component {
           <p>
             Edit <code>src/App.js</code> and save to reload.
           </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <div onClick={this.onClick} className="App-link">
             Learn React
-          </a>
+          </div>
         </header>
       </div>
     );

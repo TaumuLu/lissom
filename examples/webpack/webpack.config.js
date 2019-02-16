@@ -154,7 +154,7 @@ module.exports = ssrWebpack({
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: '../public/index.html',
-      hash: true,
+      // hash: true,
       inject: true,
     }),
     hasDll &&

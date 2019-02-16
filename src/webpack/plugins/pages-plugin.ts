@@ -1,5 +1,8 @@
 import { ConcatSource } from 'webpack-sources';
 
+const __SSR_REGISTER_PAGE__ =
+  '!(__SSR_REGISTER_PAGE__ || function(r, f) { console.warn(r+" chunk not find __SSR_REGISTER_PAGE__ function");f() })';
+
 export default class PagesPlugin {
   public apply(compiler) {
     compiler.hooks.compilation.tap('PagesPlugin', compilation => {
@@ -20,8 +23,7 @@ export default class PagesPlugin {
 
           // 包装入口模块注册函数，供客户端查找调用
           const source = new ConcatSource(
-            'var __SSR_REGISTER_PAGE__ = __SSR_REGISTER_PAGE__ || function(r, f) { return f() }\n',
-            `__SSR_REGISTER_PAGE__('${chunk.name}', function() {\n`,
+            `${__SSR_REGISTER_PAGE__}('${chunk.name}', function() {\n`,
             moduleSourcePostModule,
             '\nreturn { page: module.exports.default }',
             '});'

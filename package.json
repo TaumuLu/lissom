@@ -5,9 +5,9 @@
   "main": "./index.js",
   "scripts": {
     "clean": "rm -rf ./dist",
-    "build-ts": "tsc",
-    "watch-ts": "tsc -w",
-    "prepublish": "npm run build-ts",
+    "build": "npm run clean && tsc",
+    "watch": "tsc -w",
+    "prepublish": "npm run build",
     "lint": "lint-staged"
   },
   "husky": {
