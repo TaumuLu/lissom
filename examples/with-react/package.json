@@ -9,12 +9,13 @@
     "watch": "npm run webpack -- --config ../webpack/webpack.config.js --progress --color -w",
     "build-dev": "npm run clean && npm run webpack -- --config ../webpack/webpack.config.js --progress --color",
     "build": "npm run clean && npm run webpack -- --config ../webpack/webpack.config.js --progress --color",
-    "server": "nodemon server.js"
+    "server": "nodemon server.js",
+    "postinstall": "npm link lissom"
   },
   "dependencies": {
     "koa": "^2.7.0",
     "koa-logger": "^3.2.0",
-    "koa-send": "^5.0.0",
+    "koa-static": "^5.0.0",
     "react": "^16.8.1",
     "react-dom": "^16.8.1"
   },

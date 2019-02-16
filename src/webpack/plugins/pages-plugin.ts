@@ -1,7 +1,7 @@
 import { ConcatSource } from 'webpack-sources';
 
 const __SSR_REGISTER_PAGE__ =
-  '!(__SSR_REGISTER_PAGE__ || function(r, f) { console.warn(r+" chunk not find __SSR_REGISTER_PAGE__ function");f() })';
+  '!(typeof __SSR_REGISTER_PAGE__ !== "undefined" ? __SSR_REGISTER_PAGE__ : function(r, f) { console.warn(r+" chunk not find __SSR_REGISTER_PAGE__ function");f() })';
 
 export default class PagesPlugin {
   public apply(compiler) {
