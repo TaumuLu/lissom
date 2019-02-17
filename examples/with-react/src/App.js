@@ -14,7 +14,7 @@ export default class App extends Component {
     const value = await new Promise(resolve => {
       setTimeout(() => {
         resolve({
-          __test: 1,
+          async_value: 1,
         });
       }, 1000);
     });

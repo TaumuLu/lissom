@@ -1,5 +1,7 @@
+import chalk from 'chalk';
 import { posix } from 'path';
 import { RUNTIME_NAME } from '../../lib/constants';
+import config from '../config';
 
 function deleteCache(path) {
   delete require.cache[path];
@@ -45,7 +47,8 @@ function normalizePagePath(page) {
 
   const resolvedPage = posix.normalize(page);
   if (page !== resolvedPage) {
-    throw new Error('Requested and resolved page mismatch');
+    const message = 'Requested and resolved page mismatch';
+    printAndExit(message);
   }
 
   return page;
@@ -63,13 +66,35 @@ const fileterCssAssets = originAssets => {
   });
 };
 
-export function printAndExit(message, code = 1) {
-  const signMessage = `lissom: ${message}`;
+export function print(message, code = 1) {
+  const { dev } = config.get();
+  if (!dev) return;
+  const signMessage = `${chalk.green('[lissom]')} ${message.trim()}`;
   if (code === 0) {
     console.log(signMessage);
   } else {
     console.error(signMessage);
   }
+}
+
+export function log(action, message, sign = 'INFO') {
+  let chalkColor;
+  switch (sign.toUpperCase()) {
+    case 'INFO':
+      chalkColor = chalk.cyan;
+      break;
+    case 'ERROR':
+      chalkColor = chalk.red;
+      break;
+    default:
+      chalkColor = chalk.white;
+      break;
+  }
+  print(`${chalk.gray(action)} ${chalkColor(message)}`, 1);
+}
+
+export function printAndExit(message, code = 1) {
+  print(chalk.red(message), code);
 
   process.exit(code);
 }
@@ -126,8 +151,8 @@ const loadGetInitial = (methodName, defaultValue = {}) =>
     if (process.env.NODE_ENV !== 'production') {
       if (Component.prototype && Component.prototype[methodName]) {
         const compName = getDisplayName(Component);
-        const message = `"${compName}.${methodName}()" is defined as an instance method`;
-        throw new Error(message);
+        const message = `'${compName}.${methodName}()' is defined as an instance method`;
+        printAndExit(message);
       }
     }
 
@@ -141,8 +166,8 @@ const loadGetInitial = (methodName, defaultValue = {}) =>
 
     if (!props) {
       const compName = getDisplayName(Component);
-      const message = `"${compName}.${methodName}()" should resolve to an object. But found "${props}" instead.`;
-      throw new Error(message);
+      const message = `'${compName}.${methodName}()' should resolve to an object. But found '${props}' instead.`;
+      printAndExit(message);
     }
 
     return props;

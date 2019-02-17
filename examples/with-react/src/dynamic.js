@@ -7,7 +7,7 @@ export default class Dynamic extends React.Component {
     const value = await new Promise(resolve => {
       setTimeout(() => {
         resolve({
-          __test: 3,
+          async_value: 3,
         });
       }, 1000);
     });

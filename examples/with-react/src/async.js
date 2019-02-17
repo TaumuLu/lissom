@@ -7,7 +7,7 @@ export default class Async extends React.Component {
     const value = await new Promise(resolve => {
       setTimeout(() => {
         resolve({
-          __test: 2,
+          async_value: 2,
         });
       }, 1000);
     });

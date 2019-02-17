@@ -1,5 +1,6 @@
 import React from 'react';
 import { renderToStaticMarkup, renderToString } from 'react-dom/server';
+import config from './config';
 import createHtml from './lib/create-html';
 import {
   isResSent,
@@ -10,12 +11,21 @@ import {
 import { clearAsyncChunks, getAsyncModule } from './lib/webpack-runtime';
 import { getRouter, loadComponents } from './require';
 
-export function renderToHTML(req, res, pathname, query, opts) {
-  return doRender(req, res, pathname, query, opts);
+export function renderToHTML(req, res, pathname, query) {
+  const options = config.get();
+  const assetsConfig = config.getAssetsConfig();
+  return doRender(req, res, pathname, query, { ...options, ...assetsConfig });
 }
 
-export function renderErrorToHTML(err, req, res, pathname, query, opts = {}) {
-  return doRender(req, res, pathname, query, { ...opts, err, page: '/_error' });
+export function renderErrorToHTML(err, req, res, pathname, query) {
+  const options = config.get();
+  const assetsConfig = config.getAssetsConfig();
+  return doRender(req, res, pathname, query, {
+    ...options,
+    ...assetsConfig,
+    err,
+    page: '/_error',
+  });
 }
 
 async function doRender(
