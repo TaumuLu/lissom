@@ -53,7 +53,7 @@ class Config {
     return this._config;
   }
 
-  public get(noCheck) {
+  public get(noCheck = false) {
     if (!noCheck && !this._isCheck) this.check();
 
     return this._config;
