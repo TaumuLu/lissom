@@ -9,7 +9,8 @@
     "watch": "npm run webpack -- --config ../webpack/webpack.config.js --progress --color -w",
     "build-dev": "npm run clean && npm run webpack -- --config ../webpack/webpack.config.js --progress --color",
     "build": "npm run clean && npm run webpack -- --config ../webpack/webpack.config.js --progress --color",
-    "server": "nodemon server.js",
+    "server-dev": "nodemon server.js",
+    "server": "node server.js",
     "postinstall": "npm link lissom"
   },
   "dependencies": {

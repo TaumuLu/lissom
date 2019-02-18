@@ -1,10 +1,28 @@
 import findUp from 'find-up';
 import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
-import { defaultConfig } from '../lib/config';
 import { ASSETS_MANIFEST, RUNTIME_NAME } from '../lib/constants';
 import { fileterJsAssets, log, printAndExit } from './lib/utils';
 import { setWebpackConfig } from './lib/webpack-runtime';
+
+const _DEV_ = process.env.NODE_ENV !== 'production';
+
+const defaultConfig = {
+  isSpa: true,
+  output: './public',
+  excludeRouteRegs: [/\/api\/.*/],
+  purgeModuleRegs: [/node_modules/],
+  dir: '.',
+  dev: _DEV_,
+  staticMarkup: false,
+  generateEtags: true,
+  quiet: false,
+  requireModules: ['superagent'],
+  ignoreModules: ['babel-polyfill'],
+  clientRender: true,
+  // elementId: '',
+  // entry: '',
+};
 
 class Config {
   private _isCheck: boolean;

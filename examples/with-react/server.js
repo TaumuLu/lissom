@@ -19,7 +19,7 @@ async function startServer() {
   const app = new Koa();
   app.use(logger());
 
-  app.use(await ssrRouter(ssrConfig));
+  app.use(ssrRouter(ssrConfig));
 
   app.use(staticServe(path.join(context, './build')));
 

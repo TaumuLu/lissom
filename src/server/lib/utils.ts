@@ -66,15 +66,11 @@ const fileterCssAssets = originAssets => {
   });
 };
 
-export function print(message, code = 1) {
+export function print(message) {
   const { dev } = config.get(true);
   if (!dev) return;
   const signMessage = `${chalk.green('[lissom]')} ${message.trim()}`;
-  if (code === 0) {
-    console.log(signMessage);
-  } else {
-    console.error(signMessage);
-  }
+  console.log(signMessage);
 }
 
 export function log(action, message, sign = 'INFO') {
@@ -90,11 +86,11 @@ export function log(action, message, sign = 'INFO') {
       chalkColor = chalk.white;
       break;
   }
-  print(`${chalk.gray(action)} ${chalkColor(message)}`, 1);
+  print(`${chalk.gray(action)} ${chalkColor(message)}`);
 }
 
 export function printAndExit(message, code = 1) {
-  print(chalk.red(message), code);
+  log('exit', message, 'ERROR');
 
   process.exit(code);
 }
