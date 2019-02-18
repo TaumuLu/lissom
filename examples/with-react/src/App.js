@@ -6,7 +6,7 @@ import AsyncCompoent from './async';
 
 import './styles/app.less';
 
-const DynamicComponent = dynamic({ component: () => import('./dynamic') });
+const DynamicComponent = dynamic(() => import('./dynamic'));
 
 @async('/')
 export default class App extends Component {

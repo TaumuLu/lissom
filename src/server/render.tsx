@@ -45,7 +45,7 @@ async function doRender(
   }: any
 ) {
   page = normalizePagePath(page || pathname);
-  const router = getRouter(page, routers);
+  const router = getRouter({ page, routers });
   const { Component } = await loadComponents({ router, dev });
   // 保持兼容next
   const ctx = { err, req, res, pathname: page, query, asPath: req.url };
@@ -64,7 +64,7 @@ async function doRender(
   const props = await loadGetInitialProps(Component, ctx);
   // 查找获取所有异步组件的异步操作
   const asyncProps = await getAsyncProps({ ctx, props, pathname });
-  // 清理异步操作中注册的异步chunks
+  // 清理异步操作中注册的异步chunks，这一步是必须的
   clearAsyncChunks();
   // render时注册的异步chunks才是真正需要加载的
   const pageHTML = render(<Component {...props} />);

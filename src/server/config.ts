@@ -2,7 +2,7 @@ import findUp from 'find-up';
 import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 import { ASSETS_MANIFEST, RUNTIME_NAME } from '../lib/constants';
-import { fileterJsAssets, log, printAndExit } from './lib/utils';
+import { deleteCache, fileterJsAssets, log, printAndExit } from './lib/utils';
 import { setWebpackConfig } from './lib/webpack-runtime';
 
 const _DEV_ = process.env.NODE_ENV !== 'production';
@@ -49,7 +49,7 @@ class Config {
         `> No such directory exists as the project root: ${outputDir}`
       );
     }
-    // dev模式下解析资源文件延迟执行
+    // dev模式下延迟执行解析资源文件
     if (dev) {
       this.setAssetsConfig();
     }
@@ -71,8 +71,9 @@ class Config {
     return this._config;
   }
 
-  public get(noCheck = false) {
-    if (!noCheck && !this._isCheck) this.check();
+  public get() {
+    const { dev } = this._config;
+    if (dev || !this._isCheck) this.check();
 
     return this._config;
   }
@@ -86,10 +87,13 @@ class Config {
 export default new Config();
 
 const parseAssetsManifest = config => {
-  const { entry, outputDir } = config;
+  const { dev, entry, outputDir } = config;
   const assetsManifestPath = findUp.sync(ASSETS_MANIFEST, { cwd: outputDir });
   if (!assetsManifestPath || !assetsManifestPath.length) {
     printAndExit('> Your webpack config does not use lissom/webpack wrapping');
+  }
+  if (dev) {
+    deleteCache(assetsManifestPath);
   }
   const assetsManifest = require(assetsManifestPath);
   const {
@@ -101,14 +105,20 @@ const parseAssetsManifest = config => {
   } = assetsManifest;
   const routers = getRouters(entrypoints, outputPath, entry);
   const htmlConfig = getHtmlConfig(HtmlWebpackPlugin, outputPath);
+  const entryNames = Object.keys(entrypoints).map(getPathName);
 
   return {
     routers,
+    entryNames,
     htmlConfig,
     outputPath,
     modules,
     chunks,
   };
+};
+
+const getPathName = name => {
+  return name.charAt(0) === '/' ? name : `/${name}`;
 };
 
 const getRouters = (entrypoints, outputPath, entry) => {
@@ -130,7 +140,7 @@ const getRouters = (entrypoints, outputPath, entry) => {
       if (key === entry) {
         p.default = router;
       }
-      const page = key.charAt(0) === '/' ? key : `/${key}`;
+      const page = getPathName(key);
 
       return {
         ...p,

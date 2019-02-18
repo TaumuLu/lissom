@@ -70,6 +70,7 @@
       "avoid-escape"
     ],
     "semicolon": false,
-    "prefer-conditional-expression": false
+    "prefer-conditional-expression": false,
+    "one-variable-per-declaration": false
   }
 }

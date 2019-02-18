@@ -1,6 +1,7 @@
 import path from 'path';
 import { JSONP_FUNCTION, RUNTIME_NAME } from '../../lib/constants';
 import config from '../config';
+import styleLoader from './style-loader';
 import {
   deleteCache,
   fileterCssAssets,
@@ -145,14 +146,16 @@ const getModuleName = modulePath => {
 };
 
 const asyncModuleReg = /lissom\/dist\/lib\/async/;
-const styleModuleReg = /.(less|css|scss|sass)$/;
+const styleModuleReg = /node_modules\/style-loader/;
 
 const matchModule = moduleId => {
   const { ignoreModules, requireModules } = config.get();
   const { modules: _modules } = config.getAssetsConfig();
   const { name } = _modules[moduleId] || ({} as any);
-  // 忽略引入的样式文件
-  if (styleModuleReg.test(name)) return {};
+  // 处理webpack style-loader
+  if (styleModuleReg.test(name)) {
+    return styleLoader;
+  }
   // 记录异步模块id
   if (asyncModuleReg.test(name)) {
     asyncModuleId = moduleId;
@@ -348,6 +351,7 @@ const clearModuleCache = dev => {
     const { modules: _modules } = config.getAssetsConfig();
     Object.keys(installedModules).forEach(moduleId => {
       const { name } = _modules[moduleId] || ({} as any);
+      // 默认清理所有非node_modules包的缓存
       const excludeMatch = !getReg(purgeModuleRegs, false).test(name);
       if (excludeMatch) {
         delete installedModules[moduleId];

@@ -1,4 +1,5 @@
 import htmlescape from 'htmlescape';
+import { getStyleMap } from './style-loader';
 import { getAsyncChunks } from './webpack-runtime';
 
 const scriptType = 'text/javascript';
@@ -20,6 +21,7 @@ export default async function createHtml({
 const getAssetTags = ({ pageHTML, styleHTML, router, ssrData }) => {
   const { name } = router;
   const { asyncJsChunks, asyncCssChunks } = getAsyncChunks();
+  const styleMap = getStyleMap();
 
   const jsDefinition = asyncJsChunks.map(src => {
     return {
@@ -33,6 +35,13 @@ const getAssetTags = ({ pageHTML, styleHTML, router, ssrData }) => {
       tagName: 'link',
     };
   });
+  const styleDefinition = Object.keys(styleMap).reduce((p, key) => {
+    const { parts } = styleMap[key];
+    parts.forEach(value => {
+      p.push(value);
+    });
+    return p;
+  }, []);
 
   const assetTags = {
     bodyStart: [
@@ -52,7 +61,7 @@ const getAssetTags = ({ pageHTML, styleHTML, router, ssrData }) => {
       },
       ...jsDefinition,
     ],
-    headEnd: [...cssDefinition],
+    headEnd: [...cssDefinition, ...styleDefinition],
   };
   if (styleHTML) {
     assetTags.headEnd.push({
