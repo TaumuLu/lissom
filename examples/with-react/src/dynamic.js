@@ -1,7 +1,7 @@
 import React from 'react';
 import async from 'lissom/async';
 
-@async('/')
+@async(['/', '/test'])
 export default class Dynamic extends React.Component {
   static async getInitialProps(...params) {
     const value = await new Promise(resolve => {

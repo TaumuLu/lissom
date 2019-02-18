@@ -9,6 +9,7 @@ function addStyleMap(styles, options) {
       parts.push(createDefinition(item.parts[j], options));
     }
 
+    // 每次替换新的样式
     styleMap[item.id] = { id: item.id, parts };
   }
 }
@@ -73,6 +74,7 @@ const getStyleMap = () => {
   return styleMap;
 };
 
+// 目前暂未执行清理操作，考虑node_modules里的模块清理掉后无法再次生成，故每次生成style时采用替换的操作
 const clearStyleMap = () => {
   styleMap = {};
 };

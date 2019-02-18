@@ -8,7 +8,7 @@ import './styles/app.less';
 
 const DynamicComponent = dynamic(() => import('./dynamic'));
 
-@async('/')
+@async(['/', '/test'])
 export default class App extends Component {
   static async getInitialProps(...params) {
     const value = await new Promise(resolve => {
@@ -27,7 +27,7 @@ export default class App extends Component {
 
   onClick = e => {
     e.preventDefault();
-    console.log(111111);
+    console.log('click');
   };
 
   render() {

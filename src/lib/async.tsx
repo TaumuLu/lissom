@@ -1,18 +1,23 @@
 import React, { Component } from 'react';
-import { checkServer } from './utils';
+import { checkServer, get, getDisplayName, isArray, isString } from './utils';
 
 let defaultLoadingComponent = () => null;
+let _ssrPathName;
 
 class InitialProps {
-  public static combine(path, getInitialProps) {
+  public static combine(paths, getInitialProps) {
     // 合并总是push进queue队列中，动态队列dynamicQueue由动态组件触发移动
-    let index = 0;
-    if (pathMap.has(path)) {
-      index = pathMap.get(path).push(getInitialProps);
-    } else {
-      pathMap.set(path, new InitialProps(getInitialProps));
-    }
-    return index;
+    const indexMap = {};
+    paths.forEach(path => {
+      let index = 0;
+      if (pathMap.has(path)) {
+        index = pathMap.get(path).push(getInitialProps);
+      } else {
+        pathMap.set(path, new InitialProps(getInitialProps));
+      }
+      indexMap[path] = index;
+    });
+    return indexMap;
   }
 
   public queue: Function[];
@@ -68,7 +73,9 @@ class InitialProps {
   }
 
   // 服务端调用
-  public async getValue(ctx, golbalProps) {
+  public async getValue(ctx, golbalProps, pathname) {
+    // 保存服务端当前异步路由
+    _ssrPathName = pathname;
     this.isLock = true;
     this.value = [];
     for (const item of this.getFullQueue()) {
@@ -110,21 +117,37 @@ interface IState {
 
 export const pathMap = new Map();
 
-function Async(path, message) {
+const handlePaths = (paths, AsyncComponent) => {
+  if (isArray(paths)) return paths;
+  if (isString(paths)) {
+    return [paths];
+  }
+  const displayName = getDisplayName(AsyncComponent);
+  throw new Error(
+    `${displayName} component: async decorator path params can only be a string or an array`
+  );
+};
+
+function Async(paths, message) {
   return AsyncComponent => {
     const {
       getInitialProps,
       LoadingComponent = defaultLoadingComponent,
     } = AsyncComponent;
-    const index = InitialProps.combine(path, getInitialProps);
+    paths = handlePaths(paths, AsyncComponent);
+    const indexMap = InitialProps.combine(paths, getInitialProps);
     // 动态队列索引
     let dynamicIndex: number;
 
     return class AsyncConnect extends Component<any, IState> {
+      // 提供给动态加载模块的移动操作
       public static move() {
         // 动态模块的异步操作移至动态队列
-        const instance = pathMap.get(path);
-        dynamicIndex = instance.moveToDynamicQueue(index);
+        Object.keys(indexMap).forEach(path => {
+          const index = indexMap[path];
+          const instance = pathMap.get(path);
+          dynamicIndex = instance.moveToDynamicQueue(index);
+        });
       }
 
       public state: IState;
@@ -166,9 +189,22 @@ function Async(path, message) {
       };
 
       public load() {
-        const resolveValue = pathMap
-          .get(path)
-          .getProps(index, dynamicIndex, this.getGlobalProps(), message);
+        const { isRender } = this.state;
+        const path = isRender ? _ssrPathName : get(window, 'location.pathname');
+        const index = indexMap[path];
+        if (index === undefined) {
+          // 未匹配路由，当前异步组件传入的路径未包含此路由
+          this.state.isRender = false;
+          return;
+        }
+        const instance = pathMap.get(path);
+
+        const resolveValue = instance.getProps(
+          index,
+          dynamicIndex,
+          this.getGlobalProps(),
+          message
+        );
 
         if (resolveValue instanceof Promise) {
           resolveValue.then(this.setProps);

@@ -97,7 +97,7 @@ async function getAsyncProps({ ctx, props, pathname }) {
     const { pathMap } = asyncModule;
     const mathValue = pathMap.get(pathname);
     if (mathValue) {
-      const asyncProps = await mathValue.getValue(ctx, props);
+      const asyncProps = await mathValue.getValue(ctx, props, pathname);
       return asyncProps;
     }
   }
