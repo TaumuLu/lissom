@@ -23,3 +23,7 @@ gradlew.bat
 jsconfig.json
 tsconfig.json
 tslint.json
+
+.lintstagedrc
+.prettierrc
+commitlint.config.js
