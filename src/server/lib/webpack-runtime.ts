@@ -3,10 +3,10 @@ import { JSONP_FUNCTION, RUNTIME_NAME } from '../../lib/constants';
 import config from '../config';
 import styleLoader from './style-loader';
 import {
+  createReg,
   deleteCache,
   fileterCssAssets,
   fileterJsAssets,
-  getReg,
 } from './utils';
 
 declare global {
@@ -363,7 +363,7 @@ const clearModuleCache = dev => {
       // 默认清理所有非node_modules包的缓存
       const purgeModule =
         !excludeModuleReg.test(name) ||
-        getReg(purgeModuleRegs, false).test(name);
+        createReg(purgeModuleRegs, false).test(name);
       if (purgeModule) {
         delete installedModules[moduleId];
       }

@@ -4,11 +4,11 @@ import { RUNTIME_NAME } from '../../lib/constants';
 import { getDisplayName } from '../../lib/utils';
 import config from '../config';
 
-function deleteCache(path: string) {
+export function deleteCache(path: string) {
   delete require.cache[path];
 }
 
-function purgeCache(moduleName: string, ignoreModules: string[]) {
+export function purgeCache(moduleName: string, ignoreModules: string[]) {
   const modPath = require.resolve(moduleName);
   searchCache(modPath, deleteCache, ignoreModules);
   const mConstructor = module.constructor as any;
@@ -37,7 +37,7 @@ function searchCache(modPath, callback, ignoreModules = []) {
   }
 }
 
-function normalizePagePath(page: string) {
+export function normalizePagePath(page: string) {
   if (page === '/') {
     page = '/index';
   }
@@ -55,13 +55,13 @@ function normalizePagePath(page: string) {
   return page;
 }
 
-const fileterJsAssets = originAssets => {
+export const fileterJsAssets = originAssets => {
   return originAssets.filter(path => {
     return /.js($|\?)/.test(path) && !path.includes(RUNTIME_NAME);
   });
 };
 
-const fileterCssAssets = originAssets => {
+export const fileterCssAssets = originAssets => {
   return originAssets.filter(path => {
     return /.css($|\?)/.test(path) && !path.includes(RUNTIME_NAME);
   });
@@ -98,32 +98,7 @@ export function printAndExit(message: string, code: number = 1) {
 
 export const suffixRegs = [/\.(html|php)/, /\/[^.]*/];
 
-const getRegSourceStr = regs => {
-  return regs
-    .reduce((p, reg) => {
-      if (reg) {
-        const type = Object.prototype.toString.call(reg).slice(8, -1);
-        if (type === 'RegExp') {
-          p.push(reg.source);
-        } else {
-          p.push(reg.toString());
-        }
-      }
-      return p;
-    }, [])
-    .join('|');
-};
-
-const getReg = (regs = [], matchEnd: boolean = true) => {
-  const regTpl = getRegSourceStr(regs);
-  let regStr = '';
-  if (regTpl) {
-    regStr += `(${regTpl})${matchEnd ? '$' : ''}`;
-  }
-  return new RegExp(regStr);
-};
-
-function isResSent(res) {
+export function isResSent(res) {
   return res.finished || res.headersSent;
 }
 
@@ -154,20 +129,8 @@ const loadGetInitial = (methodName: string, defaultValue: any = {}) =>
     return props;
   };
 
-const loadGetInitialProps = loadGetInitial('getInitialProps');
+export const loadGetInitialProps = loadGetInitial('getInitialProps');
 
-const loadGetInitialStyles = loadGetInitial('getInitialStyles', null);
+export const loadGetInitialStyles = loadGetInitial('getInitialStyles', null);
 
-export {
-  deleteCache,
-  purgeCache,
-  normalizePagePath,
-  fileterJsAssets,
-  fileterCssAssets,
-  getRegSourceStr,
-  getReg,
-  isResSent,
-  getDisplayName,
-  loadGetInitialProps,
-  loadGetInitialStyles,
-};
+export * from '../../lib/utils';

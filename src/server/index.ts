@@ -1,7 +1,7 @@
 import Router from 'koa-router';
 import { IConfig } from '../lib/types';
 import config from './config';
-import { getReg, log, suffixRegs } from './lib/utils';
+import { createReg, log, suffixRegs } from './lib/utils';
 import Server from './server';
 
 export default (options: IConfig) => {
@@ -13,8 +13,8 @@ export default (options: IConfig) => {
     // 这里执行get方法是必须的，dev模式下延迟到此时解析
     const { excludeRouteRegs } = config.get();
     const ctxPath = ctx.path;
-    const suffixMatch = getReg(suffixRegs).test(ctxPath);
-    const excludeMatch = !getReg(excludeRouteRegs).test(ctxPath);
+    const suffixMatch = createReg(suffixRegs).test(ctxPath);
+    const excludeMatch = !createReg(excludeRouteRegs).test(ctxPath);
 
     if (suffixMatch && excludeMatch) {
       const { req, res, query, method } = ctx;

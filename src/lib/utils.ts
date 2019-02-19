@@ -17,6 +17,8 @@ export const isString = isTypeFactory('string');
 
 export const isArray = isTypeFactory('array');
 
+export const isRegExp = isTypeFactory('regexp');
+
 export function isDef(v: any) {
   return v !== undefined && v !== null;
 }
@@ -32,6 +34,30 @@ export const getDisplayName = (Component: ReactComp) => {
   if (isString(Component)) return Component;
 
   return Component.displayName || Component.name || 'Unknown Component';
+};
+
+const getRegSourceStr = regs => {
+  return regs
+    .reduce((p, reg) => {
+      if (reg) {
+        if (isRegExp(reg)) {
+          p.push(reg.source);
+        } else {
+          p.push(reg.toString());
+        }
+      }
+      return p;
+    }, [])
+    .join('|');
+};
+
+export const createReg = (regs = [], matchEnd: boolean = true) => {
+  const regTpl = getRegSourceStr(regs);
+  let regStr = '';
+  if (regTpl) {
+    regStr += `(${regTpl})${matchEnd ? '$' : ''}`;
+  }
+  return new RegExp(regStr);
 };
 
 type Tpath = string | string[];
