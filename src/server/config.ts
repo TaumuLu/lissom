@@ -11,7 +11,7 @@ const defaultConfig = {
   isSpa: true,
   output: './public',
   excludeRouteRegs: [/\/api\/.*/],
-  purgeModuleRegs: [/node_modules/],
+  purgeModuleRegs: [],
   dir: '.',
   dev: _DEV_,
   staticMarkup: false,

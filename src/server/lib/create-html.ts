@@ -46,7 +46,10 @@ const getAssetTags = ({ pageHTML, styleHTML, router, ssrData }) => {
   const assetTags = {
     bodyStart: [
       {
-        attributes: { id: '__ssr__', style: 'height: 100%; display: flex' },
+        attributes: {
+          id: '__ssr_root__',
+          style: 'height: 100%; display: flex',
+        },
         tagName: 'div',
         innerHTML: pageHTML,
       },

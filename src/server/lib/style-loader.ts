@@ -47,6 +47,7 @@ function getAttrs(options) {
   if (options.attrs.type === undefined) {
     options.attrs.type = 'text/css';
   }
+  options.attrs.class = '__ssr_style__';
 
   return options.attrs;
 }

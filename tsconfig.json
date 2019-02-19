@@ -4,8 +4,8 @@
     "outDir": "./dist",
     "target": "es5",
     "module": "commonjs",
-    "allowJs": true,
-    "checkJs": true,
+    "allowJs": false,
+    "checkJs": false,
     "jsx": "react",
     "sourceMap": true,
     "moduleResolution": "node",
@@ -13,7 +13,7 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "esModuleInterop": true,
-    "lib": ["esnext", "dom"],
+    "lib": ["esnext", "dom"]
     // "paths": {
     //   "*": [
     //     "node_modules/*",
@@ -25,13 +25,6 @@
     //   "node_modules/@types"
     // ],
   },
-  "include": [
-    "./src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "examples",
-    "dist",
-    "docs",
-  ]
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules", "examples", "dist", "docs"]
 }

@@ -41,7 +41,9 @@ const compassMixinsPath = path.join(require.resolve('compass-mixins'), '..');
 
 module.exports = ssrWebpack({
   ...config,
-  entry: './index.js',
+  entry: {
+    app: './index.js',
+  },
   output: {
     path: outputPath,
     filename: isDev
@@ -78,7 +80,7 @@ module.exports = ssrWebpack({
       {
         test: /\.less$/,
         use: [
-          MiniCssExtractPlugin.loader,
+          isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
           'css-loader',
           {
             loader: 'less-loader',
@@ -92,7 +94,7 @@ module.exports = ssrWebpack({
         test: /\.scss$/,
         exclude: /\.module\.scss$/,
         use: [
-          MiniCssExtractPlugin.loader,
+          isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
           'css-loader',
           {
             loader: 'postcss-loader',
@@ -115,7 +117,7 @@ module.exports = ssrWebpack({
       {
         test: /\.css$/,
         use: [
-          MiniCssExtractPlugin.loader,
+          isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
           'css-loader',
           {
             loader: 'postcss-loader',
@@ -148,10 +150,11 @@ module.exports = ssrWebpack({
     // public: 'frame.terminus.io:80',
   },
   plugins: [
-    new MiniCssExtractPlugin({
-      filename: 'assets/styles/[name].css',
-      chunkFilename: 'assets/styles/[id].css',
-    }),
+    !isDev &&
+      new MiniCssExtractPlugin({
+        filename: 'assets/styles/[name].css',
+        chunkFilename: 'assets/styles/[id].css',
+      }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: '../public/index.html',

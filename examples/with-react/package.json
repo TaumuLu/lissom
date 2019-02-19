@@ -2,7 +2,7 @@
   "name": "demo",
   "version": "0.1.0",
   "scripts": {
-    "clean": "rm -rf public",
+    "clean": "rm -rf build",
     "webpack": "../node_modules/.bin/webpack",
     "webpack-dev-server": "../node_modules/.bin/webpack-dev-server",
     "start": "npm run webpack-dev-server -- --config ../webpack/webpack.config.js --mode development",
@@ -10,7 +10,7 @@
     "build-dev": "npm run clean && npm run webpack -- --config ../webpack/webpack.config.js --progress --color",
     "build": "npm run clean && npm run webpack -- --config ../webpack/webpack.config.js --progress --color",
     "server-dev": "nodemon server.js",
-    "server": "node server.js",
+    "server": "node --inspect server.js",
     "postinstall": "npm link lissom"
   },
   "dependencies": {

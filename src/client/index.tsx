@@ -28,7 +28,7 @@ if (
       pathname,
       asyncProps,
       clientRender = true,
-      elementId = '__ssr__',
+      elementId = '__ssr_root__',
     } = window.__SSR_DATA__;
     if (!clientRender) return void 0;
 
@@ -55,8 +55,16 @@ if (
       routers[route] = Component;
 
       if (isInitialRender && route === initialRoute) {
-        const appContainer = document.getElementById('__ssr__' || elementId);
+        const appContainer = document.getElementById(
+          '__ssr_root__' || elementId
+        );
         renderReactElement(<Component {...props} />, appContainer);
+        const headElement = document.head;
+        const ssrStyles = document.getElementsByClassName('__ssr_style__');
+        // 避免重复，删除服务端渲染的style元素，客户端会再生成一份
+        Array.from(ssrStyles).forEach(style => {
+          headElement.removeChild(style);
+        });
       }
     };
 

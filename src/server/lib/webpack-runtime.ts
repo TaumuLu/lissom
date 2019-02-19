@@ -104,7 +104,7 @@ const getAsyncChunks = () => {
 };
 
 const clearAsyncChunks = () => {
-  asyncModuleId = null;
+  // asyncModuleId = null; 不应该清除，这个值是不变的
   asyncJsChunks = [];
   asyncCssChunks = [];
 };
@@ -145,13 +145,22 @@ const getModuleName = modulePath => {
   return modulePathList.slice(0, 1).join('/');
 };
 
+const getName = moduleId => {
+  const { modules: _modules } = config.getAssetsConfig();
+  const { name } = _modules[moduleId] || ({} as any);
+  if (name) {
+    const [fetchName] = name.split('!').reverse();
+    return fetchName;
+  }
+  return name;
+};
+
 const asyncModuleReg = /lissom\/dist\/lib\/async/;
 const styleModuleReg = /node_modules\/style-loader/;
 
 const matchModule = moduleId => {
   const { ignoreModules, requireModules } = config.get();
-  const { modules: _modules } = config.getAssetsConfig();
-  const { name } = _modules[moduleId] || ({} as any);
+  const name = getName(moduleId);
   // 处理webpack style-loader
   if (styleModuleReg.test(name)) {
     return styleLoader;
@@ -344,16 +353,19 @@ const setWebpackConfig = ({ outputPath }) => {
   __webpack_require__.p = getAbsPath(outputPath, false);
 };
 
+const excludeModuleReg = /node_modules/;
 // 提供清除webpack modules cache的方法
 const clearModuleCache = dev => {
   if (dev) {
     const { purgeModuleRegs } = config.get();
-    const { modules: _modules } = config.getAssetsConfig();
     Object.keys(installedModules).forEach(moduleId => {
-      const { name } = _modules[moduleId] || ({} as any);
+      const name = getName(moduleId);
       // 默认清理所有非node_modules包的缓存
-      const excludeMatch = !getReg(purgeModuleRegs, false).test(name);
-      if (excludeMatch) {
+      const purgeModule =
+        !excludeModuleReg.test(name) ||
+        (purgeModuleRegs.length > 0 &&
+          getReg(purgeModuleRegs, false).test(name));
+      if (purgeModule) {
         delete installedModules[moduleId];
       }
     });
