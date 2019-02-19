@@ -11,12 +11,13 @@ export default (options: IConfig) => {
 
   router.get('*', async (ctx, next) => {
     // 这里执行get方法是必须的，dev模式下延迟到此时解析
-    const { excludeRouteRegs } = config.get();
+    const excludeRouteRegs = config.get('excludeRouteRegs');
     const ctxPath = ctx.path;
     const suffixMatch = createReg(suffixRegs).test(ctxPath);
     const excludeMatch = !createReg(excludeRouteRegs).test(ctxPath);
 
     if (suffixMatch && excludeMatch) {
+      config.mode();
       const { req, res, query, method } = ctx;
       ctx.res.statusCode = 200;
       log(`--> ${method}`, ctxPath);

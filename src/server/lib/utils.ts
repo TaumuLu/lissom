@@ -68,8 +68,9 @@ export const fileterCssAssets = originAssets => {
 };
 
 export function print(message: string) {
-  const { dev } = config.get();
+  const dev = config.get('dev');
   if (!dev) return;
+
   const signMessage = `${chalk.green('[lissom]')} ${message.trim()}`;
   console.log(signMessage);
 }

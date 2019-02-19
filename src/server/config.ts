@@ -2,7 +2,13 @@ import findUp from 'find-up';
 import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
 import { ASSETS_MANIFEST, RUNTIME_NAME } from '../lib/constants';
-import { IConfig } from '../lib/types';
+import {
+  IAssetsConfig,
+  IConfig,
+  IHtmlConfig,
+  IHtmlWebpackPlugin,
+  IRouters,
+} from '../lib/types';
 import { deleteCache, fileterJsAssets, log, printAndExit } from './lib/utils';
 import { setWebpackConfig } from './lib/webpack-runtime';
 
@@ -73,9 +79,17 @@ class Config {
     return this._config;
   }
 
-  public get() {
+  public mode() {
     const { dev } = this._config;
-    if (dev || !this._isCheck) this.check();
+    // 开发模式下每次请求进入都重新验证读取配置
+    if (dev) {
+      this._isCheck = false;
+    }
+  }
+
+  public get(key?: string) {
+    if (key) return this._config[key];
+    if (!this._isCheck) this.check();
 
     return this._config;
   }
@@ -94,7 +108,7 @@ class Config {
 
 export default new Config();
 
-const parseAssetsManifest = (config: IConfig) => {
+const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
   const { dev, entry, outputDir } = config;
   const assetsManifestPath = findUp.sync(ASSETS_MANIFEST, { cwd: outputDir });
   if (!assetsManifestPath || !assetsManifestPath.length) {
@@ -129,7 +143,11 @@ const getPathName = (name: string) => {
   return name.charAt(0) === '/' ? name : `/${name}`;
 };
 
-const getRouters = (entrypoints, outputPath: string, entry: string) => {
+const getRouters = (
+  entrypoints: any,
+  outputPath: string,
+  entry: string
+): IRouters => {
   return Object.keys(entrypoints).reduce(
     (p, key, i) => {
       const { chunks, assets: originAssets } = entrypoints[key];
@@ -159,20 +177,23 @@ const getRouters = (entrypoints, outputPath: string, entry: string) => {
   );
 };
 
-const readHtml = (existsAt: string) => {
+const readHtmlFile = (existsAt: string): string => {
   if (!existsSync(existsAt)) {
     const message = `Could not find a valid html file in the '${existsAt}' path!`;
     printAndExit(message);
   }
-  const html = readFileSync(existsAt, 'utf8');
-  return html;
+  const htmlString = readFileSync(existsAt, 'utf8');
+  return htmlString;
 };
 
-const getHtmlConfig = (HtmlWebpackPlugin, outputPath: string) => {
+const getHtmlConfig = (
+  HtmlWebpackPlugin: IHtmlWebpackPlugin[],
+  outputPath: string
+): IHtmlConfig => {
   const [htmlConfig] = HtmlWebpackPlugin;
   const { childCompilationOutputName } = htmlConfig;
   const existsAt = resolve(outputPath, childCompilationOutputName);
-  const html = readHtml(existsAt);
+  const html = readHtmlFile(existsAt);
 
   return {
     ...htmlConfig,
