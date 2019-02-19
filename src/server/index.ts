@@ -1,9 +1,10 @@
 import Router from 'koa-router';
+import { IConfig } from '../lib/types';
 import config from './config';
 import { getReg, log, suffixRegs } from './lib/utils';
 import Server from './server';
 
-export default options => {
+export default (options: IConfig) => {
   config.init(options);
   const app = new Server();
   const router = new Router();

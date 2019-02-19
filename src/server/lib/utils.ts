@@ -1,13 +1,14 @@
 import chalk from 'chalk';
 import { posix } from 'path';
 import { RUNTIME_NAME } from '../../lib/constants';
+import { getDisplayName } from '../../lib/utils';
 import config from '../config';
 
-function deleteCache(path) {
+function deleteCache(path: string) {
   delete require.cache[path];
 }
 
-function purgeCache(moduleName, ignoreModules) {
+function purgeCache(moduleName: string, ignoreModules: string[]) {
   const modPath = require.resolve(moduleName);
   searchCache(modPath, deleteCache, ignoreModules);
   const mConstructor = module.constructor as any;
@@ -36,7 +37,7 @@ function searchCache(modPath, callback, ignoreModules = []) {
   }
 }
 
-function normalizePagePath(page) {
+function normalizePagePath(page: string) {
   if (page === '/') {
     page = '/index';
   }
@@ -66,14 +67,14 @@ const fileterCssAssets = originAssets => {
   });
 };
 
-export function print(message) {
+export function print(message: string) {
   const { dev } = config.get();
   if (!dev) return;
   const signMessage = `${chalk.green('[lissom]')} ${message.trim()}`;
   console.log(signMessage);
 }
 
-export function log(action, message, sign = 'INFO') {
+export function log(action: string, message: string, sign: string = 'INFO') {
   let chalkColor;
   switch (sign.toUpperCase()) {
     case 'INFO':
@@ -89,18 +90,10 @@ export function log(action, message, sign = 'INFO') {
   print(`${chalk.gray(action)} ${chalkColor(message)}`);
 }
 
-export function printAndExit(message, code = 1) {
+export function printAndExit(message: string, code: number = 1) {
   log('exit', message, 'ERROR');
 
   process.exit(code);
-}
-
-function getType(value, nameStr) {
-  const typeName = Object.prototype.toString.call(value).slice(8, -1);
-  if (nameStr) {
-    return typeName.toLowerCase() === nameStr.toLowerCase();
-  }
-  return typeName;
 }
 
 export const suffixRegs = [/\.(html|php)/, /\/[^.]*/];
@@ -121,7 +114,7 @@ const getRegSourceStr = regs => {
     .join('|');
 };
 
-const getReg = (regs = [], matchEnd = true) => {
+const getReg = (regs = [], matchEnd: boolean = true) => {
   const regTpl = getRegSourceStr(regs);
   let regStr = '';
   if (regTpl) {
@@ -134,15 +127,7 @@ function isResSent(res) {
   return res.finished || res.headersSent;
 }
 
-function getDisplayName(Component) {
-  if (typeof Component === 'string') {
-    return Component;
-  }
-
-  return Component.displayName || Component.name || 'Unknown';
-}
-
-const loadGetInitial = (methodName, defaultValue = {}) =>
+const loadGetInitial = (methodName: string, defaultValue: any = {}) =>
   async function(Component, ctx) {
     if (process.env.NODE_ENV !== 'production') {
       if (Component.prototype && Component.prototype[methodName]) {
@@ -179,7 +164,6 @@ export {
   normalizePagePath,
   fileterJsAssets,
   fileterCssAssets,
-  getType,
   getRegSourceStr,
   getReg,
   isResSent,

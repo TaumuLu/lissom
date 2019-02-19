@@ -3,7 +3,7 @@ import fresh from 'fresh';
 import config from './config';
 import { isResSent } from './lib/utils';
 
-export default function sendHTML(req, res, html, method) {
+export default function sendHTML(req, res, html: string, method: string) {
   const { dev, generateEtags } = config.get();
   if (isResSent(res)) return;
   const etag = generateEtags && generateETag(html);

@@ -4,14 +4,14 @@ import { renderErrorToHTML, renderToHTML } from './render';
 import sendHTML from './send-html';
 
 export default class Server {
-  public async render(req, res, pathname, query) {
+  public async render(req, res, pathname: string, query) {
     const html = await this.renderToHTML(req, res, pathname, query);
     if (isResSent(res)) return null;
 
     return sendHTML(req, res, html, req.method);
   }
 
-  public async renderToHTML(req, res, pathname, query) {
+  public async renderToHTML(req, res, pathname: string, query) {
     const { quiet } = config.get();
     try {
       const out = await renderToHTML(req, res, pathname, query);
@@ -27,7 +27,7 @@ export default class Server {
     }
   }
 
-  public async renderErrorToHTML(err, req, res, pathname, query) {
+  public async renderErrorToHTML(err, req, res, pathname: string, query) {
     return renderErrorToHTML(err, req, res, pathname, query);
   }
 }

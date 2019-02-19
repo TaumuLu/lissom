@@ -363,8 +363,7 @@ const clearModuleCache = dev => {
       // 默认清理所有非node_modules包的缓存
       const purgeModule =
         !excludeModuleReg.test(name) ||
-        (purgeModuleRegs.length > 0 &&
-          getReg(purgeModuleRegs, false).test(name));
+        getReg(purgeModuleRegs, false).test(name);
       if (purgeModule) {
         delete installedModules[moduleId];
       }

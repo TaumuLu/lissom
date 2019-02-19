@@ -13,11 +13,11 @@ const getRouter = ({ page, routers }) => {
   return routers[page] || routers.default || routers._default;
 };
 
-const requirePage = (router, dev) => {
+const requirePage = (router: any, dev: boolean) => {
   const { existsAts, size } = router;
   clearModuleCache(dev);
 
-  return existsAts.reduce((p, assetPath, i) => {
+  return existsAts.reduce((p: any, assetPath: string, i: number) => {
     if (dev) {
       deleteCache(assetPath);
     }
