@@ -10,7 +10,7 @@ const getRouter = ({ page, routers }) => {
   //     existsAts.forEach(deleteCache)
   //   })
   // }
-  return routers[page] || routers.default || routers._default;
+  return routers[page] || routers.default;
 };
 
 const requirePage = (router: any, dev: boolean) => {

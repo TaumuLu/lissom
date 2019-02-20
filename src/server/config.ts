@@ -5,10 +5,11 @@ import { ASSETS_MANIFEST, RUNTIME_NAME } from '../lib/constants';
 import {
   IAssetsConfig,
   IConfig,
-  IHtmlConfig,
+  IEntrypoints,
   IHtmlWebpackPlugin,
   IRouters,
 } from '../lib/types';
+import ParseHtml from './lib/parse-html';
 import { deleteCache, fileterJsAssets, log, printAndExit } from './lib/utils';
 import { setWebpackConfig } from './lib/webpack-runtime';
 
@@ -28,14 +29,14 @@ const defaultConfig: IConfig = {
   requireModules: ['superagent'],
   ignoreModules: ['babel-polyfill'],
   clientRender: true,
-  elementId: null,
+  rootAttr: {},
   entry: null,
 };
 
 class Config {
   private _isCheck: boolean;
   private _config: IConfig;
-  private _assetsConfig: any;
+  private _assetsConfig: IAssetsConfig;
   constructor() {
     this._config = { ...defaultConfig };
   }
@@ -126,25 +127,23 @@ const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
     chunks,
   } = assetsManifest;
   const routers = getRouters(entrypoints, outputPath, entry);
-  const htmlConfig = getHtmlConfig(HtmlWebpackPlugin, outputPath);
-  const entryNames = Object.keys(entrypoints).map(getPathName);
+  const parseHtml = getParseHtml(HtmlWebpackPlugin, outputPath);
 
   return {
     routers,
-    entryNames,
-    htmlConfig,
+    parseHtml,
     outputPath,
     modules,
     chunks,
   };
 };
 
-const getPathName = (name: string) => {
+const getPathName = (name: string): string => {
   return name.charAt(0) === '/' ? name : `/${name}`;
 };
 
 const getRouters = (
-  entrypoints: any,
+  entrypoints: IEntrypoints,
   outputPath: string,
   entry: string
 ): IRouters => {
@@ -160,9 +159,8 @@ const getRouters = (
         existsAts: assets.map(path => resolve(outputPath, path)),
         size: assets.length,
       };
-      if (i === 0) {
-        p._default = router;
-      }
+      // 默认取第一个入口
+      if (i === 0 && !entry) entry = key;
       if (key === entry) {
         p.default = router;
       }
@@ -173,7 +171,7 @@ const getRouters = (
         [page]: router,
       };
     },
-    { default: null, _default: null }
+    { default: null }
   );
 };
 
@@ -182,22 +180,18 @@ const readHtmlFile = (existsAt: string): string => {
     const message = `Could not find a valid html file in the '${existsAt}' path!`;
     printAndExit(message);
   }
-  const htmlString = readFileSync(existsAt, 'utf8');
-  return htmlString;
+  return readFileSync(existsAt, 'utf8');
 };
 
-const getHtmlConfig = (
+const getParseHtml = (
   HtmlWebpackPlugin: IHtmlWebpackPlugin[],
   outputPath: string
-): IHtmlConfig => {
+): ParseHtml => {
+  // 默认取第一个插件配置
   const [htmlConfig] = HtmlWebpackPlugin;
   const { childCompilationOutputName } = htmlConfig;
   const existsAt = resolve(outputPath, childCompilationOutputName);
-  const html = readHtmlFile(existsAt);
-
-  return {
-    ...htmlConfig,
-    html,
-    existsAt,
-  };
+  const source = readHtmlFile(existsAt);
+  const parseHtml = new ParseHtml(source);
+  return parseHtml;
 };

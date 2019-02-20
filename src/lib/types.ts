@@ -1,3 +1,5 @@
+import ParseHtml from '../server/lib/parse-html';
+
 export type ReactComp<P = {}> = React.ComponentClass<P> | React.SFC<P>;
 
 export interface IConfig {
@@ -14,14 +16,13 @@ export interface IConfig {
   requireModules?: string[];
   ignoreModules?: string[];
   clientRender?: boolean;
-  elementId?: string;
+  rootAttr?: { [attr: string]: string };
   entry?: string;
 }
 
 export interface IAssetsConfig {
   routers: IRouters;
-  entryNames: string[];
-  htmlConfig: IHtmlConfig;
+  parseHtml: ParseHtml;
   outputPath: string;
   modules: IModules;
   chunks: IChunks;
@@ -42,11 +43,6 @@ export interface IHtmlWebpackPlugin {
   childCompilationOutputName: string;
 }
 
-export interface IHtmlConfig extends IHtmlWebpackPlugin {
-  existsAt: string;
-  html: string;
-}
-
 export interface IModules {
   [module: string]: {
     issuerId: string;
@@ -61,5 +57,14 @@ export interface IChunks {
     hash: string;
     initial: boolean;
     names: string[];
+  };
+}
+
+export interface IEntrypoints {
+  [entry: string]: {
+    chunks: string[];
+    assets: string[];
+    children: any;
+    childAssets: any;
   };
 }

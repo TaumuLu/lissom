@@ -1,14 +1,16 @@
+import generateETag from 'etag';
+import fresh from 'fresh';
 import config from './config';
 import { isResSent } from './lib/utils';
 import { renderErrorToHTML, renderToHTML } from './render';
-import sendHTML from './send-html';
 
 export default class Server {
   public async render(req, res, pathname: string, query) {
+    const { method } = req;
     const html = await this.renderToHTML(req, res, pathname, query);
     if (isResSent(res)) return null;
 
-    return sendHTML(req, res, html, req.method);
+    return this.sendHTML(req, res, html, method);
   }
 
   public async renderToHTML(req, res, pathname: string, query) {
@@ -29,5 +31,31 @@ export default class Server {
 
   public async renderErrorToHTML(err, req, res, pathname: string, query) {
     return renderErrorToHTML(err, req, res, pathname, query);
+  }
+
+  public sendHTML(req, res, html: string, method: string) {
+    const { dev, generateEtags } = config.get();
+    if (isResSent(res)) return null;
+
+    const etag = generateEtags && generateETag(html);
+    if (fresh(req.headers, { etag })) {
+      res.statusCode = 304;
+      res.end();
+      return;
+    }
+
+    if (dev) {
+      res.setHeader('Cache-Control', 'no-store, must-revalidate');
+    }
+
+    if (etag) {
+      res.setHeader('ETag', etag);
+    }
+
+    if (!res.getHeader('Content-Type')) {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    }
+    res.setHeader('Content-Length', Buffer.byteLength(html));
+    res.end(method === 'HEAD' ? null : html);
   }
 }

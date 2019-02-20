@@ -39,9 +39,9 @@ async function doRender(
     dev,
     staticMarkup,
     routers,
-    htmlConfig,
+    parseHtml,
     clientRender,
-    elementId,
+    rootAttr,
   }: any
 ) {
   page = normalizePagePath(page || pathname);
@@ -71,14 +71,15 @@ async function doRender(
   // 必须放在render组件之后获取
   const Styles = await loadGetInitialStyles(Component, ctx);
   const styleHTML = render(Styles);
-  const ssrData = { props, asyncProps, pathname, clientRender, elementId };
+  const ssrData = { props, asyncProps, pathname, clientRender, rootAttr };
 
-  const html = await createHtml({
+  const html = createHtml({
     pageHTML,
     styleHTML,
-    htmlConfig,
+    parseHtml,
     router,
     ssrData,
+    rootAttr,
   });
   return html;
 }

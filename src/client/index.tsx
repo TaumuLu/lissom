@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { pathMap } from '../lib/async';
+import { get } from '../lib/utils';
 
 declare global {
   interface Window {
@@ -9,7 +10,7 @@ declare global {
       pathname: string;
       asyncProps: any[];
       clientRender: boolean;
-      elementId: string;
+      rootAttr: { [attr: string]: string };
     };
     __SSR_LOADED_PAGES__: any[];
     __SSR_REGISTER_PAGE__: Function;
@@ -28,7 +29,7 @@ if (
       pathname,
       asyncProps,
       clientRender = true,
-      elementId = '__ssr_root__',
+      rootAttr = {},
     } = window.__SSR_DATA__;
     if (!clientRender) return void 0;
 
@@ -55,13 +56,12 @@ if (
       routers[route] = Component;
 
       if (isInitialRender && route === initialRoute) {
-        const appContainer = document.getElementById(
-          '__ssr_root__' || elementId
-        );
+        const id = get(rootAttr, 'id', '__ssr_root__');
+        const appContainer = document.getElementById(id);
         renderReactElement(<Component {...props} />, appContainer);
+        // 避免重复，删除服务端渲染的style元素，客户端渲染时会再生成一份
         const headElement = document.head;
         const ssrStyles = document.getElementsByClassName('__ssr_style__');
-        // 避免重复，删除服务端渲染的style元素，客户端会再生成一份
         Array.from(ssrStyles).forEach(style => {
           headElement.removeChild(style);
         });
