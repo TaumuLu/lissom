@@ -84,7 +84,7 @@ async function doRender(
   const render = getRender({ staticMarkup });
   const props = await loadGetInitialProps(Component, ctx);
   // 查找获取所有异步组件的异步操作
-  const asyncProps = await getAsyncProps({ ctx, props, pathname });
+  const asyncProps = await getAsyncProps({ ctx, props, pathname, error });
   // 清理异步操作中注册的异步chunks，这一步是必须的
   clearAsyncChunks();
   // render时注册的异步chunks才是真正需要加载的
@@ -126,11 +126,14 @@ async function getAsyncProps({
   ctx,
   props,
   pathname,
+  error,
 }: {
   ctx: ICtx;
   props: any;
   pathname: string;
+  error: any;
 }) {
+  if (error) return [];
   const asyncModule = getAsyncModule();
   if (asyncModule && asyncModule.pathMap) {
     const { pathMap } = asyncModule;
