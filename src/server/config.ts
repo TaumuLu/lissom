@@ -16,7 +16,6 @@ import { setWebpackConfig } from './lib/webpack-runtime';
 const _DEV_ = process.env.NODE_ENV !== 'production';
 
 const defaultConfig: IConfig = {
-  isSpa: true,
   output: './public',
   outputDir: null,
   excludeRouteRegs: [/\/api\/.*/],

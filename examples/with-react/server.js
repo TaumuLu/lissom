@@ -9,7 +9,6 @@ const context = process.cwd();
 const uri = `http://127.0.0.1:${port}`;
 
 const ssrConfig = {
-  isSpa: true,
   excludeRouteRegs: [/\/(api|public)\/.*/],
   output: './build',
   rootAttr: {

@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { posix } from 'path';
 import { RUNTIME_NAME } from '../../lib/constants';
+import { ICtx } from '../../lib/types';
 import { getDisplayName } from '../../lib/utils';
 import config from '../config';
 
@@ -37,7 +38,7 @@ function searchCache(modPath, callback, ignoreModules = []) {
   }
 }
 
-export function normalizePagePath(page: string) {
+export function normalizePagePath(page: string): string {
   if (page === '/') {
     page = '/index';
   }
@@ -103,8 +104,8 @@ export function isResSent(res) {
   return res.finished || res.headersSent;
 }
 
-const loadGetInitial = (methodName: string, defaultValue: any = {}) =>
-  async function(Component, ctx) {
+const loadGetInitial = (methodName: string, defaultValue: any = {}): Function =>
+  async function(Component: any, ctx: ICtx) {
     if (process.env.NODE_ENV !== 'production') {
       if (Component.prototype && Component.prototype[methodName]) {
         const compName = getDisplayName(Component);

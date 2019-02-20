@@ -1,6 +1,17 @@
 import htmlescape from 'htmlescape';
+import { IConfig, IRouter, ISSRData } from '../../lib/types';
+import ParseHtml from './parse-html';
 import { getStyleMap } from './style-loader';
 import { getAsyncChunks } from './webpack-runtime';
+
+interface IParam {
+  pageHTML: string;
+  styleHTML: string;
+  parseHtml: ParseHtml;
+  router: IRouter;
+  ssrData: ISSRData;
+  rootAttr: IConfig['rootAttr'];
+}
 
 export default function createHtml({
   pageHTML,
@@ -9,7 +20,7 @@ export default function createHtml({
   router,
   ssrData,
   rootAttr,
-}) {
+}: IParam): string {
   // 重置回初始的html
   parseHtml.reset();
   const assetTags = createAssetTags({

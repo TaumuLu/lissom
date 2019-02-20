@@ -36,7 +36,7 @@ export default (options: IConfig) => {
   return router.routes();
 };
 
-function getLocation(ctx) {
+function getLocation(ctx: any) {
   const { path, href, host, origin, protocol, querystring } = ctx;
   const pathname = path;
   const search = querystring ? `?${querystring}` : '';

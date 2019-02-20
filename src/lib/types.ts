@@ -3,7 +3,7 @@ import ParseHtml from '../server/lib/parse-html';
 export type ReactComp<P = {}> = React.ComponentClass<P> | React.SFC<P>;
 
 export interface IConfig {
-  isSpa?: boolean;
+  // isSpa?: boolean;
   output?: string;
   outputDir?: string; // auto generate
   excludeRouteRegs?: Array<RegExp | string>;
@@ -16,8 +16,8 @@ export interface IConfig {
   requireModules?: string[];
   ignoreModules?: string[];
   clientRender?: boolean;
-  rootAttr?: { [attr: string]: string };
   entry?: string;
+  rootAttr?: { [attr: string]: string };
 }
 
 export interface IAssetsConfig {
@@ -28,14 +28,16 @@ export interface IAssetsConfig {
   chunks: IChunks;
 }
 
+export interface IRouter {
+  assets: string[];
+  chunks: string[];
+  existsAts: string[];
+  name: string;
+  size: number;
+}
+
 export interface IRouters {
-  [router: string]: {
-    assets: string[];
-    chunks: string[];
-    existsAts: string[];
-    name: string;
-    size: number;
-  };
+  [router: string]: IRouter;
 }
 
 export interface IHtmlWebpackPlugin {
@@ -67,4 +69,25 @@ export interface IEntrypoints {
     children: any;
     childAssets: any;
   };
+}
+
+export interface IQuery {
+  [key: string]: string;
+}
+
+export interface ICtx {
+  error: any;
+  req: any;
+  res: any;
+  pathname: string;
+  query: IQuery;
+  asPath: string;
+}
+
+export interface ISSRData {
+  props: any;
+  asyncProps: any;
+  pathname: string;
+  clientRender: boolean;
+  rootAttr: IConfig['rootAttr'];
 }
