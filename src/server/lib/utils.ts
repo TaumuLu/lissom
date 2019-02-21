@@ -113,15 +113,15 @@ const loadGetInitial = (methodName: string, defaultValue: any = {}): Function =>
         printAndExit(message);
       }
     }
-
+    const { error } = ctx;
+    if (error) {
+      return {
+        error,
+      };
+    }
     if (!Component[methodName]) return defaultValue;
 
     const props = await Component[methodName](ctx);
-    const { error } = ctx;
-    if (error) {
-      props.error = error;
-    }
-
     if (ctx.res && isResSent(ctx.res)) {
       return props;
     }

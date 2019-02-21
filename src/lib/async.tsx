@@ -5,7 +5,19 @@ import { checkServer, get, getDisplayName, isArray, isString } from './utils';
 let defaultLoadingComponent = () => null;
 let _ssrPathName;
 
-class InitialProps {
+export class InitialProps {
+  // 只有动态模块的情况下需要初始化操作
+  public static init(paths, getInitialProps?) {
+    paths = handlePaths(paths);
+    const indexMap = {};
+    paths.forEach(path => {
+      const index = 0;
+      pathMap.set(path, new InitialProps(getInitialProps));
+      indexMap[path] = index;
+    });
+    return indexMap;
+  }
+
   public static combine(paths, getInitialProps) {
     // 合并总是push进queue队列中，动态队列dynamicQueue由动态组件触发移动
     const indexMap = {};
@@ -26,10 +38,13 @@ class InitialProps {
   public value: any[];
   public isLock: boolean;
 
-  constructor(getInitialProps) {
-    this.queue = [getInitialProps];
+  constructor(getInitialProps?) {
+    this.queue = [];
     this.dynamicQueue = [];
     this.value = [];
+    if (getInitialProps) {
+      this.queue.push(getInitialProps);
+    }
   }
 
   public moveQueue(fromIndex, toIndex) {
@@ -139,14 +154,16 @@ interface IState {
 
 export const pathMap = new Map();
 
-const handlePaths = (paths, AsyncComponent) => {
+const handlePaths = (paths, AsyncComponent?) => {
   if (isArray(paths)) return paths;
   if (isString(paths)) {
     return [paths];
   }
-  const displayName = getDisplayName(AsyncComponent);
+  const title = AsyncComponent
+    ? `${getDisplayName(AsyncComponent)} component`
+    : 'init';
   throw new Error(
-    `${displayName} component: async decorator path params can only be a string or an array`
+    `${title}: async decorator path params can only be a string or an array`
   );
 };
 

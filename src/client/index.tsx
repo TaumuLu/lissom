@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { pathMap } from '../lib/async';
+import { InitialProps, pathMap } from '../lib/async';
 import { get } from '../lib/utils';
 
 declare global {
@@ -45,9 +45,14 @@ if (
     }
 
     const initialRoute = window.__SSR_LOADED_PAGES__.shift();
-    const mathValue = pathMap.get(pathname);
     // 设置回服务端获取的异步值
-    if (mathValue) {
+    if (asyncProps && asyncProps.length > 0) {
+      let mathValue = pathMap.get(pathname);
+      // 只有异步模块的路径时需要提前初始化好
+      if (!mathValue) {
+        InitialProps.init(pathname);
+        mathValue = pathMap.get(pathname);
+      }
       mathValue.setValue(asyncProps);
     }
 

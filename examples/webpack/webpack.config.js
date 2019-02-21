@@ -5,6 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
 const autoprefixer = require('autoprefixer');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HappyPack = require('happypack');
 const lissomWebpack = require('lissom/webpack');
 
@@ -172,6 +173,13 @@ module.exports = lissomWebpack({
         assets: vendorAssets,
         append: false,
       })),
+    new CopyWebpackPlugin([
+      {
+        from: path.join(__dirname, '../public'),
+        to: outputPath,
+        ignore: ['*.html'],
+      },
+    ]),
     new HappyPack({
       id: 'babel',
       loaders: [

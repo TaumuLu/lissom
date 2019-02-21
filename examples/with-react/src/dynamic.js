@@ -1,7 +1,7 @@
 import React from 'react';
 import async from 'lissom/async';
 
-@async(['/', '/test'])
+@async(['/', '/dynamic'])
 export default class Dynamic extends React.Component {
   static async getInitialProps(...params) {
     const value = await new Promise(resolve => {
@@ -19,7 +19,7 @@ export default class Dynamic extends React.Component {
 
     return (
       <div style={{ height: 50, justifyContent: 'center' }}>
-        <p style={{ color: 'red', fontSize: 24 }}>dynamic module</p>
+        <p style={{ color: 'red', fontSize: 24 }}>Dynamic Module</p>
       </div>
     );
   }
