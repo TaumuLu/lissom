@@ -11,6 +11,10 @@ const DynamicComponent = dynamic(() => import('./dynamic'));
 // @async(['/', '/test'])
 export default class App extends Component {
   static async getInitialProps(ctx) {
+    const { pathname, location } = ctx;
+    console.log('ctx');
+    console.log('pathname: ', pathname);
+    console.log('location: ', location);
     const value = await new Promise(resolve => {
       setTimeout(() => {
         resolve({

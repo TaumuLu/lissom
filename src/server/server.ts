@@ -5,23 +5,23 @@ import { isResSent } from './lib/utils';
 import renderHTML from './render';
 
 export default class Server {
-  public async render(req: any, res: any, pathname: string) {
+  public async render(req: any, res: any) {
     const { method } = req;
-    const html = await this.renderToHTML(req, res, pathname);
+    const html = await this.renderToHTML(req, res);
     if (isResSent(res)) return null;
 
     return this.sendHTML(req, res, html, method);
   }
 
-  public async renderToHTML(req: any, res: any, pathname: string) {
+  public async renderToHTML(req: any, res: any) {
     const { quiet } = config.get();
     try {
-      const html = await renderHTML(req, res, pathname);
+      const html = await renderHTML(req, res);
       return html;
     } catch (error) {
       if (!quiet) console.error(error);
       res.statusCode = 500;
-      const html = await renderHTML(req, res, pathname, error);
+      const html = await renderHTML(req, res, error);
       return html;
     }
   }

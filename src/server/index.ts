@@ -21,7 +21,7 @@ export default (options: IConfig) => {
       const { req, res, method } = ctx;
       ctx.res.statusCode = 200;
       log(`--> ${method}`, ctxPath);
-      await app.render(req, res, ctxPath);
+      await app.render(req, res);
       ctx.respond = false;
       log(`<-- ${method}`, ctxPath);
     } else {

@@ -14,12 +14,8 @@ import {
 import { clearAsyncChunks, getAsyncModule } from './lib/webpack-runtime';
 import { getRouter, loadComponents } from './require';
 
-export default async function doRender(
-  req: any,
-  res: any,
-  pathname: string,
-  error?: any
-) {
+export default async function doRender(req: any, res: any, error?: any) {
+  const { location, navigator, pathname, query } = new Request(req);
   const options = config.get();
   const { routers, parseHtml } = config.getAssetsConfig();
   const { dev, staticMarkup, rootAttr } = options;
@@ -32,7 +28,6 @@ export default async function doRender(
   if (error) {
     clientRender = false;
   }
-  const { location, navigator, query } = new Request(req);
   // 保持兼容next
   const ctx: ICtx = {
     error,

@@ -6,7 +6,7 @@ const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plug
 const autoprefixer = require('autoprefixer');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HappyPack = require('happypack');
-const ssrWebpack = require('lissom/webpack');
+const lissomWebpack = require('lissom/webpack');
 
 const happyThreadPool = HappyPack.ThreadPool({ size: 2 });
 
@@ -39,7 +39,7 @@ const browsers = [
 ];
 const compassMixinsPath = path.join(require.resolve('compass-mixins'), '..');
 
-module.exports = ssrWebpack({
+module.exports = lissomWebpack({
   ...config,
   entry: {
     app: './index.js',
