@@ -1,3 +1,4 @@
+import qs from 'qs';
 import React, { Component } from 'react';
 import { checkServer, get, getDisplayName, isArray, isString } from './utils';
 
@@ -81,7 +82,7 @@ class InitialProps {
     for (const item of this.getFullQueue()) {
       // 先同步执行并push进value中，并传入保存在value中之前组件的所有异步返回值
       // 用于依赖之前组件异步返回值的组件可以await去获取
-      const resolve = item(ctx, golbalProps, ...this.value);
+      const resolve = item(ctx, golbalProps, this.value);
       this.value.push(resolve);
     }
     this.value = await Promise.all(this.value);
@@ -100,8 +101,9 @@ class InitialProps {
     if (this.isLock) return existProps;
 
     const item = this.getFullQueue()[mIndex];
+    const ctx = getClientCtx();
     // 和getValue里同理
-    const resolve = item(null, golbalProps, ...this.value);
+    const resolve = item(ctx, golbalProps, this.value);
     this.value.push(resolve);
     return resolve.then(props => {
       this.value[mIndex] = props;
@@ -109,6 +111,26 @@ class InitialProps {
     });
   }
 }
+
+const getClientCtx = () => {
+  if (checkServer()) return {};
+
+  const { location, navigator } =
+    typeof window !== 'undefined' ? window : ({} as any);
+  const { pathname, search } = location;
+  const query = qs.parse(search, { ignoreQueryPrefix: true });
+  const asPath = pathname + search;
+  return {
+    error: null,
+    req: null,
+    res: null,
+    pathname,
+    asPath,
+    location,
+    navigator,
+    query,
+  };
+};
 
 interface IState {
   isRender: boolean;
@@ -128,7 +150,7 @@ const handlePaths = (paths, AsyncComponent) => {
   );
 };
 
-function Async(paths, message) {
+function Async(paths) {
   return AsyncComponent => {
     const {
       getInitialProps,
@@ -174,7 +196,7 @@ function Async(paths, message) {
         const { isRender } = this.state;
         if (isRender) {
           // 服务端不会走到这一步，不需要此值
-          return null;
+          return {};
         }
         return window.__SSR_DATA__.props;
       }
@@ -202,8 +224,7 @@ function Async(paths, message) {
         const resolveValue = instance.getProps(
           index,
           dynamicIndex,
-          this.getGlobalProps(),
-          message
+          this.getGlobalProps()
         );
 
         if (resolveValue instanceof Promise) {

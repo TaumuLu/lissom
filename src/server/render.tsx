@@ -1,8 +1,9 @@
 import React from 'react';
 import { renderToStaticMarkup, renderToString } from 'react-dom/server';
-import { IAssetsConfig, IConfig, ICtx, IQuery, ISSRData } from '../lib/types';
+import { ICtx, ISSRData } from '../lib/types';
 import config from './config';
 import createHtml from './lib/create-html';
+import Request from './lib/request';
 import {
   isResSent,
   loadGetInitialProps,
@@ -13,63 +14,36 @@ import {
 import { clearAsyncChunks, getAsyncModule } from './lib/webpack-runtime';
 import { getRouter, loadComponents } from './require';
 
-export function renderToHTML(
+export default async function doRender(
   req: any,
   res: any,
   pathname: string,
-  query: IQuery
+  error?: any
 ) {
   const options = config.get();
-  const assetsConfig = config.getAssetsConfig();
-  return doRender(req, res, pathname, query, options, assetsConfig);
-}
-
-export function renderErrorToHTML(
-  error: any,
-  req: any,
-  res: any,
-  pathname: string,
-  query: IQuery
-) {
-  const options = config.get();
-  const assetsConfig = config.getAssetsConfig();
-  return doRender(
-    req,
-    res,
-    pathname,
-    query,
-    {
-      ...options,
-      error,
-      page: '/_error',
-    },
-    assetsConfig
-  );
-}
-
-interface IRenderConfig extends IConfig {
-  error?: any;
-  page?: string;
-}
-
-async function doRender(
-  req: any,
-  res: any,
-  pathname: string,
-  query: IQuery,
-  { error, page, dev, staticMarkup, clientRender, rootAttr }: IRenderConfig,
-  { routers, parseHtml }: IAssetsConfig
-) {
-  if (error) {
-    clientRender = false;
-  }
-  page = normalizePagePath(page || pathname);
+  const { routers, parseHtml } = config.getAssetsConfig();
+  const { dev, staticMarkup, rootAttr } = options;
+  const page = normalizePagePath(pathname);
   const router = getRouter(page, routers);
   const { Component } = await loadComponents({ router, error, dev });
   if (isResSent(res)) return null;
 
+  let { clientRender } = options;
+  if (error) {
+    clientRender = false;
+  }
+  const { location, navigator, query } = new Request(req);
   // 保持兼容next
-  const ctx: ICtx = { error, req, res, pathname: page, query, asPath: req.url };
+  const ctx: ICtx = {
+    error,
+    req,
+    res,
+    pathname: page,
+    location,
+    navigator,
+    query,
+    asPath: req.url,
+  };
   if (dev) {
     const { isValidElementType } = require('react-is');
     if (!isValidElementType(Component)) {
@@ -80,7 +54,6 @@ async function doRender(
       );
     }
   }
-
   const render = getRender({ staticMarkup });
   const props = await loadGetInitialProps(Component, ctx);
   // 查找获取所有异步组件的异步操作
@@ -88,7 +61,7 @@ async function doRender(
   // 清理异步操作中注册的异步chunks，这一步是必须的
   clearAsyncChunks();
   // render时注册的异步chunks才是真正需要加载的
-  const pageHTML = render(<Component error={error} {...props} />);
+  const pageHTML = render(<Component {...props} />);
   // 必须放在render组件之后获取
   const Styles = await loadGetInitialStyles(Component, ctx);
   const styleHTML = render(Styles);

@@ -1,33 +1,27 @@
 import generateETag from 'etag';
 import fresh from 'fresh';
-import { IQuery } from '../lib/types';
 import config from './config';
 import { isResSent } from './lib/utils';
-import { renderErrorToHTML, renderToHTML } from './render';
+import renderHTML from './render';
 
 export default class Server {
-  public async render(req: any, res: any, pathname: string, query: IQuery) {
+  public async render(req: any, res: any, pathname: string) {
     const { method } = req;
-    const html = await this.renderToHTML(req, res, pathname, query);
+    const html = await this.renderToHTML(req, res, pathname);
     if (isResSent(res)) return null;
 
     return this.sendHTML(req, res, html, method);
   }
 
-  public async renderToHTML(
-    req: any,
-    res: any,
-    pathname: string,
-    query: IQuery
-  ) {
+  public async renderToHTML(req: any, res: any, pathname: string) {
     const { quiet } = config.get();
     try {
-      const html = await renderToHTML(req, res, pathname, query);
+      const html = await renderHTML(req, res, pathname);
       return html;
     } catch (error) {
       if (!quiet) console.error(error);
       res.statusCode = 500;
-      const html = await renderErrorToHTML(error, req, res, pathname, query);
+      const html = await renderHTML(req, res, pathname, error);
       return html;
     }
   }

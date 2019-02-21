@@ -16,7 +16,8 @@ export interface IConfig {
   requireModules?: string[];
   ignoreModules?: string[];
   clientRender?: boolean;
-  entry?: string;
+  // entry?: string;
+  defaultEntry?: string;
   rootAttr?: { [attr: string]: string };
 }
 
@@ -82,6 +83,8 @@ export interface ICtx {
   pathname: string;
   query: IQuery;
   asPath: string;
+  location: ILocation;
+  navigator: INavigator;
 }
 
 export interface ISSRData {
@@ -90,4 +93,20 @@ export interface ISSRData {
   pathname: string;
   clientRender: boolean;
   rootAttr: IConfig['rootAttr'];
+}
+
+export interface ILocation {
+  hash: string;
+  href: string;
+  host: string;
+  hostname: string;
+  origin: string;
+  pathname: string;
+  port: string;
+  protocol: string;
+  search: string;
+}
+
+export interface INavigator {
+  userAgent: string;
 }

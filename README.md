@@ -62,7 +62,7 @@ app.use(await ssrRouter())
 | ignoreModules | array | ['babel-polyfill'] | 服务端忽略执行的模块 |
 | excludeRouteRegs | array | [/\\/api\\/.*/] | 正则数组，排除拦截的路由，可传字符串或正则表达式 |
 | purgeModuleRegs | array | [] | 正则数组，开发模式下每次请求需要清除的模块，可传字符串或正则表达式，默认清除所有非/node_modules/里的模块 |
-| entry | string | 索引为0的wepack入口配置 | webpack入口配置name，优选匹配与本次请求路由名相同的入口name，未匹配到则使用此值指定的入口name |
+| defaultEntry | string | 索引为0的wepack入口配置 | webpack入口配置name，优选匹配与本次请求路由名相同的入口name，未匹配到则使用此值指定的入口name |
 | rootAttr | { [attr: string]: string } | `{ id: '__ssr_root__', style: 'height: 100%; display: flex' }` | 设置挂载dom属性 |
 
 ## 约束

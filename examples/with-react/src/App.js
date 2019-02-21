@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import dynamic from 'lissom/dynamic';
-import async from 'lissom/async';
+// import async from 'lissom/async';
 import logo from './files/logo.svg';
 import AsyncCompoent from './async';
 
@@ -8,9 +8,9 @@ import './styles/app.less';
 
 const DynamicComponent = dynamic(() => import('./dynamic'));
 
-@async(['/', '/test'])
+// @async(['/', '/test'])
 export default class App extends Component {
-  static async getInitialProps(...params) {
+  static async getInitialProps(ctx) {
     const value = await new Promise(resolve => {
       setTimeout(() => {
         resolve({

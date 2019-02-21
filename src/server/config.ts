@@ -29,7 +29,7 @@ const defaultConfig: IConfig = {
   ignoreModules: ['babel-polyfill'],
   clientRender: true,
   rootAttr: {},
-  entry: null,
+  defaultEntry: null,
 };
 
 class Config {
@@ -45,7 +45,7 @@ class Config {
     setWebpackConfig(this._assetsConfig);
   }
 
-  public getAssetsConfig() {
+  public getAssetsConfig(): IAssetsConfig {
     return this._assetsConfig;
   }
 
@@ -109,7 +109,7 @@ class Config {
 export default new Config();
 
 const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
-  const { dev, entry, outputDir } = config;
+  const { dev, defaultEntry, outputDir } = config;
   const assetsManifestPath = findUp.sync(ASSETS_MANIFEST, { cwd: outputDir });
   if (!assetsManifestPath || !assetsManifestPath.length) {
     printAndExit('> Your webpack config does not use lissom/webpack wrapping');
@@ -125,7 +125,7 @@ const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
     modules,
     chunks,
   } = assetsManifest;
-  const routers = getRouters(entrypoints, outputPath, entry);
+  const routers = getRouters(entrypoints, outputPath, defaultEntry);
   const parseHtml = getParseHtml(HtmlWebpackPlugin, outputPath);
 
   return {
@@ -144,7 +144,7 @@ const getPathName = (name: string): string => {
 const getRouters = (
   entrypoints: IEntrypoints,
   outputPath: string,
-  entry: string
+  defaultEntry: string
 ): IRouters => {
   return Object.keys(entrypoints).reduce(
     (p, key, i) => {
@@ -159,8 +159,8 @@ const getRouters = (
         size: assets.length,
       };
       // 默认取第一个入口
-      if (i === 0 && !entry) entry = key;
-      if (key === entry) {
+      if (i === 0 && !defaultEntry) defaultEntry = key;
+      if (key === defaultEntry) {
         p.default = router;
       }
       const page = getPathName(key);

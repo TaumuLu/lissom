@@ -117,6 +117,10 @@ const loadGetInitial = (methodName: string, defaultValue: any = {}): Function =>
     if (!Component[methodName]) return defaultValue;
 
     const props = await Component[methodName](ctx);
+    const { error } = ctx;
+    if (error) {
+      props.error = error;
+    }
 
     if (ctx.res && isResSent(ctx.res)) {
       return props;

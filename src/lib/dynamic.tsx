@@ -24,7 +24,9 @@ function Dynamic(config) {
     isRegister = true;
     const component = interopDefault(resolveComponent());
     // 动态组件执行队列移动操作
-    component.move();
+    if (component.move) {
+      component.move();
+    }
   }
 
   return class DynamicConnect extends Component<any, IState> {
