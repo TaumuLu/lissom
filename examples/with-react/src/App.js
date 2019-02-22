@@ -53,8 +53,10 @@ export default class App extends Component {
         <header className="App-header">
           <Router {...routeProps}>
             <React.Fragment>
-              <img src={logo} className="App-logo" alt="logo" />
-              <ul>
+              <div className="App-logo">
+                <img src={logo} className="App-logo-img" alt="logo" />
+              </div>
+              <ul className="link-ul">
                 <li>
                   <Link to="/">Home</Link>
                 </li>

@@ -52,6 +52,7 @@ export class InitialProps {
     this.queue.splice(toIndex, 0, ...takeValue);
   }
 
+  // 移动动态加载的异步模块至其他队列，为何要如此做，原因在于在服务端同步客户端异步
   public moveToDynamicQueue(index): number {
     const takeValue = this.queue.splice(index, 1);
     return this.dynamicQueue.push(...takeValue) - 1;
@@ -68,7 +69,7 @@ export class InitialProps {
   public push(getInitialProps): number {
     if (this.isLock) {
       if (this.value.length === this.queue.length) {
-        // 不要在render时添加含有异步操作的动态组件，请把有异步操作的动态组件放在文件运行时执行
+        // 不要在render时添加含有异步操作的动态组件，请把有异步操作的动态组件放在文件加载运行时执行
         throw new Error(
           "Don't introduce dynamic components with asynchronous operations when rendering, Please introduce dynamic components with asynchronous operations when the file is running"
         );
@@ -88,7 +89,12 @@ export class InitialProps {
     return [...this.queue, ...this.dynamicQueue];
   }
 
-  // 服务端调用
+  public handleValue(value, index) {
+    // 标记成功
+    return (this.value[index] = { success: true, value });
+  }
+
+  // 仅服务端调用
   public async getValue(ctx, golbalProps, pathname) {
     // 保存服务端当前异步路由
     _ssrPathName = pathname;
@@ -100,8 +106,9 @@ export class InitialProps {
       const resolve = item(ctx, golbalProps, this.value);
       this.value.push(resolve);
     }
-    this.value = await Promise.all(this.value);
-    return this.value;
+    return Promise.all(this.value).then(values =>
+      values.map((v, i) => this.handleValue(v, i))
+    );
   }
 
   // 渲染时调用
@@ -111,18 +118,17 @@ export class InitialProps {
     if (dynamicIndex !== undefined) {
       mIndex = this.size() + dynamicIndex;
     }
-    const existProps = this.value[mIndex];
+    const existProps = this.value[mIndex] || {};
     // 服务端渲染页面走到这步必定返回
-    if (this.isLock) return existProps;
+    if (existProps.success) return existProps;
 
     const item = this.getFullQueue()[mIndex];
     const ctx = getClientCtx();
     // 和getValue里同理
     const resolve = item(ctx, golbalProps, this.value);
-    this.value.push(resolve);
+    this.value[mIndex] = resolve;
     return resolve.then(props => {
-      this.value[mIndex] = props;
-      return props;
+      return this.handleValue(props, mIndex);
     });
   }
 }
@@ -253,10 +259,11 @@ function Async(paths) {
 
       public render() {
         const { isRender, asyncProps } = this.state;
-        if (isRender) {
+        const { value, success } = asyncProps || ({} as any);
+        if (isRender && success) {
           const props = {
             ...this.props,
-            ...asyncProps,
+            ...value,
           };
           return <AsyncComponent {...props} />;
         }
