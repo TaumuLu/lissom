@@ -78,11 +78,26 @@ export default class App extends Component {
   }
 }
 
-const Home = ({ onClick }) => (
-  <div onClick={onClick} className="App-link">
-    Lissom
-  </div>
-);
+class Home extends Component {
+  componentWillMount() {
+    console.log('willMount');
+  }
+
+  componentWillUnmount() {
+    console.log('willUnmount');
+  }
+
+  render() {
+    const { onClick } = this.props;
+    console.log(this.props);
+
+    return (
+      <div onClick={onClick} style={{ height: 50, justifyContent: 'center' }}>
+        <p style={{ color: 'aqua', fontSize: 24 }}>Lissom</p>
+      </div>
+    );
+  }
+}
 
 export const checkServer = () =>
   Object.prototype.toString.call(global.process) === '[object process]';

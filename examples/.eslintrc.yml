@@ -22,6 +22,8 @@ rules:
   object-curly-newline: 0
   operator-linebreak: 0
   implicit-arrow-linebreak: 0
+  arrow-body-style: 0
+  react/no-multi-comp: 0
 
 
 

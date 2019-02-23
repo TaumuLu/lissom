@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { checkServer, get, getDisplayName, isArray, isString } from './utils';
 
 let defaultLoadingComponent = () => null;
-let _ssrPathName;
+let _ssrPathName; // 仅服务端使用
 
 export class InitialProps {
   // 只有动态模块的情况下需要初始化操作
@@ -91,7 +91,7 @@ export class InitialProps {
 
   public handleValue(value, index) {
     // 标记成功
-    return (this.value[index] = { success: true, value });
+    return (this.value[index] = { finish: true, error: null, value });
   }
 
   // 仅服务端调用
@@ -111,24 +111,33 @@ export class InitialProps {
     );
   }
 
-  // 渲染时调用
-  public getProps(index, dynamicIndex, golbalProps) {
-    let mIndex = index;
-    // 获取合并后的索引
-    if (dynamicIndex !== undefined) {
-      mIndex = this.size() + dynamicIndex;
-    }
-    const existProps = this.value[mIndex] || {};
-    // 服务端渲染页面走到这步必定返回
-    if (existProps.success) return existProps;
+  public deleteValue(index, dIndex) {
+    const cIndex = this.calcIndex(index, dIndex);
+    this.value[cIndex] = null;
+  }
 
-    const item = this.getFullQueue()[mIndex];
+  public calcIndex(index, dIndex): number {
+    // 获取合并后的索引
+    if (dIndex !== undefined) {
+      return this.size() + dIndex;
+    }
+    return index;
+  }
+
+  // 渲染时调用
+  public getProps(index, dIndex, golbalProps) {
+    const cIndex = this.calcIndex(index, dIndex);
+    const existProps = this.value[cIndex] || {};
+    // 服务端渲染页面走到这步必定返回
+    if (existProps.finish) return existProps;
+
+    const item = this.getFullQueue()[cIndex];
     const ctx = getClientCtx();
     // 和getValue里同理
     const resolve = item(ctx, golbalProps, this.value);
-    this.value[mIndex] = resolve;
+    this.value[cIndex] = resolve;
     return resolve.then(props => {
-      return this.handleValue(props, mIndex);
+      return this.handleValue(props, cIndex);
     });
   }
 }
@@ -197,14 +206,26 @@ function Async(paths) {
 
       public state: IState;
       public mounted: boolean;
+      private isServer: boolean;
+      private path: string;
+      private index: number;
+      private match: boolean;
 
       constructor(props) {
         super(props);
         this.state = {
-          isRender: checkServer(),
+          isRender: false,
           asyncProps: {},
         };
-        this.load();
+        // 保存获取数据的信息
+        this.isServer = checkServer();
+        this.path = this.getPath();
+        this.index = indexMap[this.path];
+        this.match = this.index !== undefined;
+        // 如果未命中路由，即当前异步组件传入的路径未包含此路由
+        if (this.match) {
+          this.load();
+        }
       }
 
       public componentDidMount() {
@@ -213,11 +234,15 @@ function Async(paths) {
 
       public componentWillUnmount() {
         this.mounted = false;
+        const { isRender } = this.state;
+        if (isRender) {
+          const instance = pathMap.get(this.path);
+          instance.deleteValue(this.index, dynamicIndex);
+        }
       }
 
       public getGlobalProps() {
-        const { isRender } = this.state;
-        if (isRender) {
+        if (this.isServer) {
           // 服务端不会走到这一步，不需要此值
           return {};
         }
@@ -233,19 +258,14 @@ function Async(paths) {
         }
       };
 
-      public load() {
-        const { isRender } = this.state;
-        const path = isRender ? _ssrPathName : get(window, 'location.pathname');
-        const index = indexMap[path];
-        if (index === undefined) {
-          // 未匹配路由，当前异步组件传入的路径未包含此路由
-          this.state.isRender = false;
-          return;
-        }
-        const instance = pathMap.get(path);
+      public getPath() {
+        return this.isServer ? _ssrPathName : get(window, 'location.pathname');
+      }
 
+      public load() {
+        const instance = pathMap.get(this.path);
         const resolveValue = instance.getProps(
-          index,
+          this.index,
           dynamicIndex,
           this.getGlobalProps()
         );
@@ -258,12 +278,15 @@ function Async(paths) {
       }
 
       public render() {
+        if (!this.match) return null;
+
         const { isRender, asyncProps } = this.state;
-        const { value, success } = asyncProps || ({} as any);
-        if (isRender && success) {
+        const { value, error } = asyncProps;
+        if (isRender) {
           const props = {
             ...this.props,
             ...value,
+            error,
           };
           return <AsyncComponent {...props} />;
         }
