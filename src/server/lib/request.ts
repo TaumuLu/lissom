@@ -111,6 +111,7 @@ export default class Request {
   get navigator(): INavigator {
     return {
       userAgent: this.get('user-agent'),
+      language: this.get('accept-language'),
     };
   }
 

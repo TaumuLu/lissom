@@ -109,4 +109,5 @@ export interface ILocation {
 
 export interface INavigator {
   userAgent: string;
+  language: string;
 }

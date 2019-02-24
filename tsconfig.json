@@ -7,6 +7,7 @@
     "allowJs": false,
     "checkJs": false,
     "jsx": "react",
+    "declaration": true,
     "sourceMap": true,
     "moduleResolution": "node",
     "noUnusedLocals": true,

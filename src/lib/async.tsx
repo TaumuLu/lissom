@@ -207,10 +207,10 @@ function Async(paths) {
 
       public state: IState;
       public mounted: boolean;
-      private isServer: boolean;
-      private path: string;
-      private index: number;
-      private match: boolean;
+      public readonly isServer: boolean;
+      public readonly matchPath: boolean;
+      public readonly _path: string;
+      public readonly _index: number;
 
       constructor(props) {
         super(props);
@@ -220,11 +220,11 @@ function Async(paths) {
         };
         // 保存获取数据的信息
         this.isServer = checkServer();
-        this.path = this.getPath();
-        this.index = indexMap[this.path];
-        this.match = this.index !== undefined;
+        this._path = this.getPath();
+        this._index = indexMap[this._path];
+        this.matchPath = this._index !== undefined;
         // 如果未命中路由，即当前异步组件传入的路径未包含此路由
-        if (this.match) {
+        if (this.matchPath) {
           this.load();
         }
       }
@@ -237,8 +237,8 @@ function Async(paths) {
         this.mounted = false;
         const { isRender } = this.state;
         if (isRender && unmount) {
-          const instance = pathMap.get(this.path);
-          instance.deleteValue(this.index, dynamicIndex);
+          const instance = pathMap.get(this._path);
+          instance.deleteValue(this._index, dynamicIndex);
         }
       }
 
@@ -264,9 +264,9 @@ function Async(paths) {
       }
 
       public load() {
-        const instance = pathMap.get(this.path);
+        const instance = pathMap.get(this._path);
         const resolve = instance.getProps(
-          this.index,
+          this._index,
           dynamicIndex,
           this.getGlobalProps()
         );
@@ -279,7 +279,7 @@ function Async(paths) {
       }
 
       public render() {
-        if (!this.match) return null;
+        if (!this.matchPath) return null;
 
         const { isRender, asyncProps } = this.state;
         const { value, error } = asyncProps;
