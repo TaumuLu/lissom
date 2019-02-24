@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { ReactComp } from './types';
 import { checkServer, interopDefault, isFunction } from './utils';
 
-let defaultLoadingComponent = () => null;
+let defaultLoading = () => null;
 
 // 服务端判断，只会走一次用于注册动态组件路径
 let isRegister = false;
@@ -13,16 +13,13 @@ interface IState {
 
 function Dynamic(config) {
   if (isFunction(config)) {
-    config = { component: config };
+    config = { loader: config };
   }
-  const {
-    component: resolveComponent,
-    LoadingComponent = defaultLoadingComponent,
-  } = config;
+  const { loader, loading = defaultLoading } = config;
   // 服务端提前执行，支持动态组件中的异步操作，用于注册
   if (!isRegister && checkServer()) {
     isRegister = true;
-    const component = interopDefault(resolveComponent());
+    const component = interopDefault(loader());
     // 动态组件执行队列移动操作
     if (component.move) {
       component.move();
@@ -49,8 +46,9 @@ function Dynamic(config) {
       this.mounted = false;
     }
 
-    public setComponent = mod => {
-      const DynamicComponent = interopDefault(mod);
+    public onFulfilled = result => {
+      const { value } = result;
+      const DynamicComponent = interopDefault(value);
       if (this.mounted) {
         this.setState({ DynamicComponent });
       } else {
@@ -60,11 +58,11 @@ function Dynamic(config) {
 
     public load() {
       // 两端再次执行注册
-      const resolveValue = resolveComponent();
-      if (resolveValue._isSyncModule) {
-        this.setComponent(resolveValue);
+      const resolve = loader();
+      if (resolve._isSyncPromise) {
+        this.onFulfilled(resolve);
       } else {
-        resolveValue.then(this.setComponent);
+        resolve.then(this.onFulfilled);
       }
     }
 
@@ -74,13 +72,14 @@ function Dynamic(config) {
         return <DynamicComponent {...this.props} />;
       }
 
-      return <LoadingComponent {...this.props} />;
+      const Loading = loading;
+      return <Loading {...this.props} />;
     }
   };
 }
 
-Dynamic.setDefaultLoadingComponent = LoadingComponent => {
-  defaultLoadingComponent = LoadingComponent;
+Dynamic.setDefaultLoading = loading => {
+  defaultLoading = loading;
 };
 
 export default Dynamic;

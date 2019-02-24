@@ -2,7 +2,7 @@ import qs from 'qs';
 import React, { Component } from 'react';
 import { checkServer, get, getDisplayName, isArray, isString } from './utils';
 
-let defaultLoadingComponent = () => null;
+let defaultLoading = () => null;
 let _ssrPathName; // 仅服务端使用
 
 export class InitialProps {
@@ -186,7 +186,8 @@ function Async(paths) {
   return AsyncComponent => {
     const {
       getInitialProps,
-      LoadingComponent = defaultLoadingComponent,
+      loading = defaultLoading,
+      unmount = true,
     } = AsyncComponent;
     paths = handlePaths(paths, AsyncComponent);
     const indexMap = InitialProps.combine(paths, getInitialProps);
@@ -235,7 +236,7 @@ function Async(paths) {
       public componentWillUnmount() {
         this.mounted = false;
         const { isRender } = this.state;
-        if (isRender) {
+        if (isRender && unmount) {
           const instance = pathMap.get(this.path);
           instance.deleteValue(this.index, dynamicIndex);
         }
@@ -249,7 +250,7 @@ function Async(paths) {
         return window.__SSR_DATA__.props;
       }
 
-      public setProps = asyncProps => {
+      public onFulfilled = asyncProps => {
         const isRender = true;
         if (this.mounted) {
           this.setState({ asyncProps, isRender });
@@ -264,16 +265,16 @@ function Async(paths) {
 
       public load() {
         const instance = pathMap.get(this.path);
-        const resolveValue = instance.getProps(
+        const resolve = instance.getProps(
           this.index,
           dynamicIndex,
           this.getGlobalProps()
         );
 
-        if (resolveValue instanceof Promise) {
-          resolveValue.then(this.setProps);
+        if (resolve.finish) {
+          this.onFulfilled(resolve);
         } else {
-          this.setProps(resolveValue);
+          resolve.then(this.onFulfilled);
         }
       }
 
@@ -291,14 +292,15 @@ function Async(paths) {
           return <AsyncComponent {...props} />;
         }
 
-        return <LoadingComponent {...this.props} />;
+        const Loading = loading;
+        return <Loading {...this.props} />;
       }
     };
   };
 }
 
-Async.setDefaultLoadingComponent = LoadingComponent => {
-  defaultLoadingComponent = LoadingComponent;
+Async.setDefaultLoading = loading => {
+  defaultLoading = loading;
 };
 
 export default Async;

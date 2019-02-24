@@ -129,6 +129,7 @@ ssr渲染并不是适用于所有情况，如何使用、最佳实践根据实�
 - [ ] 普通spa迁移ssr对比文档
 - [ ] 多路由非但单页面模式，同时提供demo
 - [ ] 脚手架搭建工具
+- [ ] async、dynamic提供和react-loadable一致的api及能力
 
 ## Changelog
 

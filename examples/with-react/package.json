@@ -10,7 +10,7 @@
     "build-dev": "npm run clean && npm run webpack -- --config ../webpack/webpack.config.js --progress --color",
     "build": "npm run clean && npm run webpack -- --config ../webpack/webpack.config.js --progress --color",
     "server-dev": "nodemon server.js",
-    "server": "export NODE_ENV=production && node server.js",
+    "server": "export NODE_ENV=production && node --inspect server.js",
     "postinstall": "npm link lissom"
   },
   "dependencies": {

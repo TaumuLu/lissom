@@ -223,7 +223,7 @@ __webpack_require__.s = undefined;
 // 当作普通包加载
 __webpack_require__.e = function requireEnsure(chunkId) {
   const promises = [] as any;
-  promises._isSyncThen = true;
+  promises._isSyncPromise = true;
   // JSONP chunk loading for javascript
 
   // const installedChunkData = installedChunks[chunkId]
