@@ -130,6 +130,8 @@ ssr渲染并不是适用于所有情况，如何使用、最佳实践根据实�
 - [ ] 多路由非但单页面模式，同时提供demo
 - [ ] 脚手架搭建工具
 - [ ] async、dynamic提供和react-loadable一致的api及能力
+- [ ] 尝试改造react支持异步渲染，拦截React的渲染逻辑，开一个尝试版本实验
+- [ ] 组件级缓存能力，react-dom-stream/react-ssr-optimization/electrode-react-ssr-cachin
 
 ## Changelog
 
