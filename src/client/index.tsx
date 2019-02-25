@@ -44,7 +44,6 @@ if (
       }
     }
 
-    const initialRoute = window.__SSR_LOADED_PAGES__.shift();
     // 设置回服务端获取的异步值
     if (asyncProps && asyncProps.length > 0) {
       let mathValue = pathMap.get(pathname);
@@ -57,6 +56,7 @@ if (
     }
 
     const routers = {};
+    const initialRoute = window.__SSR_LOADED_PAGES__.shift();
     const registerPage = (route, { page: Component }) => {
       routers[route] = Component;
 
