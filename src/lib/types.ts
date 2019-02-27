@@ -16,6 +16,7 @@ export interface IConfig {
   requireModules?: string[];
   ignoreModules?: string[];
   clientRender?: boolean;
+  serverRender?: boolean;
   // entry?: string;
   defaultEntry?: string;
   rootAttr?: { [attr: string]: string };

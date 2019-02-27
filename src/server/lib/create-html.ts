@@ -6,7 +6,7 @@ import { getAsyncChunks } from './webpack-runtime';
 
 interface IParam {
   pageHTML: string;
-  styleHTML: string;
+  styleHTML?: string;
   parseHtml: ParseHtml;
   router: IRouter;
   ssrData: ISSRData;

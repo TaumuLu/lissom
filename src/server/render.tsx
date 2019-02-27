@@ -17,8 +17,8 @@ import { getRouter, loadComponents } from './require';
 export default async function doRender(req: any, res: any, error?: any) {
   const { location, navigator, pathname, query } = new Request(req);
   const options = config.get();
-  const { routers, parseHtml } = config.getAssetsConfig();
   const { dev, staticMarkup, rootAttr } = options;
+  const { routers, parseHtml } = config.getAssetsConfig();
   const page = normalizePagePath(pathname);
   const router = getRouter(page, routers);
   const { Component } = await loadComponents({ router, error, dev });

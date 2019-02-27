@@ -65,6 +65,7 @@ app.listen(3000);
 | generateEtags | boolean | true | 页面请求头是否添加ETag |
 | quiet | boolean | false | 是否不输出错误信息 |
 | clientRender | boolean | true | 客户端是否渲染，可用来调试服务端渲染输出 |
+| serverRender | boolean | true | 服务端是否渲染，可以关闭服务端渲染 |
 | requireModules | array | ['superagent'] | 不使用的webpack打包的模块，需要服务端直接从node_modules中require的模块 |
 | ignoreModules | array | ['babel-polyfill'] | 服务端忽略执行的模块 |
 | excludeRouteRegs | array | [/\\/api\\/.*/] | 正则数组，值为正则字符串或正则表达式；koa排除拦截的路由 |

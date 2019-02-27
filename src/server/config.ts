@@ -28,6 +28,7 @@ const defaultConfig: IConfig = {
   requireModules: ['superagent'],
   ignoreModules: ['babel-polyfill'],
   clientRender: true,
+  serverRender: true,
   rootAttr: {},
   defaultEntry: null,
 };
