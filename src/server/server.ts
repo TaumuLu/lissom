@@ -34,15 +34,14 @@ export default class Server {
       if (serverRender) {
         html = await Render.renderComponent();
       } else {
-        html = await Render.renderHTML();
+        html = Render.renderHTML();
       }
       return html;
     } catch (error) {
       if (!quiet) console.error(error);
 
       res.statusCode = 500;
-      const html = await Render.renderError(error);
-      return html;
+      return Render.renderError(error);
     }
   }
 

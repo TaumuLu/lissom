@@ -93,7 +93,8 @@ export default abstract class Render {
   public renderError(error: any): string {
     // 停止客户端渲染
     this.updateSsrData({ clientRender: false });
-    const pageHTML = ErrorDebug({ error });
+    const { dev } = config.get();
+    const pageHTML = ErrorDebug({ error, dev });
     return this.renderHTML(pageHTML);
   }
 

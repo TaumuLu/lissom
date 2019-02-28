@@ -3,24 +3,33 @@ import ansiHTML from 'ansi-html';
 export default function ErrorDebug({
   error,
   info,
+  dev,
 }: {
   error: any;
   info?: any;
+  dev: boolean;
 }) {
   const { name, message } = error;
+
+  let errorMessage: string;
+  if (dev) {
+    if (name === 'ModuleBuildError' && message) {
+      errorMessage = `
+        <pre style=${getStyle(styles.stack)}>
+          ${ansiHTML(encodeHtml(message))}
+        </pre>
+      `;
+    } else {
+      errorMessage = StackTrace({ error, info });
+    }
+  } else {
+    return '500: Internal Server Error';
+  }
 
   return `
     <div style=${getStyle(styles.errorDebug)}>
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      ${
-        name === 'ModuleBuildError' && message
-          ? `
-        <pre style=${getStyle(styles.stack)}>
-          ${ansiHTML(encodeHtml(message))}
-        </pre>
-      `
-          : StackTrace({ error, info })
-      }
+      ${errorMessage}
     </div>
   `;
 }
