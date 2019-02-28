@@ -11,6 +11,7 @@ const uri = `http://127.0.0.1:${port}`;
 const config = {
   excludeRouteRegs: [/\/(api|public)\/.*/],
   output: './build',
+  // dev: false,
   // serverRender: false,
   rootAttr: {
     id: 'root',
