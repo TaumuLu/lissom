@@ -38,14 +38,15 @@ function searchCache(modPath, callback, ignoreModules = []) {
   }
 }
 
+export const getPathName = (name: string): string => {
+  return name.charAt(0) === '/' ? name : `/${name}`;
+};
+
 export function normalizePagePath(page: string): string {
   if (page === '/') {
     page = '/index';
   }
-
-  if (page[0] !== '/') {
-    page = `/${page}`;
-  }
+  page = getPathName(page);
 
   const resolvedPage = posix.normalize(page);
   if (page !== resolvedPage) {

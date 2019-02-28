@@ -1,41 +1,67 @@
 import generateETag from 'etag';
 import fresh from 'fresh';
+import { IncomingMessage, ServerResponse } from 'http';
+import { IConfig } from '../lib/types';
 import config from './config';
 import { isResSent } from './lib/utils';
-import renderHTML from './render';
+import ReactRender from './react-render';
 
 export default class Server {
-  public async render(req: any, res: any) {
+  public renderOpts: any;
+
+  constructor(options: IConfig) {
+    // 初始化配置
+    config.init(options);
+  }
+
+  public async render(req: IncomingMessage, res: ServerResponse) {
+    // 执行不同模式下的配置操作
+    config.mode();
     const { method } = req;
     const html = await this.renderToHTML(req, res);
-    if (isResSent(res)) return null;
+    // 请求已结束
+    if (html === null) return;
 
     return this.sendHTML(req, res, html, method);
   }
 
-  public async renderToHTML(req: any, res: any) {
-    const { quiet } = config.get();
+  public async renderToHTML(req: IncomingMessage, res: ServerResponse) {
+    const { quiet, serverRender } = config.get();
+    const Render = new ReactRender(req, res);
+
     try {
-      const html = await renderHTML(req, res);
+      let html;
+      if (serverRender) {
+        html = await Render.renderComponent();
+      } else {
+        html = await Render.renderHTML();
+      }
       return html;
     } catch (error) {
       if (!quiet) console.error(error);
+
       res.statusCode = 500;
-      const html = await renderHTML(req, res, error);
+      const html = await Render.renderError(error);
       return html;
     }
   }
 
-  public sendHTML(req, res, html: string, method: string) {
-    const { dev, generateEtags } = config.get();
-    if (isResSent(res)) return null;
+  public sendHTML(
+    req: IncomingMessage,
+    res: ServerResponse,
+    html: string,
+    method: string
+  ) {
+    if (isResSent(res)) return;
 
+    const { dev, generateEtags } = config.get();
     const etag = generateEtags && generateETag(html);
     if (fresh(req.headers, { etag })) {
       res.statusCode = 304;
       res.end();
       return;
     }
+
     if (dev) {
       res.setHeader('Cache-Control', 'no-store, must-revalidate');
     }

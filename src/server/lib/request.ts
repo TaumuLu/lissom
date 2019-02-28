@@ -119,7 +119,7 @@ export default class Request {
   private req: any;
   private app: any;
 
-  constructor(req) {
+  constructor(req: any) {
     this.req = req;
     this.app = {};
   }

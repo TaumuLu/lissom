@@ -1,4 +1,5 @@
 import ParseHtml from '../server/lib/parse-html';
+import Request from '../server/lib/request';
 
 export type ReactComp<P = {}> = React.ComponentClass<P> | React.SFC<P>;
 
@@ -78,7 +79,7 @@ export interface IQuery {
 }
 
 export interface ICtx {
-  error: any;
+  error?: any;
   req: any;
   res: any;
   pathname: string;
@@ -111,4 +112,13 @@ export interface ILocation {
 export interface INavigator {
   userAgent: string;
   language: string;
+}
+
+export interface IRenderOpts {
+  ctx: ICtx;
+  page: string;
+  pathname: string;
+  router: IRouter;
+  request: Request;
+  ssrData: ISSRData;
 }

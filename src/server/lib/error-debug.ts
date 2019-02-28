@@ -1,30 +1,44 @@
 import ansiHTML from 'ansi-html';
-import React from 'react';
 
-export default function ErrorDebug({ error, info }) {
+export default function ErrorDebug({
+  error,
+  info,
+}: {
+  error: any;
+  info?: any;
+}) {
   const { name, message } = error;
-  return (
-    <div style={styles.errorDebug}>
+
+  return `
+    <div style=${getStyle(styles.errorDebug)}>
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      {name === 'ModuleBuildError' && message ? (
-        <pre
-          style={styles.stack}
-          dangerouslySetInnerHTML={{ __html: ansiHTML(encodeHtml(message)) }}
-        />
-      ) : (
-        <StackTrace error={error} info={info} />
-      )}
+      ${
+        name === 'ModuleBuildError' && message
+          ? `
+        <pre style=${getStyle(styles.stack)}>
+          ${ansiHTML(encodeHtml(message))}
+        </pre>
+      `
+          : StackTrace({ error, info })
+      }
     </div>
-  );
+  `;
 }
 
-const StackTrace = ({ error: { name, message, stack }, info }) => (
+const StackTrace = ({ error: { name, message, stack }, info }) => `
   <div>
-    <div style={styles.heading}>{message || name}</div>
-    <pre style={styles.stack}>{stack}</pre>
-    {info && <pre style={styles.stack}>{info.componentStack}</pre>}
+    <div style=${getStyle(styles.heading)}>${message || name}</div>
+    <pre style=${getStyle(styles.stack)}>${stack}</pre>
+    ${info &&
+      `<pre style=${getStyle(styles.stack)}>${info.componentStack}</pre>`}
   </div>
-);
+`;
+
+const getStyle = (style: any): string => {
+  return Object.keys(style)
+    .map(key => `${key}: ${style[key]}`)
+    .join(';');
+};
 
 export const styles: any = {
   errorDebug: {

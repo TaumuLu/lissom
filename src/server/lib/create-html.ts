@@ -1,16 +1,15 @@
 import htmlescape from 'htmlescape';
-import { IConfig, IRouter, ISSRData } from '../../lib/types';
+import { IRouter, ISSRData } from '../../lib/types';
 import ParseHtml from './parse-html';
 import { getStyleMap } from './style-loader';
 import { getAsyncChunks } from './webpack-runtime';
 
 interface IParam {
-  pageHTML: string;
+  pageHTML?: string;
   styleHTML?: string;
   parseHtml: ParseHtml;
   router: IRouter;
   ssrData: ISSRData;
-  rootAttr: IConfig['rootAttr'];
 }
 
 export default function createHtml({
@@ -19,7 +18,6 @@ export default function createHtml({
   parseHtml,
   router,
   ssrData,
-  rootAttr,
 }: IParam): string {
   // 重置回初始的html
   parseHtml.reset();
@@ -28,7 +26,6 @@ export default function createHtml({
     styleHTML,
     router,
     ssrData,
-    rootAttr,
   });
   parseHtml.injectTags(assetTags);
 
@@ -39,13 +36,13 @@ const cssRel = 'stylesheet';
 const scriptType = 'text/javascript';
 
 const createAssetTags = ({
-  pageHTML,
-  styleHTML,
+  pageHTML = '',
+  styleHTML = '',
   router,
   ssrData,
-  rootAttr,
 }) => {
   const { name } = router;
+  const { rootAttr } = ssrData;
   const { asyncJsChunks, asyncCssChunks } = getAsyncChunks();
   const styleMap = getStyleMap();
 

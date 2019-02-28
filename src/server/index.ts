@@ -5,8 +5,7 @@ import { createReg, log, suffixRegs } from './lib/utils';
 import Server from './server';
 
 export default (options: IConfig) => {
-  config.init(options);
-  const app = new Server();
+  const app = new Server(options);
   const router = new Router();
 
   router.get('*', async (ctx, next) => {
@@ -16,8 +15,6 @@ export default (options: IConfig) => {
     const excludeMatch = !createReg(excludeRouteRegs).test(ctxPath);
 
     if (suffixMatch && excludeMatch) {
-      // 执行不同模式下的配置操作
-      config.mode();
       const { req, res, method } = ctx;
       ctx.res.statusCode = 200;
       log(`--> ${method}`, ctxPath);

@@ -10,7 +10,13 @@ import {
   IRouters,
 } from '../lib/types';
 import ParseHtml from './lib/parse-html';
-import { deleteCache, fileterJsAssets, log, printAndExit } from './lib/utils';
+import {
+  deleteCache,
+  fileterJsAssets,
+  getPathName,
+  log,
+  printAndExit,
+} from './lib/utils';
 import { setWebpackConfig } from './lib/webpack-runtime';
 
 const _DEV_ = process.env.NODE_ENV !== 'production';
@@ -34,6 +40,7 @@ const defaultConfig: IConfig = {
 };
 
 class Config {
+  private _isInit: boolean;
   private _isCheck: boolean;
   private _config: IConfig;
   private _assetsConfig: IAssetsConfig;
@@ -76,11 +83,16 @@ class Config {
       this.setAssetsConfig();
     }
     log('init config', JSON.stringify(this._config));
-
+    this._isInit = true;
     return this._config;
   }
 
   public mode() {
+    if (!this._isInit) {
+      printAndExit(
+        '> Must initialize the configuration, execute "new Server(config)"'
+      );
+    }
     const { dev } = this._config;
     // 开发模式下每次请求进入都重新验证读取配置
     if (dev) {
@@ -136,10 +148,6 @@ const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
     modules,
     chunks,
   };
-};
-
-const getPathName = (name: string): string => {
-  return name.charAt(0) === '/' ? name : `/${name}`;
 };
 
 const getRouters = (

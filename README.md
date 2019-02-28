@@ -153,3 +153,9 @@ ssr渲染并不是适用于所有情况，如何使用、最佳实践根据实�
 - 异步方式提供客户端ctx，保持两端一致
 - 精简api，仅仅提供req和res，为koa之外的引入方式做准备
 - 维护todo，规划后期要做的事
+
+### 1.2.4+
+- 重构render代码，优化server代码，初步增加react-render类
+- 拆分rednerHTML，增加renderComponent、renderError方法
+- 增加serverRender配置，用于控制是否服务端渲染
+- 修复调用async方法报错客户端无法输出问题
