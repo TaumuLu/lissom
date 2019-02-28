@@ -10,6 +10,7 @@ declare global {
       pathname: string;
       asyncProps: any[];
       clientRender: boolean;
+      serverRender: boolean;
       rootAttr: { [attr: string]: string };
     };
     __SSR_LOADED_PAGES__: any[];
@@ -29,6 +30,7 @@ if (
       pathname,
       asyncProps,
       clientRender = true,
+      serverRender = true,
       rootAttr = {},
     } = window.__SSR_DATA__;
     if (!clientRender) return void 0;
@@ -36,7 +38,11 @@ if (
     let isInitialRender = true;
     function renderReactElement(reactEl, domEl) {
       // The check for `.hydrate` is there to support React alternatives like preact
-      if (isInitialRender && typeof ReactDOM.hydrate === 'function') {
+      if (
+        serverRender &&
+        isInitialRender &&
+        typeof ReactDOM.hydrate === 'function'
+      ) {
         ReactDOM.hydrate(reactEl, domEl);
         isInitialRender = false;
       } else {

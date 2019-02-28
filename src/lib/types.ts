@@ -94,6 +94,7 @@ export interface ISSRData {
   asyncProps: any;
   pathname: string;
   clientRender: boolean;
+  serverRender: boolean;
   rootAttr: IConfig['rootAttr'];
 }
 

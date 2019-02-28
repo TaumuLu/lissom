@@ -29,15 +29,26 @@ const StackTrace = ({ error: { name, message, stack }, info }) => `
   <div>
     <div style=${getStyle(styles.heading)}>${message || name}</div>
     <pre style=${getStyle(styles.stack)}>${stack}</pre>
-    ${info &&
-      `<pre style=${getStyle(styles.stack)}>${info.componentStack}</pre>`}
+    ${
+      info
+        ? `<pre style=${getStyle(styles.stack)}>${info.componentStack}</pre>`
+        : ''
+    }
   </div>
 `;
 
+const reg = /[A-Z]/g;
+const replaceName = name => {
+  return name.replace(reg, match => {
+    return `-${match.toLowerCase()}`;
+  });
+};
+
 const getStyle = (style: any): string => {
-  return Object.keys(style)
-    .map(key => `${key}: ${style[key]}`)
+  const styleString = Object.keys(style)
+    .map(key => `${replaceName(key)}: ${style[key]}`)
     .join(';');
+  return `"${styleString}"`;
 };
 
 export const styles: any = {
@@ -57,7 +68,7 @@ export const styles: any = {
 
   stack: {
     fontFamily:
-      '"SF Mono", "Roboto Mono", "Fira Mono", consolas, menlo-regular, monospace',
+      'SF Mono, Roboto Mono, Fira Mono, consolas, menlo-regular, monospace',
     fontSize: '13px',
     lineHeight: '18px',
     color: 'white',
@@ -69,7 +80,7 @@ export const styles: any = {
 
   heading: {
     fontFamily:
-      '-apple-system, system-ui, BlinkMacSystemFont, Roboto, "Segoe UI", "Fira Sans", Avenir, "Helvetica Neue", "Lucida Grande", sans-serif',
+      '-apple-system, system-ui, BlinkMacSystemFont, Roboto, Segoe UI, Fira Sans, Avenir, Helvetica Neue, Lucida Grande, sans-serif',
     fontSize: '20px',
     fontWeight: '400',
     lineHeight: '28px',

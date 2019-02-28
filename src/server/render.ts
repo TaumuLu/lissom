@@ -21,10 +21,10 @@ export default abstract class Render {
   }
 
   public abstract validComponent(Component: any, router: IRouter): void;
-  public abstract render(Component: any): string;
+  public abstract render(Component: any, props?: any): string;
 
   public getRenderOpts(req: IncomingMessage, res: ServerResponse): IRenderOpts {
-    const { clientRender, rootAttr } = config.get();
+    const { clientRender, serverRender, rootAttr } = config.get();
     const request = new Request(req);
     const { location, navigator, pathname, query } = request;
     const { routers } = config.getAssetsConfig();
@@ -45,6 +45,7 @@ export default abstract class Render {
       asyncProps: [],
       pathname,
       clientRender,
+      serverRender,
       rootAttr,
     };
 
@@ -80,7 +81,7 @@ export default abstract class Render {
     // 清理异步操作中注册的异步chunks，这一步是必须的
     clearAsyncChunks();
     // render时注册的异步chunks才是真正需要加载的
-    const pageHTML = this.render(Component);
+    const pageHTML = this.render(Component, props);
     // 必须放在render组件之后获取
     const Styles = await loadGetInitialStyles(Component, ctx);
     const styleHTML = this.render(Styles);

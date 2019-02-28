@@ -56,13 +56,24 @@ function Dynamic(config) {
       }
     };
 
+    public createResult = (value: any, error: any = null) => {
+      this.onFulfilled({
+        _isSyncPromise: false,
+        finish: true,
+        error,
+        value,
+      });
+    };
+
     public load() {
       // 两端再次执行注册
       const resolve = loader();
       if (resolve._isSyncPromise) {
         this.onFulfilled(resolve);
       } else {
-        resolve.then(this.onFulfilled);
+        resolve
+          .then(this.createResult)
+          .catch(error => this.createResult(null, error));
       }
     }
 
