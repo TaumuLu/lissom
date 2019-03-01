@@ -4,12 +4,14 @@ import ParseHtml from './parse-html';
 import { getStyleMap } from './style-loader';
 import { getAsyncChunks } from './webpack-runtime';
 
-interface IParam {
+interface ICreateAssetTags {
   pageHTML?: string;
   styleHTML?: string;
-  parseHtml: ParseHtml;
   router: IRouter;
   ssrData: ISSRData;
+}
+interface ICreateHtml extends ICreateAssetTags {
+  parseHtml: ParseHtml;
 }
 
 export default function createHtml({
@@ -18,7 +20,7 @@ export default function createHtml({
   parseHtml,
   router,
   ssrData,
-}: IParam): string {
+}: ICreateHtml): string {
   // 重置回初始的html
   parseHtml.reset();
   const assetTags = createAssetTags({
@@ -40,33 +42,15 @@ const createAssetTags = ({
   styleHTML = '',
   router,
   ssrData,
-}) => {
+}: ICreateAssetTags): any => {
   const { name } = router;
-  const { rootAttr } = ssrData;
-  const { asyncJsChunks, asyncCssChunks } = getAsyncChunks();
-  const styleMap = getStyleMap();
+  const { rootAttr, clientRender } = ssrData;
+  const { jsDefinition, cssDefinition, styleDefinition } = getDefinition(
+    clientRender,
+    styleHTML
+  );
 
-  const jsDefinition = asyncJsChunks.map(src => {
-    return {
-      attributes: { type: scriptType, src },
-      tagName: 'script',
-    };
-  });
-  const cssDefinition = asyncCssChunks.map(href => {
-    return {
-      attributes: { href, rel: cssRel },
-      tagName: 'link',
-    };
-  });
-  const styleDefinition = Object.keys(styleMap).reduce((p, key) => {
-    const { parts } = styleMap[key];
-    parts.forEach(value => {
-      p.push(value);
-    });
-    return p;
-  }, []);
-
-  const assetTags = {
+  return {
     headEnd: [...cssDefinition, ...styleDefinition],
     bodyStart: [
       {
@@ -90,11 +74,43 @@ const createAssetTags = ({
       ...jsDefinition,
     ],
   };
-  if (styleHTML) {
-    assetTags.headEnd.push({
-      innerHTML: styleHTML,
+};
+
+const getDefinition = (clientRender: boolean, styleHTML: string) => {
+  let jsDefinition = [];
+  let cssDefinition = [];
+  let styleDefinition = [];
+
+  if (clientRender) {
+    const { asyncJsChunks, asyncCssChunks } = getAsyncChunks();
+    const styleMap = getStyleMap();
+
+    jsDefinition = asyncJsChunks.map(src => {
+      return {
+        attributes: { type: scriptType, src },
+        tagName: 'script',
+      };
     });
+    cssDefinition = asyncCssChunks.map(href => {
+      return {
+        attributes: { href, rel: cssRel },
+        tagName: 'link',
+      };
+    });
+    styleDefinition = Object.keys(styleMap).reduce((p, key) => {
+      const { parts } = styleMap[key];
+      parts.forEach(value => {
+        p.push(value);
+      });
+      return p;
+    }, []);
+
+    if (styleHTML) {
+      styleDefinition.push({
+        innerHTML: styleHTML,
+      });
+    }
   }
 
-  return assetTags;
+  return { jsDefinition, cssDefinition, styleDefinition };
 };

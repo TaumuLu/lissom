@@ -4,18 +4,19 @@ import async from 'lissom/async';
 @async(['/', '/async'])
 export default class Async extends React.Component {
   static async getInitialProps(...params) {
-    const value = await new Promise(resolve => {
+    const asyncValue = await new Promise(resolve => {
       setTimeout(() => {
         resolve({
           async_value: 2,
         });
       }, 1000);
     });
-    return value;
+    return { asyncValue };
   }
 
   render() {
-    console.log('async props', this.props);
+    const { asyncValue } = this.props;
+    console.log('async props: 2', asyncValue);
 
     return (
       <div style={{ height: 50, justifyContent: 'center' }}>

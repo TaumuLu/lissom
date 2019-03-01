@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { BrowserRouter, MemoryRouter, Link, Route } from 'react-router-dom';
 import dynamic from 'lissom/dynamic';
-// import async from 'lissom/async';
+import async from 'lissom/async';
 import logo from './files/logo.svg';
 import AsyncCompoent from './async';
 
@@ -9,25 +9,12 @@ import './styles/app.less';
 
 const DynamicComponent = dynamic(() => import('./dynamic'));
 
-// @async(['/', '/dynamic'])
 export default class App extends Component {
   static async getInitialProps(ctx) {
+    // throw new Error('test');
     const { location } = ctx;
-    // console.log('ctx');
-    // console.log('pathname: ', pathname);
-    // console.log('location: ', location);
-    const value = await new Promise(resolve => {
-      setTimeout(() => {
-        resolve({
-          async_value: 1,
-        });
-      }, 1000);
-    });
-    return { ...value, location };
-  }
 
-  static loadComponent() {
-    return <h1>loading</h1>;
+    return { location };
   }
 
   onClick = e => {
@@ -36,7 +23,6 @@ export default class App extends Component {
   };
 
   render() {
-    // console.log('example props', this.props);
     let Router = BrowserRouter;
     let routeProps = {};
     if (checkServer()) {
@@ -78,7 +64,23 @@ export default class App extends Component {
   }
 }
 
+@async(['/'])
 class Home extends Component {
+  static async getInitialProps(ctx) {
+    const asyncValue = await new Promise(resolve => {
+      setTimeout(() => {
+        resolve({
+          async_value: 1,
+        });
+      }, 1000);
+    });
+    return { asyncValue };
+  }
+
+  static loadComponent() {
+    return <h1>loading</h1>;
+  }
+
   componentWillMount() {
     console.log('willMount');
   }
@@ -88,8 +90,8 @@ class Home extends Component {
   }
 
   render() {
-    const { onClick } = this.props;
-    console.log(this.props);
+    const { onClick, asyncValue } = this.props;
+    console.log('home props: 1', asyncValue);
 
     return (
       <div onClick={onClick} style={{ height: 50, justifyContent: 'center' }}>

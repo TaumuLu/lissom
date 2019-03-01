@@ -17,9 +17,12 @@ function Dynamic(config) {
   }
   const { loader, loading = defaultLoading } = config;
   // 服务端提前执行，支持动态组件中的异步操作，用于注册
+  // 服务端永远都会是同步取到
   if (!isRegister && checkServer()) {
     isRegister = true;
-    const component = interopDefault(loader());
+    const resolve = loader();
+    const { value } = resolve;
+    const component = interopDefault(value);
     // 动态组件执行队列移动操作
     if (component.move) {
       component.move();

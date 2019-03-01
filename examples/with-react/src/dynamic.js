@@ -4,18 +4,19 @@ import async from 'lissom/async';
 @async(['/', '/dynamic'])
 export default class Dynamic extends React.Component {
   static async getInitialProps(...params) {
-    const value = await new Promise(resolve => {
+    const asyncValue = await new Promise(resolve => {
       setTimeout(() => {
         resolve({
           async_value: 3,
         });
       }, 1000);
     });
-    return value;
+    return { asyncValue };
   }
 
   render() {
-    console.log('dynamic props', this.props);
+    const { asyncValue } = this.props;
+    console.log('dynamic props: 3', asyncValue);
 
     return (
       <div style={{ height: 50, justifyContent: 'center' }}>
