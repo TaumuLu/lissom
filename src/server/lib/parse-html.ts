@@ -14,6 +14,8 @@ const tagReg = {
   headEnd: getTagRegExp('head', true),
 };
 
+const scriptTagReg = /<script[^<>]*(\/\s*>|>[\s\S]*<\/script>)/gi;
+
 export default class ParseHtml {
   private _originSource: string;
   private _source: string;
@@ -42,6 +44,9 @@ export default class ParseHtml {
   //   const matchReg = new RegExp(`<[a-zA-Z]*\\s*${attr}\\s*=?\\s*['"]{1}${value}['"]{1}\\s*(\\/\\s*>|>([\\s\\S]*)<\\/[a-zA-Z]*\\s*>)`, 'g')
   //   this._source = this._source.replace(matchReg, '')
   // }
+  public deleteScriptTag() {
+    this._source = this._source.replace(scriptTagReg, '');
+  }
 
   public reset(): void {
     this._source = this._originSource;

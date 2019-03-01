@@ -21,6 +21,7 @@ export default function createHtml({
   router,
   ssrData,
 }: ICreateHtml): string {
+  const { clientRender } = ssrData;
   // 重置回初始的html
   parseHtml.reset();
   const assetTags = createAssetTags({
@@ -30,6 +31,10 @@ export default function createHtml({
     ssrData,
   });
   parseHtml.injectTags(assetTags);
+  // 删除script标签
+  if (!clientRender) {
+    parseHtml.deleteScriptTag();
+  }
 
   return parseHtml.get();
 }
@@ -80,36 +85,35 @@ const getDefinition = (clientRender: boolean, styleHTML: string) => {
   let jsDefinition = [];
   let cssDefinition = [];
   let styleDefinition = [];
+  const { asyncJsChunks, asyncCssChunks } = getAsyncChunks();
+  const styleMap = getStyleMap();
 
   if (clientRender) {
-    const { asyncJsChunks, asyncCssChunks } = getAsyncChunks();
-    const styleMap = getStyleMap();
-
     jsDefinition = asyncJsChunks.map(src => {
       return {
         attributes: { type: scriptType, src },
         tagName: 'script',
       };
     });
-    cssDefinition = asyncCssChunks.map(href => {
-      return {
-        attributes: { href, rel: cssRel },
-        tagName: 'link',
-      };
+  }
+  cssDefinition = asyncCssChunks.map(href => {
+    return {
+      attributes: { href, rel: cssRel },
+      tagName: 'link',
+    };
+  });
+  styleDefinition = Object.keys(styleMap).reduce((p, key) => {
+    const { parts } = styleMap[key];
+    parts.forEach(value => {
+      p.push(value);
     });
-    styleDefinition = Object.keys(styleMap).reduce((p, key) => {
-      const { parts } = styleMap[key];
-      parts.forEach(value => {
-        p.push(value);
-      });
-      return p;
-    }, []);
+    return p;
+  }, []);
 
-    if (styleHTML) {
-      styleDefinition.push({
-        innerHTML: styleHTML,
-      });
-    }
+  if (styleHTML) {
+    styleDefinition.push({
+      innerHTML: styleHTML,
+    });
   }
 
   return { jsDefinition, cssDefinition, styleDefinition };

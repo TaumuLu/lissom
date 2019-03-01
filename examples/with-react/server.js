@@ -13,6 +13,7 @@ const config = {
   output: './build',
   // dev: false,
   // serverRender: false,
+  // clientRender: false,
   rootAttr: {
     id: 'root',
     class: 'test',
