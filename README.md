@@ -21,14 +21,14 @@ npm install lissom --save
 - [实现思路](./docs/实现思路.md)
 - [动态加载](./docs/动态加载.md)
 - [异步操作](./docs/异步操作.md)
-
-## examples
-[examples](./examples/README.md)
+- [开发总结](./docs/开发总结.md)
 
 ## 使用
 
-### webpack配置
-webpack配置文件中引入
+### webpack
+
+#### webpack配置
+webpack配置文件中引入lissom/webpack使用  
 
 ```javascript
 // 引入lissom提供的webpack配置
@@ -40,15 +40,30 @@ module.exports = lissomWebpack(() => {
 })
 ```
 
+#### webpack入口文件改动
+导出react组件  
+
+```javascript
+import App from './src/App';
+...
+// before
+// ReactDOM.render(<App />, document.getElementById('root'));
+
+// after
+export default App;
+```
+
 ### server
-koa服务中引入，以中间件的形式
+使用koa服务以中间件的形式引入lissom  
 
 ```javascript
 const lissom = require('lissom')
 
 const app = new Koa();
 
-app.use(lissom()) // <- In this use
+const ssrConfig = { output: './public' } // config
+
+app.use(lissom(ssrConfig)) // <- In this use
 
 app.use(staticServe(path.join(context, './build')));
 
@@ -72,6 +87,148 @@ app.listen(3000);
 | purgeModuleRegs | array | [] | 正则数组，值为正则字符串或正则表达式；开发模式下每次请求都需要清除的模块，可传字符串或正则表达式，默认每次清除所有非/node_modules/里的模块 |
 | defaultEntry | string | 索引为0的wepack entry配置 | entry配置key，优选匹配与本次请求路由名相同的key，未匹配到则使用此值指定的key |
 | rootAttr | { [attr: string]: string } | `{ id: '__ssr_root__', style: 'height: 100%; display: flex' }` | 设置挂载dom属性 |
+
+### 异步操作
+同next一样，根组件提供静态函数getInitialProps，非根组件有两选择  
+
+1. 根组件中的getInitialProps函数中串发执行子组件的getInitialProps函数
+```javascript
+import React from 'react'
+import ChildComponent from './child-component'
+...
+export default class RootCompoent extends React.Component {
+  static async getInitialProps(ctx) {
+    const asyncData = await fetchData()
+    const childData = await ChildComponent.getInitialProps()
+
+    return { asyncData, childData }
+  }
+
+  render() {
+    const { asyncData, childData } = this.props
+
+    return (
+      <ChildComponent asyncData={asyncData} {...childData} />
+    )
+  }
+}
+```
+
+2. 使用lissom提供的async函数并发执行所有注册的getInitialProps函数
+```javascript
+// 引入异步操作高阶函数
+import async from 'lissom/async'
+...
+// 传入渲染该组件的路由
+// 必须写在外面，保证代码加载进来时就执行
+// 可传入字符串路径或数组路径
+@async('/path') // @async(['/path1', '/path2', ...])
+export default class AsyncComponent extends React.Component {
+  // 异步请求，参数为服务端ctx、根组件的异步函数返回值、顺序引入的组件同步返回值promise组成的数组
+  static async getInitialProps(ctx, rootCompoentGetInitialProps, asyncPromiseList) {
+    const asyncData = await fetchProps()
+    return { asyncData }
+  }
+  // 执行异步操作时展示的加载组件，客户端需要
+  static loading = () => {
+    return (
+      <div>Loading</div>
+    )
+  }
+  // 生命周期componentWillUnmount时是否清除getInitialProps的返回值
+  // 即下一次重新render组件时再次调用getInitialProps
+  static unmount = true
+  ...
+  render() {
+    // getInitialProps返回的值
+    const { asyncData } = this.props
+
+    return (
+      <Component />
+    )
+  }
+}
+...
+```
+
+#### ctx对象
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| req | object | request |
+| res | object | response |
+| pathname | object | 本次请求渲染的路径 |
+| location | object | 同windwos对象的location |
+| navigator | object | 同windwos对象的navigator |
+| query | object | 请求的参数 |
+| asPath | string | req.url的值，真实的请求路径 |
+
+#### async函数配置参数
+async函数接收路由字符串或数组，用于匹配请求路径，只有完全匹配时才会调用及渲染  
+
+##### async函数接收组件静态api
+静态方法/属性的形式传入配置，同react-loadable的api，提供的能力相同  
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| getInitialProps | async function | null | 异步操作的函数，返回的值会作为props传入当前组件 |
+| loading | function/element | defaultLoading | loading组件 |
+| unmount | boolean | true | 是否同组件生命周期一样，创建销毁 |
+
+#### 设置全局默认的loading组件
+```javascript
+import async from 'lissom/async'
+...
+async.setDefaultLoading(<Loading />)
+```
+
+#### **注意事项**
+当动态组件有异步操作使用async时，必须放在最外层执行dynamic函数，不能放在render函数中，渲染时能同步拿到组件，但已无法异步获取组件的值了，react不支持异步渲染  
+
+### 动态加载
+同dva/dynamic的使用方式，同react-loadable一致的api  
+
+```javascript
+// 引入动态加载高阶函数
+import dynamic from 'lissom/dynamic'
+...
+const dynamicConfig = {
+  loader: () => import('./dynamic'),
+  loading: () => {
+    return (
+      <div>Loading</div>
+    )
+  }
+}
+// 可以写在任意位置，外部提前引用，在动态组件有异步操作时必须写在这里
+// const Component = dynamic(dynamicConfig)
+
+export default class DynamicComponent extends React.Component {
+  ...
+  render() {
+    // 或者同步的render方法里
+    const Component = dynamic(dynamicConfig)
+
+    return (
+      <Component />
+    )
+  }
+}
+```
+
+#### 配置参数
+同react-loadable的api，提供的能力相同
+
+| Name | Type | Default | Description |
+| ---- | ---- | ------- | ----------- |
+| loader | function | - | 动态import组件函数 |
+| loading | function/element | defaultLoading | loading组件 |
+
+#### 设置全局默认的loading组件
+```javascript
+import dynamic from 'lissom/dynamic'
+...
+dynamic.setDefaultLoading(<Loading />)
+```
 
 ## 约束
 - koa
@@ -106,7 +263,8 @@ ssr渲染并不是适用于所有情况，如何使用、最佳实践根据实�
 - [ ] 性能优化，是否有内存泄漏问题
 - [ ] ssr缓存，怎样的缓存，是否需要由框架提供？
 - [ ] 多语言处理，同样该由谁提供
-- [ ] 完善文档
+- [x] 完善文档
+- [ ] 提供英文文档
 - [x] 翻新代码，引入ts，使用es6
 - [x] 优化入口、配置代码，提出公共模式代码
 - [x] 优化生成html的代码，提高性能render

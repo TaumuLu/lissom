@@ -21,15 +21,21 @@ const globOptions = { cwd: outputPath };
 const vendorAssets = glob.sync('./dll/vendor*.dll.js', globOptions);
 const hasDll = vendorAssets.length > 0;
 
-const babelOptions = {
-  presets: ['@babel/preset-env', '@babel/preset-react'],
-  plugins: [
-    ['@babel/plugin-proposal-decorators', { legacy: true }],
-    ['@babel/plugin-proposal-class-properties', { loose: false }],
-    '@babel/plugin-syntax-dynamic-import',
-    '@babel/plugin-transform-runtime',
-  ],
-};
+const babelLoaders = [
+  {
+    loader: 'babel-loader',
+    options: {
+      babelrc: false,
+      presets: ['@babel/preset-env', '@babel/preset-react'],
+      plugins: [
+        ['@babel/plugin-proposal-decorators', { legacy: true }],
+        ['@babel/plugin-proposal-class-properties', { loose: false }],
+        '@babel/plugin-syntax-dynamic-import',
+        '@babel/plugin-transform-runtime',
+      ],
+    },
+  },
+];
 
 const browsers = [
   'last 4 versions',
@@ -42,9 +48,7 @@ const compassMixinsPath = path.join(require.resolve('compass-mixins'), '..');
 
 module.exports = lissomWebpack({
   ...config,
-  entry: {
-    app: './index.js',
-  },
+  entry: './index.js',
   output: {
     path: outputPath,
     filename: isDev
@@ -182,12 +186,7 @@ module.exports = lissomWebpack({
     ]),
     new HappyPack({
       id: 'babel',
-      loaders: [
-        {
-          loader: 'babel-loader',
-          options: babelOptions,
-        },
-      ],
+      loaders: babelLoaders,
       threadPool: happyThreadPool,
       cache: true,
       verbose: true,
