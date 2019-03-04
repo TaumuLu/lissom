@@ -54,16 +54,48 @@ export default App;
 ```
 
 ### server
-使用koa服务以中间件的形式引入lissom  
+默认导出lissom类，可自定义使用，new创建时传入配置，调用render异步方法传入req，res完成服务端渲染  
 
 ```javascript
-const lissom = require('lissom')
+import Lissom from 'lissom';
+
+const app = new Lissom(options);
+...
+await app.render(req, res);
+...
+```
+
+#### node-server
+简单的一个示例，暂时需要自己处理静态资源  
+
+```javascript
+const { createServer } = require('http');
+const Lissom = require('lissom');
+
+const config = { output: './build' }
+const app = new Lissom(config);
+const port = 3000;
+
+createServer((req, res) => {
+  ...
+  app.render(req, res);
+}).listen(port, err => {
+  if (err) throw err;
+  console.log(`> Ready on http://localhost:${port}`);
+});
+```
+
+#### koa
+提供koa中间件，引入lissom/koa模块  
+
+```javascript
+const lissom = require('lissom/koa')
 
 const app = new Koa();
 
-const ssrConfig = { output: './public' } // config
+const config = { output: './build' } // config
 
-app.use(lissom(ssrConfig)) // <- In this use
+app.use(lissom(config)) // <- In this use
 
 app.use(staticServe(path.join(context, './build')));
 
@@ -83,7 +115,7 @@ app.listen(3000);
 | serverRender | boolean | true | 服务端是否渲染，可以关闭服务端渲染 |
 | requireModules | array | ['superagent'] | 不使用的webpack打包的模块，需要服务端直接从node_modules中require的模块 |
 | ignoreModules | array | ['babel-polyfill'] | 服务端忽略执行的模块 |
-| excludeRouteRegs | array | [/\\/api\\/.*/] | 正则数组，值为正则字符串或正则表达式；koa排除拦截的路由 |
+| excludeRouteRegs | array | [/\\/api\\/.*/] | 正则数组，值为正则字符串或正则表达式；koa排除拦截的路由，仅使用koa模块时传入 |
 | purgeModuleRegs | array | [] | 正则数组，值为正则字符串或正则表达式；开发模式下每次请求都需要清除的模块，可传字符串或正则表达式，默认每次清除所有非/node_modules/里的模块 |
 | defaultEntry | string | 索引为0的wepack entry配置 | entry配置key，优选匹配与本次请求路由名相同的key，未匹配到则使用此值指定的key |
 | rootAttr | { [attr: string]: string } | `{ id: '__ssr_root__', style: 'height: 100%; display: flex' }` | 设置挂载dom属性 |
@@ -280,8 +312,9 @@ ssr渲染并不是适用于所有情况，如何使用、最佳实践根据实�
 - [ ] 提供带路由的demo
 - [ ] 提供性能指标，对比北斗和next的数据分析
 - [ ] 提供vue服务端渲染
-- [ ] 抽离koa中间件，提供koa之外的服务端引入方式
+- [x] 抽离koa中间件，提供koa之外的服务端引入方式
 - [x] 服务端提供更丰富的ctx，客户端也增加ctx
+- [ ] 处理静态资源的能力，依据output目录
 - [ ] 添加测试代码
 - [ ] 整体流程图
 - [ ] 精简api，拆分多种模式
@@ -317,3 +350,8 @@ ssr渲染并不是适用于所有情况，如何使用、最佳实践根据实�
 - 拆分rednerHTML，增加renderComponent、renderError方法
 - 增加serverRender配置，用于控制是否服务端渲染
 - 修复调用async方法报错客户端无法输出问题
+
+### 1.2.6+
+- 修复配置参数为空的报错
+- 拆分koa中间件，提供koa模块，修改默认导出为Lissom类
+- 更新文档

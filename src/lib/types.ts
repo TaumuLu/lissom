@@ -3,10 +3,9 @@ import Request from '../server/lib/request';
 
 export type ReactComp<P = {}> = React.ComponentClass<P> | React.SFC<P>;
 
-export interface IConfig {
+export interface IOptions {
   // isSpa?: boolean;
   output?: string;
-  outputDir?: string; // auto generate
   excludeRouteRegs?: Array<RegExp | string>;
   purgeModuleRegs?: Array<RegExp | string>;
   dir?: string;
@@ -21,6 +20,10 @@ export interface IConfig {
   // entry?: string;
   defaultEntry?: string;
   rootAttr?: { [attr: string]: string };
+}
+
+export interface IConfig extends IOptions {
+  outputDir?: string; // auto generate
 }
 
 export interface IAssetsConfig {

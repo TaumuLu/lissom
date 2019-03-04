@@ -7,12 +7,14 @@ import {
   IConfig,
   IEntrypoints,
   IHtmlWebpackPlugin,
+  IOptions,
   IRouters,
 } from '../lib/types';
 import ParseHtml from './lib/parse-html';
 import {
   deleteCache,
   fileterJsAssets,
+  get,
   getPathName,
   log,
   printAndExit,
@@ -71,7 +73,7 @@ class Config {
     }
   }
 
-  public init(options: IConfig) {
+  public init(options: IOptions) {
     const { dev, dir, output } = this.set(options);
     if (!output) {
       printAndExit('> "output" config is required');
@@ -111,7 +113,7 @@ class Config {
     const { _config } = this;
     // 合并操作
     const purgeModuleRegs = _config.purgeModuleRegs.concat(
-      options.purgeModuleRegs || []
+      get(options, 'purgeModuleRegs', [])
     );
     this._config = { ..._config, ...options, purgeModuleRegs };
 
