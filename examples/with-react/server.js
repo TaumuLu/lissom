@@ -2,7 +2,9 @@ const path = require('path');
 const Koa = require('koa');
 const staticServe = require('koa-static');
 const logger = require('koa-logger');
-const lissom = require('lissom/koa');
+const lissomKoa = require('lissom/koa');
+// const { createServer } = require('http');
+// const Lissom = require('lissom');
 
 const port = 9999;
 const context = process.cwd();
@@ -23,7 +25,7 @@ const config = {
 const app = new Koa();
 app.use(logger());
 
-app.use(lissom(config));
+app.use(lissomKoa(config));
 
 app.use(staticServe(path.join(context, './build')));
 
@@ -31,16 +33,12 @@ app.listen(port, () => {
   console.log(`listening to port ${port}, open url ${uri}`);
 });
 
-// const { createServer } = require('http');
-// const Lissom = require('lissom');
-
-// const config = { output: './build' };
-// const app = new Lissom(config);
-// const port = 3000;
+// const lissomApp = new Lissom(config);
+// const port2 = 3000;
 
 // createServer((req, res) => {
-//   app.render(req, res);
-// }).listen(port, err => {
+//   lissomApp.render(req, res);
+// }).listen(port2, err => {
 //   if (err) throw err;
-//   console.log(`> Ready on http://localhost:${port}`);
+//   console.log(`> Ready on http://localhost:${port2}`);
 // });
