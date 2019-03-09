@@ -8,10 +8,12 @@ import {
   IEntrypoints,
   IHtmlWebpackPlugin,
   IOptions,
+  IRegsConfig,
   IRouters,
 } from '../lib/types';
 import ParseHtml from './lib/parse-html';
 import {
+  createReg,
   deleteCache,
   fileterJsAssets,
   get,
@@ -22,11 +24,13 @@ import {
 import { setWebpackConfig } from './lib/webpack-runtime';
 
 const _DEV_ = process.env.NODE_ENV !== 'production';
+// const suffixRegs = [/\.(html|php)/, /\/[^.]*/];
 
 const defaultConfig: IConfig = {
   output: './public',
   outputDir: null,
   excludeRouteRegs: [/\/api\/.*/],
+  excludeStaticRegs: [],
   purgeModuleRegs: [/node_modules\/lissom/],
   dir: '.',
   dev: _DEV_,
@@ -46,6 +50,7 @@ class Config {
   private _isCheck: boolean;
   private _config: IConfig;
   private _assetsConfig: IAssetsConfig;
+  private _regsConfig: IRegsConfig;
   constructor() {
     this._config = { ...defaultConfig };
   }
@@ -57,6 +62,24 @@ class Config {
 
   public getAssetsConfig(): IAssetsConfig {
     return this._assetsConfig;
+  }
+
+  public setRegsConfig() {
+    const {
+      purgeModuleRegs,
+      excludeRouteRegs,
+      excludeStaticRegs,
+    } = this._config;
+
+    this._regsConfig = {
+      purgeModuleReg: createReg(purgeModuleRegs),
+      excludeRouteReg: createReg(excludeRouteRegs, true),
+      excludeStaticReg: createReg(excludeStaticRegs, true),
+    };
+  }
+
+  public getRegsConfig(): IRegsConfig {
+    return this._regsConfig;
   }
 
   public check() {
@@ -80,6 +103,7 @@ class Config {
     }
     const outputDir = resolve(output);
     this.set({ outputDir, dir: resolve(dir) });
+    this.setRegsConfig();
     if (!dev) {
       this.check();
       this.setAssetsConfig();

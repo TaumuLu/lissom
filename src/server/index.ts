@@ -56,8 +56,10 @@ export default class Server {
 
   public isStaticFile(path: string): boolean {
     const { outputDir } = config.get();
+    const { excludeStaticReg } = config.getRegsConfig();
     const filePath = join(outputDir, path);
-    if (existsSync(filePath)) {
+
+    if (!excludeStaticReg.test(filePath) && existsSync(filePath)) {
       return statSync(filePath).isFile();
     }
     return false;

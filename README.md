@@ -66,7 +66,7 @@ await app.render(req, res);
 ```
 
 #### node-server
-简单的一个示例，暂时需要自己处理静态资源  
+简单的一个示例，lissom拥有处理静态资源的能力  
 
 ```javascript
 const { createServer } = require('http');
@@ -77,7 +77,6 @@ const app = new Lissom(config);
 const port = 3000;
 
 createServer((req, res) => {
-  ...
   app.render(req, res);
 }).listen(port, err => {
   if (err) throw err;
@@ -116,6 +115,7 @@ app.listen(3000);
 | requireModules | array | ['superagent'] | 不使用的webpack打包的模块，需要服务端直接从node_modules中require的模块 |
 | ignoreModules | array | ['babel-polyfill'] | 服务端忽略执行的模块 |
 | excludeRouteRegs | array | [/\\/api\\/.*/] | 正则数组，值为正则字符串或正则表达式；koa排除拦截的路由，仅使用koa模块时传入 |
+| excludeStaticRegs | array | [] | 正则数组，值为正则字符串或正则表达式；需要忽略处理的静态资源文件 |
 | purgeModuleRegs | array | [] | 正则数组，值为正则字符串或正则表达式；开发模式下每次请求都需要清除的模块，可传字符串或正则表达式，默认每次清除所有非/node_modules/里的模块 |
 | defaultEntry | string | 索引为0的wepack entry配置 | entry配置key，优选匹配与本次请求路由名相同的key，未匹配到则使用此值指定的key |
 | rootAttr | { [attr: string]: string } | `{ id: '__ssr_root__', style: 'height: 100%; display: flex' }` | 设置挂载dom属性 |
@@ -314,7 +314,7 @@ ssr渲染并不是适用于所有情况，如何使用、最佳实践根据实�
 - [ ] 提供vue服务端渲染
 - [x] 抽离koa中间件，提供koa之外的服务端引入方式
 - [x] 服务端提供更丰富的ctx，客户端也增加ctx
-- [ ] 处理静态资源的能力，依据output目录
+- [x] 处理静态资源的能力，根据output目录
 - [ ] 添加测试代码
 - [ ] 整体流程图
 - [x] 精简api，拆分多种模式
@@ -355,3 +355,7 @@ ssr渲染并不是适用于所有情况，如何使用、最佳实践根据实�
 - 修复配置参数为空的报错
 - 拆分koa中间件，提供koa模块，修改默认导出为Lissom类
 - 更新文档
+
+### 1.2.7+
+- 增加静态资源处理能力，新增配置excludeStaticRegs
+- 修复传入为空的正则数组匹配失效问题

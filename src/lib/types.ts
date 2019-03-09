@@ -7,6 +7,7 @@ export interface IOptions {
   // isSpa?: boolean;
   output?: string;
   excludeRouteRegs?: Array<RegExp | string>;
+  excludeStaticRegs?: Array<RegExp | string>;
   purgeModuleRegs?: Array<RegExp | string>;
   dir?: string;
   dev?: boolean;
@@ -32,6 +33,12 @@ export interface IAssetsConfig {
   outputPath: string;
   modules: IModules;
   chunks: IChunks;
+}
+
+export interface IRegsConfig {
+  excludeRouteReg: RegExp;
+  purgeModuleReg: RegExp;
+  excludeStaticReg: RegExp;
 }
 
 export interface IRouter {

@@ -2,12 +2,7 @@ import path from 'path';
 import { JSONP_FUNCTION, RUNTIME_NAME } from '../../lib/constants';
 import config from '../config';
 import styleLoader from './style-loader';
-import {
-  createReg,
-  deleteCache,
-  fileterCssAssets,
-  fileterJsAssets,
-} from './utils';
+import { deleteCache, fileterCssAssets, fileterJsAssets } from './utils';
 
 declare global {
   namespace NodeJS {
@@ -357,13 +352,12 @@ const excludeModuleReg = /node_modules/;
 // 提供清除webpack modules cache的方法
 const clearModuleCache = dev => {
   if (dev) {
-    const { purgeModuleRegs } = config.get();
+    const { purgeModuleReg } = config.getRegsConfig();
     Object.keys(installedModules).forEach(moduleId => {
       const name = getName(moduleId);
       // 默认清理所有非node_modules包的缓存
       const purgeModule =
-        !excludeModuleReg.test(name) ||
-        createReg(purgeModuleRegs, false).test(name);
+        !excludeModuleReg.test(name) || purgeModuleReg.test(name);
       if (purgeModule) {
         delete installedModules[moduleId];
       }

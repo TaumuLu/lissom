@@ -51,11 +51,15 @@ const getRegSourceStr = regs => {
     .join('|');
 };
 
-export const createReg = (regs = [], matchEnd: boolean = true) => {
-  const regTpl = getRegSourceStr(regs);
-  let regStr = '';
+export const createReg = (
+  regs: Array<RegExp | string> = [],
+  noMatch?: boolean
+) => {
+  const isEmpty = !(regs && regs.length > 0);
+  const regTpl = isEmpty ? '' : getRegSourceStr(regs);
+  let regStr = isEmpty && noMatch ? '^$' : '';
   if (regTpl) {
-    regStr += `(${regTpl})${matchEnd ? '$' : ''}`;
+    regStr += `(${regTpl})`;
   }
   return new RegExp(regStr);
 };

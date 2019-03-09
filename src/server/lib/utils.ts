@@ -99,8 +99,6 @@ export function printAndExit(message: string, code: number = 1) {
   process.exit(code);
 }
 
-export const suffixRegs = [/\.(html|php)/, /\/[^.]*/];
-
 export function isResSent(res) {
   return res.finished || res.headersSent;
 }

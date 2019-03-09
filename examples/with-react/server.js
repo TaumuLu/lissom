@@ -1,13 +1,13 @@
-const path = require('path');
+// const path = require('path');
 const Koa = require('koa');
-const staticServe = require('koa-static');
+// const staticServe = require('koa-static');
 const logger = require('koa-logger');
 const lissomKoa = require('lissom/koa');
 // const { createServer } = require('http');
 // const Lissom = require('lissom');
 
 const port = 9999;
-const context = process.cwd();
+// const context = process.cwd();
 const uri = `http://127.0.0.1:${port}`;
 
 const config = {
@@ -16,6 +16,7 @@ const config = {
   // dev: false,
   // serverRender: false,
   // clientRender: false,
+  // excludeStaticRegs: [/main/],
   rootAttr: {
     id: 'root',
     class: 'test',
@@ -27,7 +28,7 @@ app.use(logger());
 
 app.use(lissomKoa(config));
 
-app.use(staticServe(path.join(context, './build')));
+// app.use(staticServe(path.join(context, './build')));
 
 app.listen(port, () => {
   console.log(`listening to port ${port}, open url ${uri}`);

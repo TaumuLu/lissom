@@ -2,19 +2,17 @@ import Router from 'koa-router';
 import { IOptions } from '../lib/types';
 import config from './config';
 import Server from './index';
-import { createReg, log, suffixRegs } from './lib/utils';
+import { log } from './lib/utils';
 
 export default (options: IOptions) => {
   const app = new Server(options);
   const router = new Router();
 
   router.get('*', async (ctx, next) => {
-    const excludeRouteRegs = config.get('excludeRouteRegs');
+    const { excludeRouteReg } = config.getRegsConfig();
     const ctxPath = ctx.path;
-    const suffixMatch = createReg(suffixRegs).test(ctxPath);
-    const excludeMatch = !createReg(excludeRouteRegs).test(ctxPath);
 
-    if (suffixMatch && excludeMatch) {
+    if (!excludeRouteReg.test(ctxPath)) {
       const { req, res, method } = ctx;
       ctx.res.statusCode = 200;
       log(`--> ${method}`, ctxPath);
