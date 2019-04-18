@@ -91,9 +91,12 @@ export default abstract class Render {
   }
 
   public renderError(error: any): string {
+    const { dev } = config.get();
+    const { errorHtml } = config.getAssetsConfig();
+    if (errorHtml) return errorHtml;
+
     // 停止客户端渲染
     this.updateSsrData({ clientRender: false });
-    const { dev } = config.get();
     const pageHTML = ErrorDebug({ error, dev });
     return this.renderHTML(pageHTML);
   }

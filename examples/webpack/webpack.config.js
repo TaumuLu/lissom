@@ -48,7 +48,10 @@ const compassMixinsPath = path.join(require.resolve('compass-mixins'), '..');
 
 module.exports = lissomWebpack({
   ...config,
-  entry: './index.js',
+  entry: {
+    app: './index.js',
+    error: './error.js',
+  },
   output: {
     path: outputPath,
     filename: isDev

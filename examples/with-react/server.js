@@ -13,6 +13,8 @@ const uri = `http://127.0.0.1:${port}`;
 const config = {
   excludeRouteRegs: [/\/(api|public)\/.*/],
   output: './build',
+  errorHtml: './error.html',
+  // errorEntry: '/error',
   // dev: false,
   // serverRender: false,
   // clientRender: false,

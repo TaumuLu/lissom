@@ -43,6 +43,7 @@ const defaultConfig: IConfig = {
   serverRender: true,
   rootAttr: {},
   defaultEntry: null,
+  errorHtml: '',
 };
 
 class Config {
@@ -84,11 +85,14 @@ class Config {
 
   public check() {
     this._isCheck = true;
-    const { dev, outputDir } = this._config;
+    const { dev, outputDir, errorHtmlPath } = this._config;
     if (!existsSync(outputDir)) {
       printAndExit(
         `> No such directory exists as the project root: ${outputDir}`
       );
+    }
+    if (errorHtmlPath && !existsSync(errorHtmlPath)) {
+      printAndExit(`> No such file path exists: ${errorHtmlPath}`);
     }
     // dev模式下延迟执行解析资源文件
     if (dev) {
@@ -97,12 +101,13 @@ class Config {
   }
 
   public init(options: IOptions) {
-    const { dev, dir, output } = this.set(options);
+    const { dev, dir, output, errorHtml } = this.set(options);
     if (!output) {
       printAndExit('> "output" config is required');
     }
     const outputDir = resolve(output);
-    this.set({ outputDir, dir: resolve(dir) });
+    const errorHtmlPath = errorHtml ? resolve(errorHtml) : errorHtml;
+    this.set({ outputDir, errorHtmlPath, dir: resolve(dir) });
     this.setRegsConfig();
     if (!dev) {
       this.check();
@@ -148,7 +153,7 @@ class Config {
 export default new Config();
 
 const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
-  const { dev, defaultEntry, outputDir } = config;
+  const { dev, defaultEntry, outputDir, errorHtmlPath } = config;
   const assetsManifestPath = findUp.sync(ASSETS_MANIFEST, { cwd: outputDir });
   if (!assetsManifestPath || !assetsManifestPath.length) {
     printAndExit('> Your webpack config does not use lissom/webpack wrapping');
@@ -166,6 +171,7 @@ const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
   } = assetsManifest;
   const routers = getRouters(entrypoints, outputPath, defaultEntry);
   const parseHtml = getParseHtml(HtmlWebpackPlugin, outputPath);
+  const errorHtml = errorHtmlPath ? readHtmlFile(errorHtmlPath) : errorHtmlPath;
 
   return {
     routers,
@@ -173,6 +179,7 @@ const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
     outputPath,
     modules,
     chunks,
+    errorHtml,
   };
 };
 

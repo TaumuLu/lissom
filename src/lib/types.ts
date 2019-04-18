@@ -21,10 +21,12 @@ export interface IOptions {
   // entry?: string;
   defaultEntry?: string;
   rootAttr?: { [attr: string]: string };
+  errorHtml?: string;
 }
 
 export interface IConfig extends IOptions {
   outputDir?: string; // auto generate
+  errorHtmlPath?: string;
 }
 
 export interface IAssetsConfig {
@@ -33,6 +35,7 @@ export interface IAssetsConfig {
   outputPath: string;
   modules: IModules;
   chunks: IChunks;
+  errorHtml: string;
 }
 
 export interface IRegsConfig {

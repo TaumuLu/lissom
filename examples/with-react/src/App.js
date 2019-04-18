@@ -4,6 +4,7 @@ import dynamic from 'lissom/dynamic';
 import async from 'lissom/async';
 import logo from './files/logo.svg';
 import AsyncCompoent from './async';
+import ErrorBoundary from './error-boundary';
 
 import './styles/app.less';
 
@@ -14,6 +15,7 @@ export default class App extends Component {
     // throw new Error('test');
     const { location } = ctx;
 
+    // throw new Error('test');
     return { location };
   }
 
@@ -35,31 +37,33 @@ export default class App extends Component {
     }
 
     return (
-      <div className="App">
-        <header className="App-header">
-          <Router {...routeProps}>
-            <React.Fragment>
-              <div className="App-logo">
-                <img src={logo} className="App-logo-img" alt="logo" />
-              </div>
-              <ul className="link-ul">
-                <li>
-                  <Link to="/">Home</Link>
-                </li>
-                <li>
-                  <Link to="/dynamic">dynamic</Link>
-                </li>
-                <li>
-                  <Link to="/async">async</Link>
-                </li>
-              </ul>
-              <Route exact path="/" component={Home} />
-              <Route path="/dynamic" component={DynamicComponent} />
-              <Route path="/async" component={AsyncCompoent} />
-            </React.Fragment>
-          </Router>
-        </header>
-      </div>
+      <ErrorBoundary>
+        <div className="App">
+          <header className="App-header">
+            <Router {...routeProps}>
+              <React.Fragment>
+                <div className="App-logo">
+                  <img src={logo} className="App-logo-img" alt="logo" />
+                </div>
+                <ul className="link-ul">
+                  <li>
+                    <Link to="/">Home</Link>
+                  </li>
+                  <li>
+                    <Link to="/dynamic">dynamic</Link>
+                  </li>
+                  <li>
+                    <Link to="/async">async</Link>
+                  </li>
+                </ul>
+                <Route exact path="/" component={Home} />
+                <Route path="/dynamic" component={DynamicComponent} />
+                <Route path="/async" component={AsyncCompoent} />
+              </React.Fragment>
+            </Router>
+          </header>
+        </div>
+      </ErrorBoundary>
     );
   }
 }
@@ -80,6 +84,10 @@ class Home extends Component {
   static loadComponent() {
     return <h1>loading</h1>;
   }
+
+  // componentDidMount() {
+  //   throw new Error('test');
+  // }
 
   componentWillMount() {
     console.log('willMount');
