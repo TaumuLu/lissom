@@ -362,3 +362,7 @@ ssr渲染并不是适用于所有情况，如何使用、最佳实践根据实�
 ### 1.2.7+
 - 增加静态资源处理能力，新增配置excludeStaticRegs
 - 修复传入为空的正则数组匹配失效问题
+
+### 1.2.9+
+- 修复production模式下，checkDeferredModules方法没找到webpack_runtime chunk
+- 修复浏览器不支持Promise时替换all方法报错

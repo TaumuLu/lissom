@@ -8,7 +8,7 @@
     "start": "npm run webpack-dev-server -- --config ../webpack/webpack.config.js --mode development",
     "watch": "npm run webpack -- --config ../webpack/webpack.config.js --progress --color -w",
     "build-dev": "npm run clean && npm run webpack -- --config ../webpack/webpack.config.js --progress --color",
-    "build": "npm run clean && npm run webpack -- --config ../webpack/webpack.config.js --progress --color",
+    "build": "npm run clean && export NODE_ENV=production && npm run webpack -- --config ../webpack/webpack.config.js --progress --color --mode production",
     "server-dev": "nodemon server.js",
     "server": "export NODE_ENV=production && node --inspect server.js",
     "postinstall": "npm link lissom"

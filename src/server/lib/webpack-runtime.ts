@@ -12,6 +12,10 @@ declare global {
       window: undefined;
     }
   }
+
+  interface PromiseConstructor {
+    _all: any;
+  }
 }
 
 const modules = [];
@@ -55,12 +59,17 @@ function webpackJsonpCallback(data) {
 
 function checkDeferredModules() {
   let result;
+  const { chunks } = config.getAssetsConfig();
   for (let i = 0; i < deferredModules.length; i++) {
     const deferredModule = deferredModules[i];
     let fulfilled = true;
     for (let j = 1; j < deferredModule.length; j++) {
       const depId = deferredModule[j];
-      if (installedChunks[depId] !== 0) fulfilled = false;
+      const { names = [] } = chunks[depId] || {};
+      // webpack runtime chunks
+      if (!names.includes(RUNTIME_NAME)) {
+        if (installedChunks[depId] !== 0) fulfilled = false;
+      }
     }
     if (fulfilled) {
       deferredModules.splice(i--, 1);
@@ -177,8 +186,68 @@ const matchModule = moduleId => {
   return null;
 };
 
+function _hackPromiseAll_() {
+  const hasPromise = typeof Promise !== 'undefined';
+  if (!hasPromise || Promise._all) return;
+
+  function getType(context) {
+    return Object.prototype.toString
+      .call(context)
+      .slice(8, -1)
+      .toLowerCase();
+  }
+  function checkValue(arr) {
+    if (arr.length > 0) {
+      let hasValue = false;
+      for (const i in arr) {
+        const item = arr[i];
+        if (!hasValue) {
+          const type = getType(item);
+          if (type === 'array') {
+            hasValue = checkValue(item);
+          } else if (type === 'object' && item._isSyncPromise) {
+            hasValue = false;
+          } else {
+            hasValue = true;
+          }
+        }
+      }
+      return hasValue;
+    }
+    return !arr._isSyncPromise;
+  }
+  function SyncPromise(value?, error?) {
+    this.value = value;
+    this.error = error;
+    this.finish = true;
+    this._isSyncPromise = true;
+  }
+  SyncPromise.prototype.then = function(onFulfilled) {
+    let error = null;
+    let value = null;
+    try {
+      value = onFulfilled(this);
+    } catch (e) {
+      error = e;
+    }
+    return new SyncPromise(value, error);
+  };
+  Promise._all = Promise.all;
+  Promise.all = function() {
+    const value = arguments[0];
+    if (typeof value === 'object') {
+      const isSyncValue = !checkValue(value);
+      if (isSyncValue) {
+        return new SyncPromise(); // 这里是给webpack用的
+      }
+    }
+    return Promise._all.apply(Promise, arguments);
+  };
+}
+
 // The require function
 function __webpack_require__(moduleId) {
+  _hackPromiseAll_();
   // Check if module is in cache
   if (installedModules[moduleId]) {
     return installedModules[moduleId].exports;

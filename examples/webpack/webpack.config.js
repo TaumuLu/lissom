@@ -7,6 +7,7 @@ const autoprefixer = require('autoprefixer');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HappyPack = require('happypack');
+// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const lissomWebpack = require('lissom/webpack');
 
 const happyThreadPool = HappyPack.ThreadPool({ size: 2 });
@@ -196,6 +197,20 @@ module.exports = lissomWebpack({
     }),
   ].filter(Boolean),
   optimization: {
+    // minimize: isDev,
+    // minimizer: [
+    //   new UglifyJsPlugin({
+    //     sourceMap: true,
+    //     cache: path.join(__dirname, '/.cache'),
+    //     parallel: true,
+    //     uglifyOptions: {
+    //       output: {
+    //         comments: false,
+    //         beautify: false,
+    //       },
+    //     },
+    //   }),
+    // ],
     splitChunks: {
       chunks: 'all',
       name: 'common',

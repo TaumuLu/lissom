@@ -71,6 +71,7 @@
     ],
     "semicolon": false,
     "prefer-conditional-expression": false,
-    "one-variable-per-declaration": false
+    "one-variable-per-declaration": false,
+    "forin": false
   }
 }
