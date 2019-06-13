@@ -1,18 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { InitialProps, pathMap } from '../lib/async';
-import { get } from '../lib/utils';
+import { ISSRData } from '../lib/types';
+import { get, parseSSRData } from '../lib/utils';
 
 declare global {
   interface Window {
-    __SSR_DATA__: {
-      props: any;
-      pathname: string;
-      asyncProps: any[];
-      clientRender: boolean;
-      serverRender: boolean;
-      rootAttr: { [attr: string]: string };
-    };
+    __SSR_DATA__: string | ISSRData;
     __SSR_LOADED_PAGES__: any[];
     __SSR_REGISTER_PAGE__: Function;
   }
@@ -32,7 +26,7 @@ if (
       clientRender = true,
       serverRender = true,
       rootAttr = {},
-    } = window.__SSR_DATA__;
+    } = parseSSRData();
     if (!clientRender) return void 0;
 
     let isInitialRender = true;

@@ -22,6 +22,7 @@ export interface IOptions {
   defaultEntry?: string;
   rootAttr?: { [attr: string]: string };
   errorHtml?: string;
+  isBase64?: boolean;
 }
 
 export interface IConfig extends IOptions {
@@ -109,6 +110,7 @@ export interface ISSRData {
   clientRender: boolean;
   serverRender: boolean;
   rootAttr: IConfig['rootAttr'];
+  isBase64: boolean;
 }
 
 export interface ILocation {

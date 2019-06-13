@@ -121,6 +121,7 @@ app.listen(3000);
 | defaultEntry | string | 索引为0的wepack entry配置 | entry配置key，优选匹配与本次请求路由名相同的key，未匹配到则使用此值指定的key |
 | rootAttr | { [attr: string]: string } | `{ id: '__ssr_root__', style: 'height: 100%; display: flex' }` | 设置挂载dom属性 |
 | errorHtml | string | '' | html文件路径，报错时需要展示的html页面 |
+| isBase64 | boolean | false | 返回html中的数据是否使用base64编码 |
 
 ### 异步操作
 同next一样，根组件提供静态函数getInitialProps，非根组件有两选择  

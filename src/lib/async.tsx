@@ -1,6 +1,13 @@
 import qs from 'qs';
 import React, { Component } from 'react';
-import { checkServer, get, getDisplayName, isArray, isString } from './utils';
+import {
+  checkServer,
+  get,
+  getDisplayName,
+  isArray,
+  isString,
+  parseSSRData,
+} from './utils';
 
 let defaultLoading = () => null;
 let _ssrPathName; // 仅服务端使用
@@ -247,7 +254,8 @@ function Async(paths) {
           // 服务端不会走到这一步，不需要此值
           return {};
         }
-        return window.__SSR_DATA__.props;
+        const { props } = parseSSRData();
+        return props;
       }
 
       public onFulfilled = asyncProps => {

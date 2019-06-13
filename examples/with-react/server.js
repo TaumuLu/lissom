@@ -14,6 +14,7 @@ const config = {
   excludeRouteRegs: [/\/(api|public)\/.*/],
   output: './build',
   errorHtml: './error.html',
+  // isBase64: true,
   // errorEntry: '/error',
   // dev: false,
   // serverRender: false,

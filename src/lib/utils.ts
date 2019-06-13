@@ -1,4 +1,5 @@
-import { ReactComp } from './types';
+import { Base64 } from 'js-base64';
+import { ISSRData, ReactComp } from './types';
 
 export const getType = (value: any) => {
   return Object.prototype.toString
@@ -100,3 +101,16 @@ export const set = (object: any, path: Tpath, value: any) => {
     return obj ? obj[key] : null;
   }, object);
 };
+
+export function parseSSRData(): ISSRData {
+  const ssrData = window.__SSR_DATA__;
+  if (typeof ssrData === 'string') {
+    const code = Base64.atob(ssrData);
+    try {
+      return JSON.parse(code);
+    } catch (error) {
+      throw error;
+    }
+  }
+  return ssrData;
+}

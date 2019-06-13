@@ -24,7 +24,7 @@ export default abstract class Render {
   public abstract render(Component: any, props?: any): string;
 
   public getRenderOpts(req: IncomingMessage, res: ServerResponse): IRenderOpts {
-    const { clientRender, serverRender, rootAttr } = config.get();
+    const { clientRender, serverRender, rootAttr, isBase64 } = config.get();
     const request = new Request(req);
     const { location, navigator, pathname, query } = request;
     const { routers } = config.getAssetsConfig();
@@ -47,6 +47,7 @@ export default abstract class Render {
       clientRender,
       serverRender,
       rootAttr,
+      isBase64,
     };
 
     return {

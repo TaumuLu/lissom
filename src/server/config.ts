@@ -44,6 +44,7 @@ const defaultConfig: IConfig = {
   rootAttr: {},
   defaultEntry: null,
   errorHtml: '',
+  isBase64: false,
 };
 
 class Config {
@@ -131,6 +132,8 @@ class Config {
     }
   }
 
+  public get(): IConfig;
+  public get<K extends keyof IConfig>(K: string): IConfig[K];
   public get(key?: string) {
     if (key) return this._config[key];
     if (!this._isCheck) this.check();

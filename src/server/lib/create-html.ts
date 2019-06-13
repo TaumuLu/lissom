@@ -1,4 +1,5 @@
 import htmlescape from 'htmlescape';
+import { Base64 } from 'js-base64';
 import { IRouter, ISSRData } from '../../lib/types';
 import ParseHtml from './parse-html';
 import { getStyleMap } from './style-loader';
@@ -71,7 +72,7 @@ const createAssetTags = ({
         attributes: { type: scriptType },
         tagName: 'script',
         innerHTML: `
-          window.__SSR_DATA__ = ${htmlescape(ssrData)}
+          window.__SSR_DATA__ = ${createSSRData(ssrData)}
           window.__SSR_LOADED_PAGES__ = ['${name}'];
           window.__SSR_REGISTER_PAGE__ = function(r,f) { __SSR_LOADED_PAGES__.push([r, f()]) };
         `,
@@ -79,6 +80,15 @@ const createAssetTags = ({
       ...jsDefinition,
     ],
   };
+};
+
+const createSSRData = (ssrData: ISSRData) => {
+  const code = htmlescape(ssrData);
+  const { isBase64 } = ssrData;
+  if (isBase64) {
+    return `'${Base64.btoa(code)}'`;
+  }
+  return code;
 };
 
 const getDefinition = (clientRender: boolean, styleHTML: string) => {
