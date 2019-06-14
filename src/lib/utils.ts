@@ -105,7 +105,7 @@ export const set = (object: any, path: Tpath, value: any) => {
 export function parseSSRData(): ISSRData {
   const ssrData = window.__SSR_DATA__;
   if (typeof ssrData === 'string') {
-    const code = Base64.atob(ssrData);
+    const code = Base64.decode(ssrData);
     try {
       return JSON.parse(code);
     } catch (error) {
