@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { posix } from 'path';
+// import { posix } from 'path';
 import { RUNTIME_NAME } from '../../lib/constants';
 import { ICtx } from '../../lib/types';
 import { getDisplayName } from '../../lib/utils';
@@ -47,12 +47,12 @@ export function normalizePagePath(page: string): string {
     page = '/index';
   }
   page = getPathName(page);
-
-  const resolvedPage = posix.normalize(page);
-  if (page !== resolvedPage) {
-    const message = 'Requested and resolved page mismatch';
-    printAndExit(message);
-  }
+  // 路由不在我这没必要校验路径
+  // const resolvedPage = posix.normalize(page);
+  // if (page !== resolvedPage) {
+  //   const message = 'Requested and resolved page mismatch';
+  //   printAndExit(message);
+  // }
 
   return page;
 }

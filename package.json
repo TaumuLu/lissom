@@ -1,6 +1,6 @@
 {
   "name": "lissom",
-  "version": "1.2.12",
+  "version": "1.2.13",
   "description": "Lightweight React Server Side Rendering Framework",
   "main": "./index.js",
   "scripts": {
