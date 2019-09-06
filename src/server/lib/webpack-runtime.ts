@@ -19,7 +19,7 @@ declare global {
 }
 
 const modules = [];
-let parentJsonpFunction;
+// let parentJsonpFunction;
 // install a JSONP callback for chunk loading
 function webpackJsonpCallback(data) {
   const chunkIds = data[0];
@@ -44,7 +44,7 @@ function webpackJsonpCallback(data) {
       modules[moduleId] = moreModules[moduleId];
     }
   }
-  if (parentJsonpFunction) parentJsonpFunction(data);
+  // if (parentJsonpFunction) parentJsonpFunction(data);
 
   while (resolves.length) {
     resolves.shift()();
@@ -379,11 +379,11 @@ __webpack_require__.oe = function(err) {
 
 global[JSONP_FUNCTION] = [];
 let jsonpArray = global[JSONP_FUNCTION];
-const oldJsonpFunction = jsonpArray.push.bind(jsonpArray);
+// const oldJsonpFunction = jsonpArray.push.bind(jsonpArray);
 jsonpArray.push = webpackJsonpCallback;
 jsonpArray = jsonpArray.slice();
 for (let i = 0; i < jsonpArray.length; i++) webpackJsonpCallback(jsonpArray[i]);
-parentJsonpFunction = oldJsonpFunction;
+// parentJsonpFunction = oldJsonpFunction;
 
 // run deferred modules from other chunks
 // checkDeferredModules()
