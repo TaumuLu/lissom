@@ -6,7 +6,14 @@ import { getDisplayName } from '../../lib/utils';
 import config from '../config';
 
 export function deleteCache(path: string) {
-  delete require.cache[path];
+  const cacheModule = require.cache[path];
+  if (cacheModule) {
+    // 同时清除父模块的引用，避免开发模式下内存泄漏
+    const { parent = {} } = cacheModule;
+    const { children = [] } = parent;
+    parent.children = children.filter(child => child.id !== path);
+    delete require.cache[path];
+  }
 }
 
 export function purgeCache(moduleName: string, ignoreModules: string[]) {

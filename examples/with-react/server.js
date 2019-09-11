@@ -20,6 +20,7 @@ const config = {
   // serverRender: false,
   // clientRender: false,
   // excludeStaticRegs: [/main/],
+  // purgeModuleRegs: [/.*/],
   rootAttr: {
     id: 'root',
     class: 'test',

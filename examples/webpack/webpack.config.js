@@ -8,7 +8,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HappyPack = require('happypack');
 // const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const lissomWebpack = require('lissom/webpack');
+const lissomWebpack = require('../../webpack');
 
 const happyThreadPool = HappyPack.ThreadPool({ size: 2 });
 

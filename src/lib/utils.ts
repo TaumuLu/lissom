@@ -1,4 +1,3 @@
-import { Base64 } from 'js-base64';
 import { ISSRData, ReactComp } from './types';
 
 export const getType = (value: any) => {
@@ -105,6 +104,9 @@ export const set = (object: any, path: Tpath, value: any) => {
 export function parseSSRData(): ISSRData {
   const ssrData = window.__SSR_DATA__;
   if (typeof ssrData === 'string') {
+    // 延迟到方法调用时再引用，避免服务端被执行
+    // js-base64会引用全局对象导致开发模式下循环引用造成内存泄漏
+    const { Base64 } = require('js-base64');
     const code = Base64.decode(ssrData);
     try {
       return JSON.parse(code);
