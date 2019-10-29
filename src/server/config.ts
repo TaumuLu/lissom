@@ -1,7 +1,7 @@
-import findUp from 'find-up';
-import { existsSync, readFileSync } from 'fs';
-import { resolve } from 'path';
-import { ASSETS_MANIFEST, RUNTIME_NAME } from '../lib/constants';
+import findUp from 'find-up'
+import { existsSync, readFileSync } from 'fs'
+import { resolve } from 'path'
+import { ASSETS_MANIFEST, RUNTIME_NAME } from '../lib/constants'
 import {
   IAssetsConfig,
   IConfig,
@@ -10,8 +10,8 @@ import {
   IOptions,
   IRegsConfig,
   IRouters,
-} from '../lib/types';
-import ParseHtml from './lib/parse-html';
+} from '../lib/types'
+import ParseHtml from './lib/parse-html'
 import {
   createReg,
   deleteCache,
@@ -20,10 +20,10 @@ import {
   getPathName,
   log,
   printAndExit,
-} from './lib/utils';
-import { setWebpackConfig } from './lib/webpack-runtime';
+} from './lib/utils'
+import { setWebpackConfig } from './lib/webpack-runtime'
 
-const _DEV_ = process.env.NODE_ENV !== 'production';
+const _DEV_ = process.env.NODE_ENV !== 'production'
 // const suffixRegs = [/\.(html|php)/, /\/[^.]*/];
 
 const defaultConfig: IConfig = {
@@ -37,7 +37,7 @@ const defaultConfig: IConfig = {
   staticMarkup: false,
   generateEtags: true,
   quiet: false,
-  requireModules: ['superagent'],
+  requireModules: ['superagent', 'react'],
   ignoreModules: ['babel-polyfill'],
   clientRender: true,
   serverRender: true,
@@ -45,25 +45,25 @@ const defaultConfig: IConfig = {
   defaultEntry: null,
   errorHtml: '',
   isBase64: false,
-};
+}
 
 class Config {
-  private _isInit: boolean;
-  private _isCheck: boolean;
-  private _config: IConfig;
-  private _assetsConfig: IAssetsConfig;
-  private _regsConfig: IRegsConfig;
+  private _isInit: boolean
+  private _isCheck: boolean
+  private _config: IConfig
+  private _assetsConfig: IAssetsConfig
+  private _regsConfig: IRegsConfig
   constructor() {
-    this._config = { ...defaultConfig };
+    this._config = { ...defaultConfig }
   }
 
   public setAssetsConfig() {
-    this._assetsConfig = parseAssetsManifest(this._config);
-    setWebpackConfig(this._assetsConfig);
+    this._assetsConfig = parseAssetsManifest(this._config)
+    setWebpackConfig(this._assetsConfig)
   }
 
   public getAssetsConfig(): IAssetsConfig {
-    return this._assetsConfig;
+    return this._assetsConfig
   }
 
   public setRegsConfig() {
@@ -71,110 +71,110 @@ class Config {
       purgeModuleRegs,
       excludeRouteRegs,
       excludeStaticRegs,
-    } = this._config;
+    } = this._config
 
     this._regsConfig = {
       purgeModuleReg: createReg(purgeModuleRegs),
       excludeRouteReg: createReg(excludeRouteRegs, true),
       excludeStaticReg: createReg(excludeStaticRegs, true),
-    };
+    }
   }
 
   public getRegsConfig(): IRegsConfig {
-    return this._regsConfig;
+    return this._regsConfig
   }
 
   public check() {
-    this._isCheck = true;
-    const { dev, outputDir, errorHtmlPath } = this._config;
+    this._isCheck = true
+    const { dev, outputDir, errorHtmlPath } = this._config
     if (!existsSync(outputDir)) {
       printAndExit(
         `> No such directory exists as the project root: ${outputDir}`
-      );
+      )
     }
     if (errorHtmlPath && !existsSync(errorHtmlPath)) {
-      printAndExit(`> No such file path exists: ${errorHtmlPath}`);
+      printAndExit(`> No such file path exists: ${errorHtmlPath}`)
     }
     // dev模式下延迟执行解析资源文件
     if (dev) {
-      this.setAssetsConfig();
+      this.setAssetsConfig()
     }
   }
 
   public init(options: IOptions) {
-    const { dev, dir, output, errorHtml } = this.set(options);
+    const { dev, dir, output, errorHtml } = this.set(options)
     if (!output) {
-      printAndExit('> "output" config is required');
+      printAndExit('> "output" config is required')
     }
-    const outputDir = resolve(output);
-    const errorHtmlPath = errorHtml ? resolve(errorHtml) : errorHtml;
-    this.set({ outputDir, errorHtmlPath, dir: resolve(dir) });
-    this.setRegsConfig();
+    const outputDir = resolve(output)
+    const errorHtmlPath = errorHtml ? resolve(errorHtml) : errorHtml
+    this.set({ outputDir, errorHtmlPath, dir: resolve(dir) })
+    this.setRegsConfig()
     if (!dev) {
-      this.check();
-      this.setAssetsConfig();
+      this.check()
+      this.setAssetsConfig()
     }
-    log('init config', JSON.stringify(this._config));
-    this._isInit = true;
-    return this._config;
+    log('init config', JSON.stringify(this._config))
+    this._isInit = true
+    return this._config
   }
 
   public mode() {
     if (!this._isInit) {
       printAndExit(
         '> Must initialize the configuration, execute "new Server(config)"'
-      );
+      )
     }
-    const { dev } = this._config;
+    const { dev } = this._config
     // 开发模式下每次请求进入都重新验证读取配置
     if (dev) {
-      this._isCheck = false;
+      this._isCheck = false
     }
   }
 
-  public get(): IConfig;
-  public get<K extends keyof IConfig>(K: string): IConfig[K];
+  public get(): IConfig
+  public get<K extends keyof IConfig>(K: string): IConfig[K]
   public get(key?: string) {
-    if (key) return this._config[key];
-    if (!this._isCheck) this.check();
+    if (key) return this._config[key]
+    if (!this._isCheck) this.check()
 
-    return this._config;
+    return this._config
   }
 
   public set(options: IConfig) {
-    const { _config } = this;
+    const { _config } = this
     // 合并操作
     const purgeModuleRegs = _config.purgeModuleRegs.concat(
       get(options, 'purgeModuleRegs', [])
-    );
-    this._config = { ..._config, ...options, purgeModuleRegs };
+    )
+    this._config = { ..._config, ...options, purgeModuleRegs }
 
-    return this._config;
+    return this._config
   }
 }
 
-export default new Config();
+export default new Config()
 
 const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
-  const { dev, defaultEntry, outputDir, errorHtmlPath } = config;
-  const assetsManifestPath = findUp.sync(ASSETS_MANIFEST, { cwd: outputDir });
+  const { dev, defaultEntry, outputDir, errorHtmlPath } = config
+  const assetsManifestPath = findUp.sync(ASSETS_MANIFEST, { cwd: outputDir })
   if (!assetsManifestPath || !assetsManifestPath.length) {
-    printAndExit('> Your webpack config does not use lissom/webpack wrapping');
+    printAndExit('> Your webpack config does not use lissom/webpack wrapping')
   }
   if (dev) {
-    deleteCache(assetsManifestPath);
+    deleteCache(assetsManifestPath)
   }
-  const assetsManifest = require(assetsManifestPath);
+  const assetsManifest = require(assetsManifestPath)
   const {
     entrypoints,
     HtmlWebpackPlugin,
     outputPath,
     modules,
     chunks,
-  } = assetsManifest;
-  const routers = getRouters(entrypoints, outputPath, defaultEntry);
-  const parseHtml = getParseHtml(HtmlWebpackPlugin, outputPath);
-  const errorHtml = errorHtmlPath ? readHtmlFile(errorHtmlPath) : errorHtmlPath;
+  } = assetsManifest
+  const routers = getRouters(entrypoints, outputPath, defaultEntry)
+  const parseHtml = getParseHtml(HtmlWebpackPlugin, outputPath)
+  const errorHtml = errorHtmlPath ? readHtmlFile(errorHtmlPath) : errorHtmlPath
 
   return {
     routers,
@@ -183,8 +183,8 @@ const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
     modules,
     chunks,
     errorHtml,
-  };
-};
+  }
+}
 
 const getRouters = (
   entrypoints: IEntrypoints,
@@ -193,8 +193,8 @@ const getRouters = (
 ): IRouters => {
   return Object.keys(entrypoints).reduce(
     (p, key, i) => {
-      const { chunks, assets: originAssets } = entrypoints[key];
-      const assets = fileterJsAssets(originAssets);
+      const { chunks, assets: originAssets } = entrypoints[key]
+      const assets = fileterJsAssets(originAssets)
 
       const router = {
         name: key,
@@ -202,40 +202,40 @@ const getRouters = (
         assets,
         existsAts: assets.map(path => resolve(outputPath, path)),
         size: assets.length,
-      };
-      // 默认取第一个入口
-      if (i === 0 && !defaultEntry) defaultEntry = key;
-      if (key === defaultEntry) {
-        p.default = router;
       }
-      const page = getPathName(key);
+      // 默认取第一个入口
+      if (i === 0 && !defaultEntry) defaultEntry = key
+      if (key === defaultEntry) {
+        p.default = router
+      }
+      const page = getPathName(key)
 
       return {
         ...p,
         [page]: router,
-      };
+      }
     },
     { default: null }
-  );
-};
+  )
+}
 
 const readHtmlFile = (existsAt: string): string => {
   if (!existsSync(existsAt)) {
-    const message = `Could not find a valid html file in the '${existsAt}' path!`;
-    printAndExit(message);
+    const message = `Could not find a valid html file in the '${existsAt}' path!`
+    printAndExit(message)
   }
-  return readFileSync(existsAt, 'utf8');
-};
+  return readFileSync(existsAt, 'utf8')
+}
 
 const getParseHtml = (
   HtmlWebpackPlugin: IHtmlWebpackPlugin[],
   outputPath: string
 ): ParseHtml => {
   // 默认取第一个插件配置
-  const [htmlConfig] = HtmlWebpackPlugin;
-  const { childCompilationOutputName } = htmlConfig;
-  const existsAt = resolve(outputPath, childCompilationOutputName);
-  const source = readHtmlFile(existsAt);
-  const parseHtml = new ParseHtml(source);
-  return parseHtml;
-};
+  const [htmlConfig] = HtmlWebpackPlugin
+  const { childCompilationOutputName } = htmlConfig
+  const existsAt = resolve(outputPath, childCompilationOutputName)
+  const source = readHtmlFile(existsAt)
+  const parseHtml = new ParseHtml(source)
+  return parseHtml
+}

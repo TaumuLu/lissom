@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 
 export default class ErrorComponent extends React.Component {
   state = {
@@ -7,21 +7,21 @@ export default class ErrorComponent extends React.Component {
   };
 
   componentDidCatch(error, info) {
-    this.setState({ error, info });
+    this.setState({ error, info })
   }
 
   render() {
-    const { children } = this.props;
-    const { error, info } = this.state;
+    const { children } = this.props
+    const { error, info } = this.state
     if (error || info) {
-      const { message, stack } = error;
+      const { message, stack } = error
       return (
         <div>
           <p>{message}</p>
           <pre>{stack}</pre>
         </div>
-      );
+      )
     }
-    return children;
+    return children
   }
 }

@@ -1,29 +1,29 @@
-import ansiHTML from 'ansi-html';
+import ansiHTML from 'ansi-html'
 
 export default function ErrorDebug({
   error,
   info,
   dev,
 }: {
-  error: any;
-  info?: any;
-  dev: boolean;
+  error: any
+  info?: any
+  dev: boolean
 }) {
-  const { name, message } = error;
+  const { name, message } = error
 
-  let errorMessage: string;
+  let errorMessage: string
   if (dev) {
     if (name === 'ModuleBuildError' && message) {
       errorMessage = `
         <pre style=${getStyle(styles.stack)}>
           ${ansiHTML(encodeHtml(message))}
         </pre>
-      `;
+      `
     } else {
-      errorMessage = StackTrace({ error, info });
+      errorMessage = StackTrace({ error, info })
     }
   } else {
-    return '500: Internal Server Error';
+    return '500: Internal Server Error'
   }
 
   return `
@@ -31,7 +31,7 @@ export default function ErrorDebug({
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       ${errorMessage}
     </div>
-  `;
+  `
 }
 
 const StackTrace = ({ error: { name, message, stack }, info }) => `
@@ -44,21 +44,21 @@ const StackTrace = ({ error: { name, message, stack }, info }) => `
         : ''
     }
   </div>
-`;
+`
 
-const reg = /[A-Z]/g;
+const reg = /[A-Z]/g
 const replaceName = name => {
   return name.replace(reg, match => {
-    return `-${match.toLowerCase()}`;
-  });
-};
+    return `-${match.toLowerCase()}`
+  })
+}
 
 const getStyle = (style: any): string => {
   const styleString = Object.keys(style)
     .map(key => `${replaceName(key)}: ${style[key]}`)
-    .join(';');
-  return `"${styleString}"`;
-};
+    .join(';')
+  return `"${styleString}"`
+}
 
 export const styles: any = {
   errorDebug: {
@@ -97,11 +97,11 @@ export const styles: any = {
     marginBottom: '0px',
     marginTop: '0px',
   },
-};
+}
 
 const encodeHtml = str => {
-  return str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-};
+  return str.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
 
 // see color definitions of babel-code-frame:
 // https://github.com/babel/babel/blob/master/packages/babel-code-frame/src/index.js
@@ -115,4 +115,4 @@ ansiHTML.setColors({
   blue: 'ebe7e5',
   cyan: 'ebe7e5',
   red: 'ff001f',
-});
+})

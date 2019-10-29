@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "examples",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "link": "[ ! -d ./node_modules/lissom ] && ln -s $INIT_CWD/../ ./node_modules/lissom && echo 'link lissom success' || true",
+    "postinstall": "npm run link"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/TaumuLu/lissom.git"

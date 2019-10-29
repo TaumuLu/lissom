@@ -1,6 +1,6 @@
 {
   "name": "lissom",
-  "version": "1.2.15",
+  "version": "1.2.16",
   "description": "Lightweight React Server Side Rendering Framework",
   "main": "./index.js",
   "scripts": {
@@ -65,8 +65,8 @@
     "koa-router": "^7.4.0",
     "lint-staged": "^8.1.4",
     "prettier": "^1.16.4",
-    "react": "^16.8.1",
-    "react-dom": "^16.8.1",
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
     "tslint": "^5.12.1",
     "tslint-react": "^3.6.0",
     "typescript": "^3.2.2",

@@ -374,3 +374,6 @@ ssr渲染并不是适用于所有情况，如何使用、最佳实践根据实�
 ### 1.2.15+
 - 修复development模式下，require.cache父模块引用缓存未清除造成的内存泄漏问题
 - 修复development模式下，js-base64模块引用全局模块多次加载循环引用造成的内存泄漏问题
+
+### 1.2.16+
+- 修复服务端下react和react-dom不在同一环境下，导致使用react hooks报错的问题
