@@ -1,58 +1,58 @@
-import { Configuration } from 'webpack';
+import { Configuration } from 'webpack'
 
 export const getEntry = (entries: string[], initialEntry: any): any => {
   const prependEntry = (entry: any) => {
     if (typeof entry === 'function') {
-      return () => Promise.resolve(entry()).then(prependEntry);
+      return () => Promise.resolve(entry()).then(prependEntry)
     }
 
     if (typeof entry === 'object' && !Array.isArray(entry)) {
-      const clone = {};
+      const clone = {}
       Object.keys(entry).forEach(key => {
-        clone[key] = entries.concat(entry[key]);
-      });
-      return clone;
+        clone[key] = entries.concat(entry[key])
+      })
+      return clone
     }
-    return entries.concat(entry);
-  };
+    return entries.concat(entry)
+  }
 
-  return prependEntry(initialEntry);
-};
+  return prependEntry(initialEntry)
+}
 
 function handleExport(options) {
   const isES6DefaultExported =
     typeof options === 'object' &&
     options !== null &&
-    typeof options.default !== 'undefined';
+    typeof options.default !== 'undefined'
 
-  return isES6DefaultExported ? options.default : options;
+  return isES6DefaultExported ? options.default : options
 }
 
 function handleFunction(options, ...params) {
   if (typeof options === 'function') {
-    options = options(...params);
+    options = options(...params)
   }
-  return options;
+  return options
 }
 
 export function prepareOptions(options, ...params): Configuration {
-  options = handleExport(options);
-  const isArray = Array.isArray(options);
+  options = handleExport(options)
+  const isArray = Array.isArray(options)
   if (isArray) {
-    throw new Error('[lissom] > webpack config does not support array');
+    throw new Error('[lissom] > webpack config does not support array')
   }
   return isArray
     ? options.map(_options => handleFunction(_options, ...params))
-    : handleFunction(options, ...params);
+    : handleFunction(options, ...params)
 }
 
-const constructorName = 'HtmlWebpackPlugin';
+const constructorName = 'HtmlWebpackPlugin'
 export const isMissHtmlPlugin = plugins => {
   return !plugins.some(instance => {
-    const { name } = instance.constructor;
-    return name === constructorName;
-  });
-};
+    const { name } = instance.constructor
+    return name === constructorName
+  })
+}
 
 const styles = {
   bold: ['\x1B[1m', '\x1B[22m'],
@@ -78,14 +78,14 @@ const styles = {
   magentaBG: ['\x1B[45m', '\x1B[49m'],
   redBG: ['\x1B[41m', '\x1B[49m'],
   yellowBG: ['\x1B[43m', '\x1B[49m'],
-};
+}
 
-export let log: any;
+export let log: any
 
 log = function(style, message = '') {
-  console.log(style, message);
-};
+  console.log(style, message)
+}
 
 Object.keys(styles).forEach(key => {
-  log[key] = log.bind(null, styles[key].join('%s'));
-});
+  log[key] = log.bind(null, styles[key].join('%s'))
+})

@@ -1,14 +1,16 @@
 // const path = require('path');
-const Koa = require('koa');
+const Koa = require('koa')
+// const Express = require('express')
 // const staticServe = require('koa-static');
-const logger = require('koa-logger');
-const lissomKoa = require('lissom/koa');
+const logger = require('koa-logger')
+const lissomKoa = require('lissom/koa')
+// const lissomExpress = require('lissom/express')
 // const { createServer } = require('http');
 // const Lissom = require('lissom');
 
-const port = 9999;
+const port = 9999
 // const context = process.cwd();
-const uri = `http://127.0.0.1:${port}`;
+const uri = `http://127.0.0.1:${port}`
 
 const config = {
   excludeRouteRegs: [/\/(api|public)\/.*/],
@@ -25,18 +27,29 @@ const config = {
     id: 'root',
     class: 'test',
   },
-};
+}
 
-const app = new Koa();
-app.use(logger());
+// koa
+const koaApp = new Koa()
 
-app.use(lissomKoa(config));
+koaApp.use(logger())
 
-// app.use(staticServe(path.join(context, './build')));
+koaApp.use(lissomKoa(config))
 
-app.listen(port, () => {
-  console.log(`listening to port ${port}, open url ${uri}`);
-});
+// koaApp.use(staticServe(path.join(context, './build')));
+
+koaApp.listen(port, () => {
+  console.log(`listening to port ${port}, open url ${uri}`)
+})
+
+// express
+// const expressApp = new Express()
+
+// expressApp.use(lissomExpress(config))
+
+// expressApp.listen(port, () => {
+//   console.log(`listening to port ${port}, open url ${uri}`)
+// })
 
 // const lissomApp = new Lissom(config);
 // const port2 = 3000;

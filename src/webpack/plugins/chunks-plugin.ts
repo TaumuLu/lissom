@@ -1,9 +1,9 @@
-import { ConcatSource } from 'webpack-sources';
-import { GLOBAl_VARIABLE, RUNTIME_NAME } from '../../lib/constants';
+import { ConcatSource } from 'webpack-sources'
+import { GLOBAl_VARIABLE, RUNTIME_NAME } from '../../lib/constants'
 
-const replacePromiseReg = /Promise\.all\(([^()]*)\)/g;
-const replaceRequireReg = /(.*)function __webpack_require__\(.*/g;
-const hackFunctionName = '_hackPromiseAll_';
+const replacePromiseReg = /Promise\.all\(([^()]*)\)/g
+const replaceRequireReg = /(.*)function __webpack_require__\(.*/g
+const hackFunctionName = '_hackPromiseAll_'
 
 export default class ChunksPlugin {
   public apply(compiler) {
@@ -11,47 +11,47 @@ export default class ChunksPlugin {
       compilation.chunkTemplate.hooks.render.tap(
         'ChunksPluginRenderHack',
         modules => {
-          const source = new ConcatSource();
+          const source = new ConcatSource()
           // 支持服务端运行和导出
-          source.add(chunkHackCode);
+          source.add(chunkHackCode)
           const replaceStr = modules.children[0].replace(
             /window/g,
             GLOBAl_VARIABLE
-          );
-          modules.children[0] = replaceStr;
-          source.add(modules);
-          source.add('\n})()');
+          )
+          modules.children[0] = replaceStr
+          source.add(modules)
+          source.add('\n})()')
 
-          return source;
+          return source
         }
-      );
+      )
       compilation.mainTemplate.hooks.render.tap(
         'ChunksPluginMainRenderHack',
         (modules, chunk) => {
           if (chunk.name === RUNTIME_NAME) {
-            const source = new ConcatSource();
+            const source = new ConcatSource()
             // 替换webpack中的Promise.all参数用于辨别
             const moduleSource = modules
               .source()
               .replace(replacePromiseReg, (_match: string, value: string) => {
-                return `Promise.all(${value} && ${value}.length === 0 ? { _isSyncPromise: true } : ${value})`;
+                return `Promise.all(${value} && ${value}.length === 0 ? { _isSyncPromise: true } : ${value})`
               })
               .replace(replaceRequireReg, (match: string, value: string) => {
                 return `${runTimeHackPromise}\n${match}\n${callHackFucion(
                   value
-                )}`;
-              });
-            source.add(moduleSource);
-            return source;
+                )}`
+              })
+            source.add(moduleSource)
+            return source
           }
-          return modules;
+          return modules
         }
-      );
-    });
+      )
+    })
   }
 }
 
-const callHackFucion = (value: string) => `${value}${hackFunctionName}()`;
+const callHackFucion = (value: string) => `${value}${hackFunctionName}()`
 
 const runTimeHackPromise = `// hack promise all function
 function ${hackFunctionName}() {
@@ -108,11 +108,11 @@ function ${hackFunctionName}() {
     }
     return Promise._all.apply(Promise, arguments)
   }
-}`;
+}`
 
 const chunkHackCode = `(function() {
   var ${GLOBAl_VARIABLE} = typeof window === "undefined" ? global : window
-  return `;
+  return `
 // var _module = typeof module === "undefined" ? {} : module
 // var ${GLOBAl_VARIABLE} = typeof window === "undefined" ? global : window
 // _module.exports =

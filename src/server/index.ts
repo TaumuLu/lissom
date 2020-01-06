@@ -124,3 +124,10 @@ export default class Server {
     console.error(...args)
   }
 }
+
+export const serverWrap = (fun: any) => {
+  return (options: IOptions) => {
+    const app = new Server(options)
+    return fun(app)
+  }
+}

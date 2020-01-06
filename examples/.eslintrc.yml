@@ -25,6 +25,9 @@ rules:
   arrow-body-style: 0
   react/no-multi-comp: 0
   semi: [2, 'never']
+  max-classes-per-file: 0
+  react/state-in-constructor: 0
+  react/jsx-props-no-spreading: 0
 
 
 

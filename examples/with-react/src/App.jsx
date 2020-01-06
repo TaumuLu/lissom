@@ -90,13 +90,18 @@ class Home extends Component {
     return <h1>loading</h1>
   }
 
+  constructor(props) {
+    super(props)
+    console.log('willMount')
+  }
+
   // componentDidMount() {
   //   throw new Error('test');
   // }
 
-  componentWillMount() {
-    console.log('willMount')
-  }
+  // componentWillMount() {
+  //   console.log('willMount')
+  // }
 
   componentWillUnmount() {
     console.log('willUnmount')

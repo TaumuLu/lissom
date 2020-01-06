@@ -1,26 +1,26 @@
-const path = require('path');
-const glob = require('glob');
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin');
-const autoprefixer = require('autoprefixer');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const HappyPack = require('happypack');
+const path = require('path')
+const glob = require('glob')
+const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plugin')
+const autoprefixer = require('autoprefixer')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const HappyPack = require('happypack')
 // const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const lissomWebpack = require('../../webpack');
+const lissomWebpack = require('../../webpack')
 
-const happyThreadPool = HappyPack.ThreadPool({ size: 2 });
+const happyThreadPool = HappyPack.ThreadPool({ size: 2 })
 
-const commonConfig = require('./common.config');
+const commonConfig = require('./common.config')
 
-const { isDev, outputPath, ...config } = commonConfig;
-const { context } = config;
+const { isDev, outputPath, ...config } = commonConfig
+const { context } = config
 
 // 从dll包的原始位置（webpack/build目录下）匹配要插入html的dll文件
-const globOptions = { cwd: outputPath };
-const vendorAssets = glob.sync('./dll/vendor*.dll.js', globOptions);
-const hasDll = vendorAssets.length > 0;
+const globOptions = { cwd: outputPath }
+const vendorAssets = glob.sync('./dll/vendor*.dll.js', globOptions)
+const hasDll = vendorAssets.length > 0
 
 const babelLoaders = [
   {
@@ -36,16 +36,9 @@ const babelLoaders = [
       ],
     },
   },
-];
+]
 
-const browsers = [
-  'last 4 versions',
-  'Firefox ESR',
-  '> 1%',
-  'ie >= 9',
-  'Safari >=9',
-];
-const compassMixinsPath = path.join(require.resolve('compass-mixins'), '..');
+const compassMixinsPath = path.join(require.resolve('compass-mixins'), '..')
 
 module.exports = lissomWebpack({
   ...config,
@@ -109,16 +102,16 @@ module.exports = lissomWebpack({
             loader: 'postcss-loader',
             options: {
               plugins: [
-                autoprefixer({
-                  browsers,
-                }),
+                autoprefixer(),
               ],
             },
           },
           {
             loader: 'sass-loader',
             options: {
-              includePaths: [compassMixinsPath],
+              sassOptions: {
+                includePaths: [compassMixinsPath],
+              },
             },
           },
         ],
@@ -132,9 +125,7 @@ module.exports = lissomWebpack({
             loader: 'postcss-loader',
             options: {
               plugins: [
-                autoprefixer({
-                  browsers,
-                }),
+                autoprefixer(),
               ],
             },
           },
@@ -219,4 +210,4 @@ module.exports = lissomWebpack({
       name: 'runtime',
     },
   },
-});
+})

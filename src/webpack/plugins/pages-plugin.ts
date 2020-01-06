@@ -1,7 +1,7 @@
-import { ConcatSource } from 'webpack-sources';
+import { ConcatSource } from 'webpack-sources'
 
 const __SSR_REGISTER_PAGE__ =
-  '!(typeof __SSR_REGISTER_PAGE__ !== "undefined" ? __SSR_REGISTER_PAGE__ : function(r, f) { console.warn(r+" chunk not find __SSR_REGISTER_PAGE__ function");f() })';
+  '!(typeof __SSR_REGISTER_PAGE__ !== "undefined" ? __SSR_REGISTER_PAGE__ : function(r, f) { console.warn(r+" chunk not find __SSR_REGISTER_PAGE__ function");f() })'
 
 export default class PagesPlugin {
   public apply(compiler) {
@@ -9,16 +9,16 @@ export default class PagesPlugin {
       compilation.moduleTemplates.javascript.hooks.render.tap(
         'PagesPluginRenderRegister',
         (moduleSourcePostModule, module, options) => {
-          const { chunk } = options;
+          const { chunk } = options
 
           // 排除非入口模块
           if (chunk.entryModule !== module) {
-            return moduleSourcePostModule;
+            return moduleSourcePostModule
           }
 
           // 排除非项目入口模块
           if (compilation.compiler !== compiler) {
-            return moduleSourcePostModule;
+            return moduleSourcePostModule
           }
 
           // 包装入口模块注册函数，供客户端查找调用
@@ -27,11 +27,11 @@ export default class PagesPlugin {
             moduleSourcePostModule,
             '\nreturn { page: module.exports.default }',
             '});'
-          );
+          )
 
-          return source;
+          return source
         }
-      );
-    });
+      )
+    })
   }
 }

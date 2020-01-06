@@ -1,9 +1,9 @@
-const path = require('path');
+const path = require('path')
 
-const isDev = process.env.NODE_ENV !== 'production';
-const context = process.cwd();
-const folderName = './build';
-const outputPath = path.join(context, folderName);
+const isDev = process.env.NODE_ENV !== 'production'
+const context = process.cwd()
+const folderName = './build'
+const outputPath = path.join(context, folderName)
 
 module.exports = {
   isDev,
@@ -20,4 +20,4 @@ module.exports = {
     modules: [path.join(context, 'web_modules/node_modules'), 'node_modules'],
     extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx'],
   },
-};
+}

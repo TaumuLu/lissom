@@ -9,8 +9,8 @@ export function deleteCache(path: string) {
   const cacheModule = require.cache[path]
   if (cacheModule) {
     // 同时清除父模块的引用，避免开发模式下内存泄漏
-    const { parent = {} } = cacheModule
-    const { children = [] } = parent
+    const { parent } = cacheModule
+    const { children = [] } = parent || {}
     parent.children = children.filter(child => child.id !== path)
     delete require.cache[path]
   }

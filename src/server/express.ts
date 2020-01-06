@@ -4,21 +4,18 @@ import { log } from './lib/utils'
 
 export default serverWrap(
   (app: Server) => {
-    return async (ctx, next) => {
+    return (req, res, next) => {
       const { excludeRouteReg } = config.getRegsConfig()
-      const { path, method } = ctx
+      const { path, method } = req
 
       if (method === 'GET') {
         if (!excludeRouteReg.test(path)) {
-          const { req, res } = ctx
-          ctx.res.statusCode = 200
           log(`--> ${method}`, path)
-          await app.render(req, res)
-          ctx.respond = false
+          app.render(req, res)
           log(`<-- ${method}`, path)
         } else {
           log('skip', path, '')
-          await next()
+          next()
         }
       }
     }
