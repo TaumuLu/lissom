@@ -428,3 +428,7 @@ ssr 渲染并不是适用于所有情况，如何使用、最佳实践根据实�
 ### 1.3.0+
 
 - 移除 koa-router 依赖，升级所有 package.json 依赖，支持 express 中间件
+
+### 1.3.1+
+
+- 修复 style-loader1.1+版本参数变导致服务端运行时 style 样式获取错误的 bug

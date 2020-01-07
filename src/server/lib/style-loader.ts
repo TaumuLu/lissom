@@ -82,8 +82,9 @@ const clearStyleMap = () => {
 
 export { getStyleMap, clearStyleMap }
 
-export default (list, options) => {
-  options = options || {}
+// TODO: style-loader injectType: linkTag 方式未支持
+export default (...args) => {
+  const [list, options = {}] = args.length === 2 ? args : args.slice(1)
   options.attrs = typeof options.attrs === 'object' ? options.attrs : {}
   if (!options.insertInto) options.insertInto = 'head'
   if (!options.insertAt) options.insertAt = 'bottom'
