@@ -11,13 +11,10 @@ module.exports = {
   outputPath,
   mode: isDev ? 'development' : 'production',
   // devtool: isDev ? 'cheap-module-eval-source-map' : 'cheap-module-source-map',
-  // mode: 'none',
   devtool: 'source-map',
   resolve: {
-    alias: {
-      'react-native': 'react-native-web',
-    },
+    alias: {},
     modules: [path.join(context, 'web_modules/node_modules'), 'node_modules'],
-    extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
 }

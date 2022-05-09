@@ -1,5 +1,5 @@
-import React from 'react'
 import async from 'lissom/async'
+import React from 'react'
 
 @async(['/', '/async'])
 export default class Async extends React.Component {

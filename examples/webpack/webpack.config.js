@@ -6,11 +6,7 @@ const HtmlWebpackIncludeAssetsPlugin = require('html-webpack-include-assets-plug
 const autoprefixer = require('autoprefixer')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const HappyPack = require('happypack')
-// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const lissomWebpack = require('../../webpack')
-
-const happyThreadPool = HappyPack.ThreadPool({ size: 2 })
 
 const commonConfig = require('./common.config')
 
@@ -22,23 +18,30 @@ const globOptions = { cwd: outputPath }
 const vendorAssets = glob.sync('./dll/vendor*.dll.js', globOptions)
 const hasDll = vendorAssets.length > 0
 
-const babelLoaders = [
-  {
-    loader: 'babel-loader',
-    options: {
-      babelrc: false,
-      presets: ['@babel/preset-env', '@babel/preset-react'],
-      plugins: [
-        ['@babel/plugin-proposal-decorators', { legacy: true }],
-        ['@babel/plugin-proposal-class-properties', { loose: false }],
-        '@babel/plugin-syntax-dynamic-import',
-        '@babel/plugin-transform-runtime',
-      ],
-    },
-  },
-]
+const hasJsxRuntime = (() => {
+  return false
+  if (process.env.DISABLE_NEW_JSX_TRANSFORM === 'true') {
+    return false
+  }
+
+  try {
+    require.resolve('react/jsx-runtime')
+    return true
+  } catch (e) {
+    return false
+  }
+})()
 
 const compassMixinsPath = path.join(require.resolve('compass-mixins'), '..')
+
+const getPostcssLoader = () => {
+  return {
+    loader: 'postcss-loader',
+    options: {
+      plugins: [autoprefixer()],
+    },
+  }
+}
 
 module.exports = lissomWebpack({
   ...config,
@@ -60,34 +63,57 @@ module.exports = lissomWebpack({
   module: {
     rules: [
       {
-        test: /\.(jsx?|es6)$/,
+        test: /\.(js|mjs|jsx|ts|tsx)$/,
         exclude: /node_modules/,
-        use: 'happypack/loader?id=babel',
-      },
-      {
-        test: /\.tsx?$/,
-        use: [
-          {
-            loader: 'babel-loader',
-          },
-          {
-            loader: 'ts-loader',
-            options: {
-              transpileOnly: true,
-              allowTsInNodeModules: true,
-            },
-          },
-        ],
+        loader: require.resolve('babel-loader'),
+        options: {
+          customize: require.resolve(
+            'babel-preset-react-app/webpack-overrides',
+          ),
+          presets: [
+            [
+              require.resolve('babel-preset-react-app'),
+              {
+                runtime: hasJsxRuntime ? 'automatic' : 'classic',
+              },
+            ],
+          ],
+          plugins: [
+            [
+              require.resolve('babel-plugin-named-asset-import'),
+              {
+                loaderMap: {
+                  svg: {
+                    ReactComponent:
+                      '@svgr/webpack?-svgo,+titleProp,+ref![path]',
+                  },
+                },
+              },
+            ],
+            ['@babel/plugin-proposal-decorators', { legacy: true }],
+            ['@babel/plugin-proposal-class-properties', { loose: true }],
+          ],
+          // This is a feature of `babel-loader` for webpack (not Babel itself).
+          // It enables caching results in ./node_modules/.cache/babel-loader/
+          // directory for faster rebuilds.
+          cacheDirectory: true,
+          // See #6846 for context on why cacheCompression is disabled
+          cacheCompression: false,
+          compact: !isDev,
+        },
       },
       {
         test: /\.less$/,
         use: [
           isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
           'css-loader',
+          getPostcssLoader(),
           {
             loader: 'less-loader',
             options: {
-              javascriptEnabled: true,
+              lessOptions: {
+                javascriptEnabled: true,
+              },
             },
           },
         ],
@@ -98,14 +124,7 @@ module.exports = lissomWebpack({
         use: [
           isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
           'css-loader',
-          {
-            loader: 'postcss-loader',
-            options: {
-              plugins: [
-                autoprefixer(),
-              ],
-            },
-          },
+          getPostcssLoader(),
           {
             loader: 'sass-loader',
             options: {
@@ -121,14 +140,7 @@ module.exports = lissomWebpack({
         use: [
           isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
           'css-loader',
-          {
-            loader: 'postcss-loader',
-            options: {
-              plugins: [
-                autoprefixer(),
-              ],
-            },
-          },
+          getPostcssLoader(),
         ],
       },
       {
@@ -142,25 +154,28 @@ module.exports = lissomWebpack({
   devServer: {
     contentBase: outputPath,
     // compress: true,
-    host: '127.0.0.1',
+    host: '0.0.0.0',
     port: 9966,
     historyApiFallback: true,
     open: true,
+    hot: true,
+    inline: true,
+    disableHostCheck: true,
     // watchContentBase: true,
     // public: 'frame.terminus.io:80',
   },
   plugins: [
-    !isDev &&
-      new MiniCssExtractPlugin({
-        filename: 'assets/styles/[name].css',
-        chunkFilename: 'assets/styles/[id].css',
-      }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: '../public/index.html',
       // hash: true,
       inject: true,
     }),
+    !isDev &&
+      new MiniCssExtractPlugin({
+        filename: 'assets/styles/[name].css',
+        chunkFilename: 'assets/styles/[id].css',
+      }),
     hasDll &&
       (new webpack.DllReferencePlugin({
         context,
@@ -172,36 +187,19 @@ module.exports = lissomWebpack({
         assets: vendorAssets,
         append: false,
       })),
-    new CopyWebpackPlugin([
-      {
-        from: path.join(__dirname, '../public'),
-        to: outputPath,
-        ignore: ['*.html'],
-      },
-    ]),
-    new HappyPack({
-      id: 'babel',
-      loaders: babelLoaders,
-      threadPool: happyThreadPool,
-      cache: true,
-      verbose: true,
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.join(__dirname, '../public'),
+          to: outputPath,
+          globOptions: {
+            ignore: ['*.html'],
+          },
+        },
+      ],
     }),
   ].filter(Boolean),
   optimization: {
-    // minimize: isDev,
-    // minimizer: [
-    //   new UglifyJsPlugin({
-    //     sourceMap: true,
-    //     cache: path.join(__dirname, '/.cache'),
-    //     parallel: true,
-    //     uglifyOptions: {
-    //       output: {
-    //         comments: false,
-    //         beautify: false,
-    //       },
-    //     },
-    //   }),
-    // ],
     splitChunks: {
       chunks: 'all',
       name: 'common',

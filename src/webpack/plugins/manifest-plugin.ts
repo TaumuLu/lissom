@@ -1,4 +1,5 @@
 import { RawSource } from 'webpack-sources'
+
 import { ASSETS_MANIFEST, HTML_WEBPACK_PLUGIN } from '../../lib/constants'
 
 const chunkOnlyConfig = {
@@ -92,7 +93,7 @@ export default class ManifestPlugin {
         }
       })
       compilation.assets[ASSETS_MANIFEST] = new RawSource(
-        JSON.stringify(stats, null, 2)
+        JSON.stringify(stats, null, 2),
       )
       // compilation.assets[CONFIG_MANIFEST] = new RawSource(JSON.stringify({ ...options, plugins }, null, 2))
     })

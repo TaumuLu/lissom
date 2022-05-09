@@ -1,4 +1,5 @@
 import { ConcatSource } from 'webpack-sources'
+
 import { GLOBAl_VARIABLE, RUNTIME_NAME } from '../../lib/constants'
 
 const replacePromiseReg = /Promise\.all\(([^()]*)\)/g
@@ -16,14 +17,14 @@ export default class ChunksPlugin {
           source.add(chunkHackCode)
           const replaceStr = modules.children[0].replace(
             /window/g,
-            GLOBAl_VARIABLE
+            GLOBAl_VARIABLE,
           )
           modules.children[0] = replaceStr
           source.add(modules)
           source.add('\n})()')
 
           return source
-        }
+        },
       )
       compilation.mainTemplate.hooks.render.tap(
         'ChunksPluginMainRenderHack',
@@ -38,14 +39,14 @@ export default class ChunksPlugin {
               })
               .replace(replaceRequireReg, (match: string, value: string) => {
                 return `${runTimeHackPromise}\n${match}\n${callHackFucion(
-                  value
+                  value,
                 )}`
               })
             source.add(moduleSource)
             return source
           }
           return modules
-        }
+        },
       )
     })
   }

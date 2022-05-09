@@ -1,5 +1,6 @@
 import htmlescape from 'htmlescape'
 import { Base64 } from 'js-base64'
+
 import { IRouter, ISSRData } from '../../lib/types'
 import ParseHtml from './parse-html'
 import { getStyleMap } from './style-loader'
@@ -53,7 +54,7 @@ const createAssetTags = ({
   const { rootAttr, clientRender } = ssrData
   const { jsDefinition, cssDefinition, styleDefinition } = getDefinition(
     clientRender,
-    styleHTML
+    styleHTML,
   )
 
   return {

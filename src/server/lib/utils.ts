@@ -1,4 +1,5 @@
 import chalk from 'chalk'
+
 // import { posix } from 'path';
 import { RUNTIME_NAME } from '../../lib/constants'
 import { ICtx } from '../../lib/types'
@@ -32,7 +33,7 @@ function searchCache(modPath, callback, ignoreModules = []) {
   const searchMod = modPath && require.cache[modPath]
 
   if (searchMod !== undefined) {
-    (function traverse(mod) {
+    ;(function traverse(mod) {
       const id = mod.id
       const isExclude = ignoreModules.some(exmod => id.includes(exmod))
       if (!isExclude) {
@@ -111,7 +112,7 @@ export function isResSent(res) {
 }
 
 const loadGetInitial = (methodName: string, defaultValue: any = {}): Function =>
-  async function(Component: any, ctx: ICtx) {
+  async function (Component: any, ctx: ICtx) {
     if (process.env.NODE_ENV !== 'production') {
       if (Component.prototype && Component.prototype[methodName]) {
         const compName = getDisplayName(Component)

@@ -4,6 +4,7 @@ import { existsSync, statSync } from 'fs'
 import { IncomingMessage, ServerResponse } from 'http'
 import { join } from 'path'
 import send from 'send'
+
 import { IOptions } from '../lib/types'
 import config from './config'
 import { isResSent } from './lib/utils'
@@ -68,7 +69,7 @@ export default class Server {
   public async sendFile(
     req: IncomingMessage,
     res: ServerResponse,
-    path: string
+    path: string,
   ) {
     const { outputDir } = config.get()
     return new Promise((resolve, reject) => {
@@ -93,7 +94,7 @@ export default class Server {
     req: IncomingMessage,
     res: ServerResponse,
     html: string,
-    method: string
+    method: string,
   ) {
     if (isResSent(res)) return
 

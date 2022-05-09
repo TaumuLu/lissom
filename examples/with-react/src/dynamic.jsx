@@ -1,5 +1,5 @@
-import React from 'react'
 import async from 'lissom/async'
+import React from 'react'
 
 @async(['/', '/dynamic'])
 export default class Dynamic extends React.Component {

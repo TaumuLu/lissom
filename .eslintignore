@@ -1,5 +1,5 @@
-build/
 public/
-vendor/
-lib/
 node_modules/
+build/
+vendor/
+./lib

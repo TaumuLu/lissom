@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+
 import { ReactComp } from './types'
 import { checkServer, interopDefault, isFunction } from './utils'
 

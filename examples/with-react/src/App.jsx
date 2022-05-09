@@ -1,11 +1,18 @@
-import React, { Component } from 'react'
-import { BrowserRouter, MemoryRouter, Switch, Link, Route } from 'react-router-dom'
-import dynamic from 'lissom/dynamic'
 import async from 'lissom/async'
-import logo from './files/logo.svg'
-import AsyncCompoent from './async'
-import HooksComponent from './hooks'
+import dynamic from 'lissom/dynamic'
+import React, { Component } from 'react'
+import {
+  BrowserRouter,
+  Link,
+  MemoryRouter,
+  Route,
+  Switch,
+} from 'react-router-dom'
+
+import AsyncComponent from './async'
 import ErrorBoundary from './error-boundary'
+import logo from './files/logo.svg'
+import HooksComponent from './hooks'
 
 import './styles/app.less'
 
@@ -23,7 +30,7 @@ export default class App extends Component {
   onClick = e => {
     e.preventDefault()
     console.log('click')
-  };
+  }
 
   render() {
     let Router = BrowserRouter
@@ -62,7 +69,7 @@ export default class App extends Component {
               <Switch>
                 <Route exact path="/" component={Home} />
                 <Route path="/dynamic" component={DynamicComponent} />
-                <Route path="/async" component={AsyncCompoent} />
+                <Route path="/async" component={AsyncComponent} />
                 <Route path="/hooks" component={HooksComponent} />
               </Switch>
             </header>
@@ -112,8 +119,21 @@ class Home extends Component {
     console.log('home props: 1', asyncValue)
 
     return (
-      <div onClick={onClick} style={{ height: 50, justifyContent: 'center' }}>
-        <p style={{ color: 'aqua', fontSize: 24 }}>Lissom</p>
+      <div
+        onClick={onClick}
+        style={{
+          height: 50,
+          justifyContent: 'center',
+        }}
+      >
+        <p
+          style={{
+            color: 'red',
+            fontSize: 24,
+          }}
+        >
+          Lissom
+        </p>
       </div>
     )
   }

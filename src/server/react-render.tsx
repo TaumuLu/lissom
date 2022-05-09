@@ -1,5 +1,6 @@
 import React from 'react'
 import { renderToStaticMarkup, renderToString } from 'react-dom/server'
+
 import { IRouter } from '../lib/types'
 import config from './config'
 import { printAndExit } from './lib/utils'
@@ -10,9 +11,7 @@ export default class ReactRender extends Render {
     const { isValidElementType } = require('react-is')
     if (!isValidElementType(Component)) {
       printAndExit(
-        `The default export is not a React Component in webpack entry: "${
-          router.name
-        }"`
+        `The default export is not a React Component in webpack entry: "${router.name}"`,
       )
     }
   }

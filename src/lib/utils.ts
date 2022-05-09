@@ -1,10 +1,7 @@
 import { ISSRData, ReactComp } from './types'
 
 export const getType = (value: any) => {
-  return Object.prototype.toString
-    .call(value)
-    .slice(8, -1)
-    .toLowerCase()
+  return Object.prototype.toString.call(value).slice(8, -1).toLowerCase()
 }
 
 const isTypeFactory = (type: string) => (value: any) => {
@@ -53,7 +50,7 @@ const getRegSourceStr = regs => {
 
 export const createReg = (
   regs: Array<RegExp | string> = [],
-  noMatch?: boolean
+  noMatch?: boolean,
 ) => {
   const isEmpty = !(regs && regs.length > 0)
   const regTpl = isEmpty ? '' : getRegSourceStr(regs)

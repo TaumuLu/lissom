@@ -1,5 +1,6 @@
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import { join } from 'path'
+
 import { JSONP_FUNCTION, RUNTIME_NAME } from '../lib/constants'
 import { ChunksPlugin, ManifestPlugin, PagesPlugin } from './plugins'
 import { getEntry, isMissHtmlPlugin, log, prepareOptions } from './utils'
@@ -30,17 +31,17 @@ export default config => {
     options.plugins.push(
       new ChunksPlugin(),
       new PagesPlugin(),
-      new ManifestPlugin()
+      new ManifestPlugin(),
     )
     // 必须要有html-webpack-plugin插件，没有使用默认的
     if (isMissHtmlPlugin(options.plugins)) {
       log.yellow(
-        '[lissom] > Your webpack config missing "html-webpack-plugin" plugin use lissom default plugin'
+        '[lissom] > Your webpack config missing "html-webpack-plugin" plugin use lissom default plugin',
       )
       options.plugins.unshift(
         new HtmlWebpackPlugin({
           filename: 'lissom.html',
-        })
+        }),
       )
     }
     // 打入客户端挂载执行文件

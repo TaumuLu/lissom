@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "baseUrl": "./",
+    "rootDir": "./src",
     "outDir": "./dist",
+    "experimentalDecorators": true,
+    "downlevelIteration": true,
     "target": "es5",
     "module": "commonjs",
     "allowJs": false,
@@ -15,17 +18,7 @@
     "noImplicitReturns": true,
     "esModuleInterop": true,
     "lib": ["esnext", "dom"]
-    // "paths": {
-    //   "*": [
-    //     "node_modules/*",
-    //     "src/types/*"
-    //   ]
-    // },
-    // "typeRoots": [
-    //   "src/@types",
-    //   "node_modules/@types"
-    // ],
   },
-  "include": ["./src/**/*"],
-  "exclude": ["node_modules", "examples", "dist", "docs"]
+  "include": ["src", "examples"],
+  "exclude": ["node_modules", "dist", "docs"]
 }

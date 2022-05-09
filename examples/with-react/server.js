@@ -27,6 +27,7 @@ const config = {
     id: 'root',
     class: 'test',
   },
+  ssgRouter: ['/', '/dynamic', '/hooks'],
 }
 
 // koa

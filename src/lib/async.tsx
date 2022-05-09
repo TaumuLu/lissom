@@ -1,5 +1,6 @@
 import qs from 'qs'
 import React, { Component } from 'react'
+
 import {
   checkServer,
   get,
@@ -78,7 +79,7 @@ export class InitialProps {
       if (this.value.length === this.queue.length) {
         // 不要在render时添加含有异步操作的动态组件，请把有异步操作的动态组件放在文件加载运行时执行
         throw new Error(
-          "Don't introduce dynamic components with asynchronous operations when rendering, Please introduce dynamic components with asynchronous operations when the file is running"
+          "Don't introduce dynamic components with asynchronous operations when rendering, Please introduce dynamic components with asynchronous operations when the file is running",
         )
       }
     }
@@ -114,7 +115,7 @@ export class InitialProps {
       this.value.push(resolve)
     }
     return Promise.all(this.value).then(values =>
-      values.map((v, i) => this.handleValue(v, i))
+      values.map((v, i) => this.handleValue(v, i)),
     )
   }
 
@@ -140,7 +141,7 @@ export class InitialProps {
 
     const item = this.getFullQueue()[cIndex]
     const ctx = getClientCtx()
-    // 和getValue里同理
+    // 和 getValue 里同理
     const resolve = item(ctx, golbalProps, this.value)
     this.value[cIndex] = resolve
     return resolve.then(props => {
@@ -185,7 +186,7 @@ const handlePaths = (paths, AsyncComponent?) => {
     ? `${getDisplayName(AsyncComponent)} component`
     : 'init'
   throw new Error(
-    `${title}: async decorator path params can only be a string or an array`
+    `${title}: async decorator path params can only be a string or an array`,
   )
 }
 
@@ -254,7 +255,7 @@ function Async(paths) {
           // 服务端不会走到这一步，不需要此值
           return {}
         }
-        const { props } = parseSSRData()
+        const { props } = parseSSRData() || {}
         return props
       }
 
@@ -276,7 +277,7 @@ function Async(paths) {
         const resolve = instance.getProps(
           this._index,
           dynamicIndex,
-          this.getGlobalProps()
+          this.getGlobalProps(),
         )
 
         if (resolve.finish) {

@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+
 import { InitialProps, pathMap } from '../lib/async'
 import { ISSRData } from '../lib/types'
 import { get, parseSSRData } from '../lib/utils'

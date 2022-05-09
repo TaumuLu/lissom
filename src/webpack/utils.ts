@@ -47,6 +47,7 @@ export function prepareOptions(options, ...params): Configuration {
 }
 
 const constructorName = 'HtmlWebpackPlugin'
+
 export const isMissHtmlPlugin = plugins => {
   return !plugins.some(instance => {
     const { name } = instance.constructor
@@ -82,7 +83,7 @@ const styles = {
 
 export let log: any
 
-log = function(style, message = '') {
+log = function (style, message = '') {
   console.log(style, message)
 }
 

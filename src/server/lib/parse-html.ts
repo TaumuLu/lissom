@@ -30,7 +30,7 @@ export default class ParseHtml {
       } else {
         source = source.replace(
           tagReg.htmlReg,
-          match => `${match}<head></head>`
+          match => `${match}<head></head>`,
         )
       }
     }

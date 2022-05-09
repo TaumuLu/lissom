@@ -1,11 +1,11 @@
-const path = require('path');
-const webpack = require('webpack');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const path = require('path')
+const webpack = require('webpack')
+const CleanWebpackPlugin = require('clean-webpack-plugin')
 
-const commonConfig = require('./common.config');
+const commonConfig = require('./common.config')
 
-const { isDev, outputPath, ...config } = commonConfig;
-const { context } = config;
+const { isDev, outputPath, ...config } = commonConfig
+const { context } = config
 
 module.exports = {
   ...config,
@@ -38,4 +38,4 @@ module.exports = {
       verbose: true,
     }),
   ],
-};
+}

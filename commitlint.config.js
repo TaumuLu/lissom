@@ -19,4 +19,4 @@ module.exports = {
     'subject-full-stop': [0, 'never'],
     'subject-case': [0, 'never'],
   },
-};
+}

@@ -1,4 +1,5 @@
 import path from 'path'
+
 import { JSONP_FUNCTION, RUNTIME_NAME } from '../../lib/constants'
 import config from '../config'
 import styleLoader from './style-loader'
@@ -191,10 +192,7 @@ function _hackPromiseAll_() {
   if (!hasPromise || Promise._all) return
 
   function getType(context) {
-    return Object.prototype.toString
-      .call(context)
-      .slice(8, -1)
-      .toLowerCase()
+    return Object.prototype.toString.call(context).slice(8, -1).toLowerCase()
   }
   function checkValue(arr) {
     if (arr.length > 0) {
@@ -222,7 +220,7 @@ function _hackPromiseAll_() {
     this.finish = true
     this._isSyncPromise = true
   }
-  SyncPromise.prototype.then = function(onFulfilled) {
+  SyncPromise.prototype.then = function (onFulfilled) {
     let error = null
     let value = null
     try {
@@ -233,7 +231,7 @@ function _hackPromiseAll_() {
     return new SyncPromise(value, error)
   }
   Promise._all = Promise.all
-  Promise.all = function() {
+  Promise.all = function () {
     const value = arguments[0]
     if (typeof value === 'object') {
       const isSyncValue = !checkValue(value)
@@ -270,7 +268,7 @@ function __webpack_require__(moduleId) {
       _module.exports,
       _module,
       _module.exports,
-      __webpack_require__
+      __webpack_require__,
     )
   }
 
@@ -316,14 +314,14 @@ __webpack_require__.m = modules
 __webpack_require__.c = installedModules
 
 // define getter function for harmony exports
-__webpack_require__.d = function(exports, name, getter) {
+__webpack_require__.d = function (exports, name, getter) {
   if (!__webpack_require__.o(exports, name)) {
     Object.defineProperty(exports, name, { enumerable: true, get: getter })
   }
 }
 
 // define __esModule on exports
-__webpack_require__.r = function(exports) {
+__webpack_require__.r = function (exports) {
   if (typeof Symbol !== 'undefined' && Symbol.toStringTag) {
     Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' })
   }
@@ -335,7 +333,7 @@ __webpack_require__.r = function(exports) {
 // mode & 2: merge all properties of value into the ns
 // mode & 4: return value when already ns object
 // mode & 8|1: behave like require
-__webpack_require__.t = function(value, mode) {
+__webpack_require__.t = function (value, mode) {
   if (mode & 1) value = __webpack_require__(value)
   if (mode & 8) return value
   if (mode & 4 && typeof value === 'object' && value && value.__esModule)
@@ -350,7 +348,7 @@ __webpack_require__.t = function(value, mode) {
 }
 
 // getDefaultExport function for compatibility with non-harmony modules
-__webpack_require__.n = function(module) {
+__webpack_require__.n = function (module) {
   const getter =
     module && module.__esModule
       ? function getDefault() {
@@ -364,7 +362,7 @@ __webpack_require__.n = function(module) {
 }
 
 // Object.prototype.hasOwnProperty.call
-__webpack_require__.o = function(object, property) {
+__webpack_require__.o = function (object, property) {
   return Object.prototype.hasOwnProperty.call(object, property)
 }
 
@@ -372,7 +370,7 @@ __webpack_require__.o = function(object, property) {
 __webpack_require__.p = '/'
 
 // on error function for async loading
-__webpack_require__.oe = function(err) {
+__webpack_require__.oe = function (err) {
   console.error(err)
   throw err
 }
@@ -389,7 +387,7 @@ for (let i = 0; i < jsonpArray.length; i++) webpackJsonpCallback(jsonpArray[i])
 // checkDeferredModules()
 
 // __SSR_REGISTER_PAGE__, client use
-global.__SSR_REGISTER_PAGE__ = function(_route, fn) {
+global.__SSR_REGISTER_PAGE__ = function (_route, fn) {
   const { page } = fn()
   return page
 }
@@ -436,9 +434,9 @@ const clearModuleCache = dev => {
 }
 
 export {
-  clearModuleCache,
   clearAsyncChunks,
-  setWebpackConfig,
+  clearModuleCache,
   getAsyncChunks,
   getAsyncModule,
+  setWebpackConfig,
 }

@@ -7,7 +7,15 @@ export default () => {
     <div style={{ fontSize: 24 }}>
       {value}
       <div>
-        <span style={{ marginRight: 10 }} onClick={() => setValue(value + 1)}>+</span>
+        <span
+          style={{
+            marginRight: 10,
+            cursor: 'pointer',
+          }}
+          onClick={() => setValue(value + 1)}
+        >
+          +
+        </span>
         <span onClick={() => setValue(value - 1)}>-</span>
       </div>
     </div>

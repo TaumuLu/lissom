@@ -31,7 +31,7 @@ function createDefinition(obj, options) {
     } else {
       // If the transform function returns a falsy value, don't add this css.
       // This allows conditional loading of css
-      return function() {
+      return function () {
         // noop
       }
     }
@@ -80,7 +80,7 @@ const clearStyleMap = () => {
   styleMap = {}
 }
 
-export { getStyleMap, clearStyleMap }
+export { clearStyleMap, getStyleMap }
 
 // TODO: style-loader injectType: linkTag 方式未支持
 export default (...args) => {

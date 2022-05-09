@@ -4,7 +4,7 @@ export default class ErrorComponent extends React.Component {
   state = {
     error: null,
     info: null,
-  };
+  }
 
   componentDidCatch(error, info) {
     this.setState({ error, info })

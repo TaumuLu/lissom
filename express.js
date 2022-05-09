@@ -1,1 +1,1 @@
-module.exports = require('./dist/server/express').default;
+module.exports = require('./dist/server/express').default

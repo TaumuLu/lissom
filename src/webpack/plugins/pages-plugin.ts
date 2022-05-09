@@ -26,11 +26,11 @@ export default class PagesPlugin {
             `${__SSR_REGISTER_PAGE__}('${chunk.name}', function() {\n`,
             moduleSourcePostModule,
             '\nreturn { page: module.exports.default }',
-            '});'
+            '});',
           )
 
           return source
-        }
+        },
       )
     })
   }

@@ -1,6 +1,7 @@
 import findUp from 'find-up'
 import { existsSync, readFileSync } from 'fs'
 import { resolve } from 'path'
+
 import { ASSETS_MANIFEST, RUNTIME_NAME } from '../lib/constants'
 import {
   IAssetsConfig,
@@ -67,11 +68,8 @@ class Config {
   }
 
   public setRegsConfig() {
-    const {
-      purgeModuleRegs,
-      excludeRouteRegs,
-      excludeStaticRegs,
-    } = this._config
+    const { purgeModuleRegs, excludeRouteRegs, excludeStaticRegs } =
+      this._config
 
     this._regsConfig = {
       purgeModuleReg: createReg(purgeModuleRegs),
@@ -89,7 +87,7 @@ class Config {
     const { dev, outputDir, errorHtmlPath } = this._config
     if (!existsSync(outputDir)) {
       printAndExit(
-        `> No such directory exists as the project root: ${outputDir}`
+        `> No such directory exists as the project root: ${outputDir}`,
       )
     }
     if (errorHtmlPath && !existsSync(errorHtmlPath)) {
@@ -122,7 +120,7 @@ class Config {
   public mode() {
     if (!this._isInit) {
       printAndExit(
-        '> Must initialize the configuration, execute "new Server(config)"'
+        '> Must initialize the configuration, execute "new Server(config)"',
       )
     }
     const { dev } = this._config
@@ -145,7 +143,7 @@ class Config {
     const { _config } = this
     // 合并操作
     const purgeModuleRegs = _config.purgeModuleRegs.concat(
-      get(options, 'purgeModuleRegs', [])
+      get(options, 'purgeModuleRegs', []),
     )
     this._config = { ..._config, ...options, purgeModuleRegs }
 
@@ -165,13 +163,8 @@ const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
     deleteCache(assetsManifestPath)
   }
   const assetsManifest = require(assetsManifestPath)
-  const {
-    entrypoints,
-    HtmlWebpackPlugin,
-    outputPath,
-    modules,
-    chunks,
-  } = assetsManifest
+  const { entrypoints, HtmlWebpackPlugin, outputPath, modules, chunks } =
+    assetsManifest
   const routers = getRouters(entrypoints, outputPath, defaultEntry)
   const parseHtml = getParseHtml(HtmlWebpackPlugin, outputPath)
   const errorHtml = errorHtmlPath ? readHtmlFile(errorHtmlPath) : errorHtmlPath
@@ -189,7 +182,7 @@ const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
 const getRouters = (
   entrypoints: IEntrypoints,
   outputPath: string,
-  defaultEntry: string
+  defaultEntry: string,
 ): IRouters => {
   return Object.keys(entrypoints).reduce(
     (p, key, i) => {
@@ -215,7 +208,7 @@ const getRouters = (
         [page]: router,
       }
     },
-    { default: null }
+    { default: null },
   )
 }
 
@@ -229,7 +222,7 @@ const readHtmlFile = (existsAt: string): string => {
 
 const getParseHtml = (
   HtmlWebpackPlugin: IHtmlWebpackPlugin[],
-  outputPath: string
+  outputPath: string,
 ): ParseHtml => {
   // 默认取第一个插件配置
   const [htmlConfig] = HtmlWebpackPlugin

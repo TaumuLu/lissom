@@ -1,5 +1,6 @@
 import qs from 'qs'
 import { parse } from 'url'
+
 import { ILocation, INavigator, IQuery } from '../../lib/types'
 
 const locationKeys = [
@@ -97,15 +98,12 @@ export default class Request {
   }
 
   get location(): ILocation {
-    return locationKeys.reduce(
-      (p, k) => {
-        return {
-          ...p,
-          [k]: this[k],
-        }
-      },
-      {} as any
-    )
+    return locationKeys.reduce((p, k) => {
+      return {
+        ...p,
+        [k]: this[k],
+      }
+    }, {} as any)
   }
 
   get navigator(): INavigator {
