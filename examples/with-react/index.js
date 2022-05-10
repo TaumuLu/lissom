@@ -6,8 +6,8 @@ import App from './src/App'
 
 import './src/styles/index.scss'
 
-// if (!checkServer()) {
-//   ReactDOM.render(<App />, document.getElementById('root'))
-// }
+if (!checkServer()) {
+  ReactDOM.render(<App />, document.getElementById('root'))
+}
 
 export default App

@@ -39,7 +39,7 @@ export interface IAssetsConfig {
   errorHtml: string
 }
 
-export interface IRegsConfig {
+export interface IRegConfig {
   excludeRouteReg: RegExp
   purgeModuleReg: RegExp
   excludeStaticReg: RegExp

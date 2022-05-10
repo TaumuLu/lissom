@@ -9,7 +9,7 @@ import {
   IEntrypoints,
   IHtmlWebpackPlugin,
   IOptions,
-  IRegsConfig,
+  IRegConfig,
   IRouters,
 } from '../lib/types'
 import ParseHtml from './lib/parse-html'
@@ -53,7 +53,8 @@ class Config {
   private _isCheck: boolean
   private _config: IConfig
   private _assetsConfig: IAssetsConfig
-  private _regsConfig: IRegsConfig
+  private _regConfig: IRegConfig
+
   constructor() {
     this._config = { ...defaultConfig }
   }
@@ -67,19 +68,19 @@ class Config {
     return this._assetsConfig
   }
 
-  public setRegsConfig() {
+  public setRegConfig() {
     const { purgeModuleRegs, excludeRouteRegs, excludeStaticRegs } =
       this._config
 
-    this._regsConfig = {
+    this._regConfig = {
       purgeModuleReg: createReg(purgeModuleRegs),
       excludeRouteReg: createReg(excludeRouteRegs, true),
       excludeStaticReg: createReg(excludeStaticRegs, true),
     }
   }
 
-  public getRegsConfig(): IRegsConfig {
-    return this._regsConfig
+  public getRegConfig() {
+    return this._regConfig
   }
 
   public check() {
@@ -107,7 +108,7 @@ class Config {
     const outputDir = resolve(output)
     const errorHtmlPath = errorHtml ? resolve(errorHtml) : errorHtml
     this.set({ outputDir, errorHtmlPath, dir: resolve(dir) })
-    this.setRegsConfig()
+    this.setRegConfig()
     if (!dev) {
       this.check()
       this.setAssetsConfig()

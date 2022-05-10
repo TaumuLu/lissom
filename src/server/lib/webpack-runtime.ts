@@ -419,7 +419,7 @@ const excludeModuleReg = /node_modules/
 // 提供清除webpack modules cache的方法
 const clearModuleCache = dev => {
   if (dev) {
-    const { purgeModuleReg } = config.getRegsConfig()
+    const { purgeModuleReg } = config.getRegConfig()
     Object.keys(installedModules).forEach(moduleId => {
       const name = getName(moduleId)
       // 默认清理所有非node_modules包的缓存

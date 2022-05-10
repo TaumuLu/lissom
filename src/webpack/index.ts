@@ -7,8 +7,8 @@ import { getEntry, isMissHtmlPlugin, log, prepareOptions } from './utils'
 
 const entries = [join(__dirname, '../client/index.js')]
 
-export default config => {
-  return (...params) => {
+export default (config: any, isObject: boolean) => {
+  const exportFun = (...params) => {
     const options = prepareOptions(config, ...params)
     const { entry } = options
 
@@ -18,7 +18,7 @@ export default config => {
     options.output.jsonpFunction = JSONP_FUNCTION
     if (!options.optimization) options.optimization = {}
 
-    // 拆分出webpack运行时，避免污染js chunks
+    // 拆分出 webpack 运行时，避免污染 js chunks
     options.optimization.runtimeChunk = {
       name: RUNTIME_NAME,
     }
@@ -49,4 +49,8 @@ export default config => {
 
     return options
   }
+  if (isObject) {
+    return exportFun()
+  }
+  return exportFun
 }

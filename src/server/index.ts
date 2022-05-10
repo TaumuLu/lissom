@@ -55,9 +55,9 @@ export default class Server {
     }
   }
 
-  public isStaticFile(path: string): boolean {
+  public isStaticFile(path: string) {
     const { outputDir } = config.get()
-    const { excludeStaticReg } = config.getRegsConfig()
+    const { excludeStaticReg } = config.getRegConfig()
     const filePath = join(outputDir, path)
 
     if (!excludeStaticReg.test(filePath) && existsSync(filePath)) {
@@ -126,7 +126,7 @@ export default class Server {
   }
 }
 
-export const serverWrap = (fun: any) => {
+export const createServer = (fun: any) => {
   return (options: IOptions) => {
     const app = new Server(options)
     return fun(app)

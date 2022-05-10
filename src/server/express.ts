@@ -1,10 +1,10 @@
 import config from './config'
-import Server, { serverWrap } from './index'
+import Server, { createServer } from './index'
 import { log } from './lib/utils'
 
-export default serverWrap((app: Server) => {
+export default createServer((app: Server) => {
   return (req, res, next) => {
-    const { excludeRouteReg } = config.getRegsConfig()
+    const { excludeRouteReg } = config.getRegConfig()
     const { path, method } = req
 
     if (method === 'GET') {
