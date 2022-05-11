@@ -20,8 +20,14 @@ export function isDef(v: any) {
   return v !== undefined && v !== null
 }
 
-export const checkServer = (): boolean =>
+export const hasWindow = typeof window !== 'undefined'
+
+export const checkServer = () =>
   Object.prototype.toString.call(global.process) === '[object process]'
+
+export const isSsrRender = () =>
+  checkServer() ||
+  (hasWindow && typeof window.__SSR_REGISTER_PAGE__ !== 'undefined')
 
 export function interopDefault(mod: any): any {
   return mod.default || mod

@@ -65,13 +65,13 @@ export function normalizePagePath(page: string): string {
   return page
 }
 
-export const fileterJsAssets = (originAssets: string[]): string[] => {
+export const filterJsAssets = (originAssets: string[]): string[] => {
   return originAssets.filter(path => {
     return /.js($|\?)/.test(path) && !path.includes(RUNTIME_NAME)
   })
 }
 
-export const fileterCssAssets = (originAssets: string[]): string[] => {
+export const filterCssAssets = (originAssets: string[]): string[] => {
   return originAssets.filter(path => {
     return /.css($|\?)/.test(path) && !path.includes(RUNTIME_NAME)
   })

@@ -3,7 +3,7 @@ import path from 'path'
 import { JSONP_FUNCTION, RUNTIME_NAME } from '../../lib/constants'
 import config from '../config'
 import styleLoader from './style-loader'
-import { deleteCache, fileterCssAssets, fileterJsAssets } from './utils'
+import { deleteCache, filterCssAssets, filterJsAssets } from './utils'
 
 declare global {
   namespace NodeJS {
@@ -99,6 +99,7 @@ const installedChunks = {
 const deferredModules = []
 
 let asyncModuleId = null
+let dynamicModuleId = null
 let asyncJsChunks = []
 let asyncCssChunks = []
 const getAsyncChunks = () => {
@@ -121,8 +122,8 @@ function requireChunk(chunkId) {
   const installedChunkData = installedChunks[chunkId]
   const isRequire = installedChunkData !== 0
   const { files } = chunks[chunkId]
-  const jsChunkAssets = fileterJsAssets(files)
-  const cssChunAsstes = fileterCssAssets(files)
+  const jsChunkAssets = filterJsAssets(files)
+  const cssChunkAssets = filterCssAssets(files)
   jsChunkAssets.forEach(asset => {
     const absPath = path.join(__webpack_require__.p, asset)
     if (dev) {
@@ -133,7 +134,7 @@ function requireChunk(chunkId) {
       require(absPath)
     }
   })
-  cssChunAsstes.forEach(asset => {
+  cssChunkAssets.forEach(asset => {
     asyncCssChunks.push(getAbsPath(asset))
   })
 }
@@ -161,6 +162,7 @@ const getName = moduleId => {
 }
 
 const asyncModuleReg = /lissom\/dist\/lib\/async/
+const dynamicModuleReg = /lissom\/dist\/lib\/dynamic/
 const styleModuleReg = /node_modules\/style-loader/
 
 const matchModule = moduleId => {
@@ -173,6 +175,10 @@ const matchModule = moduleId => {
   // 记录异步模块id
   if (asyncModuleReg.test(name)) {
     asyncModuleId = moduleId
+  }
+  // 记录动态模块id
+  if (dynamicModuleReg.test(name)) {
+    dynamicModuleId = moduleId
   }
   if (name && /node_modules/.test(name)) {
     const modulePath = name.replace(/.*\/node_modules\//, '')
@@ -284,8 +290,6 @@ __webpack_require__.s = undefined
 // The chunk loading function for additional chunks
 // 当作普通包加载
 __webpack_require__.e = function requireEnsure(chunkId) {
-  const promises = [] as any
-  promises._isSyncPromise = true
   // JSONP chunk loading for javascript
 
   // const installedChunkData = installedChunks[chunkId]
@@ -304,7 +308,7 @@ __webpack_require__.e = function requireEnsure(chunkId) {
   requireChunk(chunkId)
   // }
 
-  return Promise.all(promises)
+  return Promise.all([])
 }
 
 // expose the modules object (__webpack_modules__)
@@ -411,6 +415,14 @@ function getAsyncModule() {
   return null
 }
 
+function getDynamicModule() {
+  const dynamicModule = installedModules[dynamicModuleId]
+  if (dynamicModule) {
+    return dynamicModule.exports
+  }
+  return null
+}
+
 const setWebpackConfig = ({ outputPath }) => {
   __webpack_require__.p = getAbsPath(outputPath, false)
 }
@@ -438,5 +450,6 @@ export {
   clearModuleCache,
   getAsyncChunks,
   getAsyncModule,
+  getDynamicModule,
   setWebpackConfig,
 }

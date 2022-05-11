@@ -11,7 +11,11 @@ import {
   loadGetInitialStyles,
   normalizePagePath,
 } from './lib/utils'
-import { clearAsyncChunks, getAsyncModule } from './lib/webpack-runtime'
+import {
+  clearAsyncChunks,
+  getAsyncModule,
+  getDynamicModule,
+} from './lib/webpack-runtime'
 import { getRouter, loadComponent } from './require'
 
 export default abstract class Render {
@@ -82,6 +86,7 @@ export default abstract class Render {
     const asyncProps = await getAsyncProps({ ctx, props, pathname })
     // 清理异步操作中注册的异步chunks，这一步是必须的
     clearAsyncChunks()
+    await Promise.all(getDynamicLoader())
     // render时注册的异步chunks才是真正需要加载的
     const pageHTML = this.render(Component, props)
     // 必须放在render组件之后获取
@@ -138,6 +143,14 @@ async function getAsyncProps({
       const asyncProps = await mathValue.getValue(ctx, props, pathname)
       return asyncProps
     }
+  }
+  return []
+}
+
+function getDynamicLoader() {
+  const dynamicModule = getDynamicModule()
+  if (dynamicModule && dynamicModule.moduleLoader) {
+    return dynamicModule.moduleLoader
   }
   return []
 }

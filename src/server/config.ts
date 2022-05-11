@@ -16,7 +16,7 @@ import ParseHtml from './lib/parse-html'
 import {
   createReg,
   deleteCache,
-  fileterJsAssets,
+  filterJsAssets,
   get,
   getPathName,
   log,
@@ -188,7 +188,7 @@ const getRouters = (
   return Object.keys(entrypoints).reduce(
     (p, key, i) => {
       const { chunks, assets: originAssets } = entrypoints[key]
-      const assets = fileterJsAssets(originAssets)
+      const assets = filterJsAssets(originAssets)
 
       const router = {
         name: key,

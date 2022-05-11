@@ -1,4 +1,4 @@
-import { checkServer } from 'lissom/utils'
+import { isSsrRender } from 'lissom/utils'
 import React from 'react'
 import ReactDOM from 'react-dom'
 
@@ -6,7 +6,7 @@ import App from './src/App'
 
 import './src/styles/index.scss'
 
-if (!checkServer()) {
+if (!isSsrRender()) {
   ReactDOM.render(<App />, document.getElementById('root'))
 }
 
