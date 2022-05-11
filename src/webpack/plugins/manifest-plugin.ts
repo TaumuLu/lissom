@@ -1,3 +1,4 @@
+import { Compiler, Stats } from 'webpack'
 import { RawSource } from 'webpack-sources'
 
 import { ASSETS_MANIFEST, HTML_WEBPACK_PLUGIN } from '../../lib/constants'
@@ -32,7 +33,7 @@ export default class ManifestPlugin {
   //   return obj
   // }
 
-  public apply(compiler) {
+  public apply(compiler: Compiler) {
     // compiler.hooks.thisCompilation.tap('CssChunkPlugin', (compilation) => {
     //   const { mainTemplate } = compilation
     //   mainTemplate.hooks.requireEnsure.tap('CssChunkPluginMap', (source, chunk) => {
@@ -46,12 +47,19 @@ export default class ManifestPlugin {
         context,
       } = compiler
       // 输出打包清单供服务端使用
-      const stats = compilation.getStats().toJson(chunkOnlyConfig)
+      const stats = compilation
+        .getStats()
+        .toJson(chunkOnlyConfig) as Stats.ToJsonOutput & {
+        context: string
+        assets: string[]
+        chunks: any
+        modules: any
+      }
 
       stats.context = context
-      stats.assets = Object.keys(compilation.assets)
+      stats.assets = Object.keys(compilation.assets) as any
       stats[HTML_WEBPACK_PLUGIN] = []
-      stats.chunks = stats.chunks.reduce((p, chunk) => {
+      stats.chunks = stats.chunks.reduce((p: any, chunk: any) => {
         const { id, entry, initial, names, files, hash } = chunk
         return {
           ...p,
@@ -64,7 +72,7 @@ export default class ManifestPlugin {
           },
         }
       }, {})
-      stats.modules = stats.modules.reduce((p, module) => {
+      stats.modules = stats.modules.reduce((p: any, module: any) => {
         const { id, name, issuerId } = module
         return {
           ...p,
@@ -80,7 +88,7 @@ export default class ManifestPlugin {
           constructor: { name },
         } = plugin
         if (name === HTML_WEBPACK_PLUGIN) {
-          const { childCompilationOutputName, assetJson } = plugin
+          const { childCompilationOutputName, assetJson } = plugin as any
           stats[HTML_WEBPACK_PLUGIN].push({
             childCompilationOutputName, // 输出html文件目录
             assetJson,

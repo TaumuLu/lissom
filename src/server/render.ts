@@ -43,7 +43,7 @@ export default abstract class Render {
       location,
       navigator,
       query,
-      asPath: req.url,
+      asPath: request.url,
     }
     const ssrData: ISSRData = {
       props: {},
@@ -110,7 +110,7 @@ export default abstract class Render {
 
   public renderHTML(pageHTML?: string, styleHTML?: string): string {
     const { res } = this.renderOpts.ctx
-    if (isResSent(res)) return null
+    if (isResSent(res)) return ''
 
     const { router, ssrData } = this.renderOpts
     const { parseHtml } = config.getAssetsConfig()

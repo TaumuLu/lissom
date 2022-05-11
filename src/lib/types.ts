@@ -1,8 +1,6 @@
 import ParseHtml from '../server/lib/parse-html'
 import Request from '../server/lib/request'
 
-export type ReactComp<P = {}> = React.ComponentClass<P> | React.SFC<P>
-
 export interface IOptions {
   // isSpa?: boolean
   output?: string
@@ -36,7 +34,7 @@ export interface IAssetsConfig {
   outputPath: string
   modules: IModules
   chunks: IChunks
-  errorHtml: string
+  errorHtml?: string
 }
 
 export interface IRegConfig {
@@ -107,10 +105,10 @@ export interface ISSRData {
   props: any
   asyncProps: any
   pathname: string
-  clientRender: boolean
-  serverRender: boolean
+  clientRender?: boolean
+  serverRender?: boolean
   rootAttr: IConfig['rootAttr']
-  isBase64: boolean
+  isBase64?: boolean
 }
 
 export interface ILocation {

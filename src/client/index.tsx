@@ -35,7 +35,7 @@ if (
       if (!clientRender) return void 0
 
       let isInitialRender = true
-      function renderReactElement(reactEl, domEl) {
+      function renderReactElement(reactEl: any, domEl: any) {
         // The check for `.hydrate` is there to support React alternatives like preact
         if (
           serverRender &&
@@ -62,7 +62,7 @@ if (
 
       const routers = {}
       const initialRoute = window.__SSR_LOADED_PAGES__.shift()
-      const registerPage = (route, { page: Component }) => {
+      const registerPage = (route: string, { page: Component }: any) => {
         routers[route] = Component
 
         if (isInitialRender && route === initialRoute) {
@@ -81,7 +81,8 @@ if (
       window.__SSR_LOADED_PAGES__.forEach(([r, m]) => {
         registerPage(r, m)
       })
-      delete window.__SSR_LOADED_PAGES__
-      window.__SSR_REGISTER_PAGE__ = (r, f) => registerPage(r, f())
+      window.__SSR_LOADED_PAGES__ = []
+      window.__SSR_REGISTER_PAGE__ = (r: string, f: any) => registerPage(r, f())
+      return
     })
 }

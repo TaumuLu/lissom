@@ -1,3 +1,4 @@
+import { Compiler } from 'webpack'
 import { ConcatSource } from 'webpack-sources'
 
 import { GLOBAl_VARIABLE } from '../../lib/constants'
@@ -7,11 +8,11 @@ import { GLOBAl_VARIABLE } from '../../lib/constants'
 // const hackFunctionName = '_hackPromiseAll_'
 
 export default class ChunksPlugin {
-  public apply(compiler) {
-    compiler.hooks.compilation.tap('ChunksPlugin', compilation => {
+  public apply(compiler: Compiler) {
+    compiler.hooks.compilation.tap('ChunksPlugin', (compilation: any) => {
       compilation.chunkTemplate.hooks.render.tap(
         'ChunksPluginRenderHack',
-        modules => {
+        (modules: any) => {
           const source = new ConcatSource()
           // 支持服务端运行和导出
           source.add(chunkHackCode)

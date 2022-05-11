@@ -11,8 +11,10 @@ export function deleteCache(path: string) {
   if (cacheModule) {
     // 同时清除父模块的引用，避免开发模式下内存泄漏
     const { parent } = cacheModule
-    const { children = [] } = parent || {}
-    parent.children = children.filter(child => child.id !== path)
+    if (parent) {
+      const { children = [] } = parent || {}
+      parent.children = children.filter(child => child.id !== path)
+    }
     delete require.cache[path]
   }
 }
@@ -29,15 +31,19 @@ export function purgeCache(moduleName: string, ignoreModules: string[]) {
   })
 }
 
-function searchCache(modPath, callback, ignoreModules = []) {
+function searchCache(
+  modPath: string,
+  callback: (modId: string) => void,
+  ignoreModules: string[] = [],
+) {
   const searchMod = modPath && require.cache[modPath]
 
   if (searchMod !== undefined) {
-    ;(function traverse(mod) {
+    ;(function traverse(mod: any) {
       const id = mod.id
       const isExclude = ignoreModules.some(exmod => id.includes(exmod))
       if (!isExclude) {
-        mod.children.forEach(child => {
+        mod.children.forEach((child: any) => {
           traverse(child)
         })
       }
@@ -107,7 +113,7 @@ export function printAndExit(message: string, code: number = 1) {
   process.exit(code)
 }
 
-export function isResSent(res) {
+export function isResSent(res: any) {
   return res.finished || res.headersSent
 }
 

@@ -3,7 +3,7 @@ import Server, { createServer } from './index'
 import { log } from './lib/utils'
 
 export default createServer((app: Server) => {
-  return (req, res, next) => {
+  return (req: any, res: any, next: any) => {
     const { excludeRouteReg } = config.getRegConfig()
     const { path, method } = req
 

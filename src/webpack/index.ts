@@ -8,10 +8,13 @@ import { getEntry, isMissHtmlPlugin, log, prepareOptions } from './utils'
 const entries = [join(__dirname, '../client/index.js')]
 
 export default (config: any, isObject: boolean) => {
-  const exportFun = (...params) => {
+  const exportFun = (...params: any[]) => {
     const options = prepareOptions(config, ...params)
     const { entry } = options
 
+    if (!options.output) {
+      options.output = {}
+    }
     options.output.libraryTarget = 'umd'
     options.output.libraryExport = 'default'
     options.output.umdNamedDefine = true
@@ -27,6 +30,9 @@ export default (config: any, isObject: boolean) => {
     // options.optimization.namedChunks = true
     // options.optimization.moduleIds = 'named'
 
+    if (!options.plugins) {
+      options.plugins = []
+    }
     // 添加支持服务端webpack插件
     options.plugins.push(
       new ChunksPlugin(),

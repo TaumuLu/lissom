@@ -23,7 +23,7 @@ export default class Server {
   public async render(req: IncomingMessage, res: ServerResponse) {
     // 执行不同模式下的配置操作
     config.mode()
-    const { method, url } = req
+    const { method = '', url = '' } = req
     // 处理静态资源文件
     if (this.isStaticFile(url)) {
       return this.sendFile(req, res, url)
@@ -56,7 +56,7 @@ export default class Server {
   }
 
   public isStaticFile(path: string) {
-    const { outputDir } = config.get()
+    const { outputDir = '' } = config.get()
     const { excludeStaticReg } = config.getRegConfig()
     const filePath = join(outputDir, path)
 
@@ -99,7 +99,7 @@ export default class Server {
     if (isResSent(res)) return
 
     const { dev, generateEtags } = config.get()
-    const etag = generateEtags && generateETag(html)
+    const etag = generateEtags ? generateETag(html) : undefined
     if (fresh(req.headers, { etag })) {
       res.statusCode = 304
       res.end()

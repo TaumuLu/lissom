@@ -1,10 +1,11 @@
+import { Compiler } from 'webpack'
 import { ConcatSource } from 'webpack-sources'
 
 const __SSR_REGISTER_PAGE__ =
   '!(typeof __SSR_REGISTER_PAGE__ !== "undefined" ? __SSR_REGISTER_PAGE__ : function(r, f) { console.warn(r+" chunk not find __SSR_REGISTER_PAGE__ function");f() })'
 
 export default class PagesPlugin {
-  public apply(compiler) {
+  public apply(compiler: Compiler) {
     compiler.hooks.compilation.tap('PagesPlugin', compilation => {
       compilation.moduleTemplates.javascript.hooks.render.tap(
         'PagesPluginRenderRegister',

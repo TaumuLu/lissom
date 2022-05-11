@@ -16,6 +16,13 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "strict": true,
     "lib": ["esnext", "dom"]
   },
   "include": ["src", "examples"],

@@ -1,4 +1,4 @@
-import { ISSRData, ReactComp } from './types'
+import { ISSRData } from './types'
 
 export const getType = (value: any) => {
   return Object.prototype.toString.call(value).slice(8, -1).toLowerCase()
@@ -33,24 +33,24 @@ export function interopDefault(mod: any): any {
   return mod.default || mod
 }
 
-export const getDisplayName = (Component: ReactComp) => {
+export const getDisplayName = (Component: any) => {
   if (isString(Component)) return Component
 
   return Component.displayName || Component.name || 'Unknown Component'
 }
 
-const getRegSourceStr = regs => {
+const getRegSourceStr = (regs: Array<RegExp | string>) => {
   return regs
     .reduce((p, reg) => {
       if (reg) {
-        if (isRegExp(reg)) {
-          p.push(reg.source)
-        } else {
+        if (typeof reg === 'string') {
           p.push(reg.toString())
+        } else {
+          p.push(reg.source)
         }
       }
       return p
-    }, [])
+    }, [] as string[])
     .join('|')
 }
 

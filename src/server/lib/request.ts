@@ -1,3 +1,4 @@
+import { IncomingMessage } from 'http'
 import qs from 'qs'
 import { parse } from 'url'
 
@@ -16,16 +17,25 @@ const locationKeys = [
 ]
 
 export default class Request {
+  private _querycache: any
+  private req: IncomingMessage
+  private app: any
+
+  constructor(req: IncomingMessage) {
+    this.req = req
+    this.app = {}
+  }
+
   get headers() {
     return this.req.headers
   }
 
   get url() {
-    return this.req.url
+    return this.req.url || ''
   }
 
   get originalUrl() {
-    return this.req.url
+    return this.req.url || ''
   }
 
   get hash() {
@@ -68,10 +78,12 @@ export default class Request {
   }
 
   get protocol() {
-    if (this.socket.encrypted) return 'https'
+    if ((this.socket as any).encrypted) return 'https'
     if (!this.app.proxy) return 'http'
     const proto = this.get('X-Forwarded-Proto')
-    return proto ? proto.split(/\s*,\s*/, 1)[0] : 'http'
+    return proto && typeof proto === 'string'
+      ? proto.split(/\s*,\s*/, 1)[0]
+      : 'http'
   }
 
   get query(): IQuery {
@@ -85,7 +97,7 @@ export default class Request {
   }
 
   get path() {
-    return parse(this.url).pathname
+    return parse(this.url).pathname || ''
   }
 
   get pathname() {
@@ -108,21 +120,12 @@ export default class Request {
 
   get navigator(): INavigator {
     return {
-      userAgent: this.get('user-agent'),
-      language: this.get('accept-language'),
+      userAgent: this.get('user-agent') as string,
+      language: this.get('accept-language') as string,
     }
   }
 
-  private _querycache: any
-  private req: any
-  private app: any
-
-  constructor(req: any) {
-    this.req = req
-    this.app = {}
-  }
-
-  public get(field) {
+  public get(field: string) {
     const req = this.req
     switch ((field = field.toLowerCase())) {
       case 'referer':

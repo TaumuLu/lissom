@@ -1,6 +1,6 @@
 let styleMap = {}
 
-function addStyleMap(styles, options) {
+function addStyleMap(styles: any, options: any) {
   for (let i = 0; i < styles.length; i++) {
     const item = styles[i]
     const parts = []
@@ -14,7 +14,7 @@ function addStyleMap(styles, options) {
   }
 }
 
-function createDefinition(obj, options) {
+function createDefinition(obj: any, options: any) {
   let result
 
   // If a transform function was defined, run it on the css
@@ -43,7 +43,7 @@ function createDefinition(obj, options) {
   }
 }
 
-function getAttrs(options) {
+function getAttrs(options: any) {
   if (options.attrs.type === undefined) {
     options.attrs.type = 'text/css'
   }
@@ -52,7 +52,7 @@ function getAttrs(options) {
   return options.attrs
 }
 
-function listToStyles(list, options) {
+function listToStyles(list: any, options: any) {
   const styles = []
   const newStyles = {}
 
@@ -83,7 +83,7 @@ const clearStyleMap = () => {
 export { clearStyleMap, getStyleMap }
 
 // TODO: style-loader injectType: linkTag 方式未支持
-export default (...args) => {
+export default (...args: any) => {
   const [list, options = {}] = args.length === 2 ? args : args.slice(1)
   options.attrs = typeof options.attrs === 'object' ? options.attrs : {}
   if (!options.insertInto) options.insertInto = 'head'

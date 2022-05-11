@@ -53,8 +53,8 @@ const createAssetTags = ({
   const { name } = router
   const { rootAttr, clientRender } = ssrData
   const { jsDefinition, cssDefinition, styleDefinition } = getDefinition(
-    clientRender,
     styleHTML,
+    clientRender,
   )
 
   return {
@@ -92,8 +92,8 @@ const createSSRData = (ssrData: ISSRData) => {
   return code
 }
 
-const getDefinition = (clientRender: boolean, styleHTML: string) => {
-  let jsDefinition = []
+const getDefinition = (styleHTML: string, clientRender?: boolean) => {
+  let jsDefinition: any = []
   let cssDefinition = []
   let styleDefinition = []
   const { asyncJsChunks, asyncCssChunks } = getAsyncChunks()
@@ -115,11 +115,11 @@ const getDefinition = (clientRender: boolean, styleHTML: string) => {
   })
   styleDefinition = Object.keys(styleMap).reduce((p, key) => {
     const { parts } = styleMap[key]
-    parts.forEach(value => {
+    parts.forEach((value: any) => {
       p.push(value)
     })
     return p
-  }, [])
+  }, [] as any)
 
   if (styleHTML) {
     styleDefinition.push({

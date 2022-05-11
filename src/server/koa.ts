@@ -3,7 +3,7 @@ import Server, { createServer } from './index'
 import { log } from './lib/utils'
 
 export default createServer((app: Server) => {
-  return async (ctx, next) => {
+  return async (ctx: any, next: any) => {
     const { excludeRouteReg } = config.getRegConfig()
     const { path, method } = ctx
 

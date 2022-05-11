@@ -1,23 +1,27 @@
-import React, { Component } from 'react'
+import React, { Component, ReactElement } from 'react'
 
-import { ReactComp } from './types'
-import { checkServer, interopDefault, isFunction } from './utils'
-
-let defaultLoading = () => null
-
+import { checkServer, interopDefault } from './utils'
 interface IState {
-  DynamicComponent: ReactComp<any>
+  DynamicComponent: any
 }
 
 export const moduleLoader = new Set()
 
-let component
+let component: ReactElement
 
-function Dynamic(config) {
-  if (isFunction(config)) {
+let defaultLoading: any = () => null
+
+interface Config {
+  loader: () => Promise<any>
+  loading?: ReactElement
+}
+
+function Dynamic(config: Config | Config['loader']) {
+  if (typeof config === 'function') {
     config = { loader: config }
   }
   const { loader, loading = defaultLoading } = config
+
   // 服务端提前执行，支持动态组件中的异步操作，用于注册
   if (!component) {
     const resolve = loader()
@@ -26,10 +30,12 @@ function Dynamic(config) {
     resolve.then(result => {
       moduleLoader.delete(resolve)
       component = interopDefault(result)
+
       // 动态组件执行队列移动操作
       if (checkServer()) {
-        if (component.move) {
-          component.move()
+        const asyncComponent = component as any
+        if (asyncComponent.move) {
+          asyncComponent.move()
         }
       }
     })
@@ -37,9 +43,9 @@ function Dynamic(config) {
 
   return class DynamicConnect extends Component<any, IState> {
     public state: IState
-    public mounted: boolean
+    public mounted = false
 
-    constructor(props) {
+    constructor(props: any) {
       super(props)
       this.state = {
         DynamicComponent: null,
@@ -55,7 +61,7 @@ function Dynamic(config) {
       this.mounted = false
     }
 
-    public onFulfilled = result => {
+    public onFulfilled = (result: any) => {
       const { value } = result
       const DynamicComponent = interopDefault(value)
       if (this.mounted) {
@@ -67,7 +73,7 @@ function Dynamic(config) {
 
     public createResult = (value: any, error: any = null) => {
       this.onFulfilled({
-        _isSyncPromise: false,
+        // _isSyncPromise: false,
         finish: true,
         error,
         value,
@@ -97,7 +103,7 @@ function Dynamic(config) {
   }
 }
 
-Dynamic.setDefaultLoading = loading => {
+Dynamic.setDefaultLoading = (loading: ReactElement) => {
   defaultLoading = loading
 }
 

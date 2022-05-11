@@ -5,9 +5,9 @@ export default function ErrorDebug({
   info,
   dev,
 }: {
-  error: any
+  error: Error
   info?: any
-  dev: boolean
+  dev?: boolean
 }) {
   const { name, message } = error
 
@@ -34,7 +34,13 @@ export default function ErrorDebug({
   `
 }
 
-const StackTrace = ({ error: { name, message, stack }, info }) => `
+const StackTrace = ({
+  error: { name, message, stack },
+  info,
+}: {
+  error: Error
+  info: any
+}) => `
   <div>
     <div style=${getStyle(styles.heading)}>${message || name}</div>
     <pre style=${getStyle(styles.stack)}>${stack}</pre>
@@ -47,7 +53,7 @@ const StackTrace = ({ error: { name, message, stack }, info }) => `
 `
 
 const reg = /[A-Z]/g
-const replaceName = name => {
+const replaceName = (name: string) => {
   return name.replace(reg, match => {
     return `-${match.toLowerCase()}`
   })
@@ -99,7 +105,7 @@ export const styles: any = {
   },
 }
 
-const encodeHtml = str => {
+const encodeHtml = (str: string) => {
   return str.replace(/</g, '&lt;').replace(/>/g, '&gt;')
 }
 

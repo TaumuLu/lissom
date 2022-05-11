@@ -19,7 +19,7 @@ export const getEntry = (entries: string[], initialEntry: any): any => {
   return prependEntry(initialEntry)
 }
 
-function handleExport(options) {
+function handleExport(options: any) {
   const isES6DefaultExported =
     typeof options === 'object' &&
     options !== null &&
@@ -28,27 +28,27 @@ function handleExport(options) {
   return isES6DefaultExported ? options.default : options
 }
 
-function handleFunction(options, ...params) {
+function handleFunction(options: any, ...params: any[]) {
   if (typeof options === 'function') {
     options = options(...params)
   }
   return options
 }
 
-export function prepareOptions(options, ...params): Configuration {
+export function prepareOptions(options: any, ...params: any[]): Configuration {
   options = handleExport(options)
   const isArray = Array.isArray(options)
   if (isArray) {
     throw new Error('[lissom] > webpack config does not support array')
   }
   return isArray
-    ? options.map(_options => handleFunction(_options, ...params))
+    ? options.map((_options: any) => handleFunction(_options, ...params))
     : handleFunction(options, ...params)
 }
 
 const constructorName = 'HtmlWebpackPlugin'
 
-export const isMissHtmlPlugin = plugins => {
+export const isMissHtmlPlugin = (plugins: any[]) => {
   return !plugins.some(instance => {
     const { name } = instance.constructor
     return name === constructorName
@@ -83,7 +83,7 @@ const styles = {
 
 export let log: any
 
-log = function (style, message = '') {
+log = function (style: string, message = '') {
   console.log(style, message)
 }
 

@@ -1,4 +1,4 @@
-const getTagRegExp = (tag, isEnd = false, flags = 'i') => {
+const getTagRegExp = (tag: string, isEnd = false, flags = 'i') => {
   let tagAfter = '\\s'
   if (tag === 'html') {
     tagAfter = '[^>]'
@@ -17,9 +17,10 @@ const tagReg = {
 const scriptTagReg = /<script[^<>]*(\/\s*>|>[\s\S]*<\/script>)/gi
 
 export default class ParseHtml {
-  private _originSource: string
-  private _source: string
-  constructor(source) {
+  private _originSource!: string
+  private _source!: string
+
+  constructor(source: string) {
     this.set(source)
   }
 
@@ -52,7 +53,7 @@ export default class ParseHtml {
     this._source = this._originSource
   }
 
-  public injectTags(assetTags): string {
+  public injectTags(assetTags: any) {
     Object.keys(assetTags).forEach(key => {
       const tags = assetTags[key]
       const isEnd = key.includes('End')
@@ -78,7 +79,7 @@ export default class ParseHtml {
   }
 }
 
-const createTagTexts = tagDefinition => {
+const createTagTexts = (tagDefinition: any) => {
   const {
     attributes,
     voidTag = false,

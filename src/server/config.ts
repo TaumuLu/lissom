@@ -29,7 +29,7 @@ const _DEV_ = process.env.NODE_ENV !== 'production'
 
 const defaultConfig: IConfig = {
   output: './public',
-  outputDir: null,
+  outputDir: undefined,
   excludeRouteRegs: [/\/api\/.*/],
   excludeStaticRegs: [],
   purgeModuleRegs: [/node_modules\/lissom/],
@@ -43,17 +43,17 @@ const defaultConfig: IConfig = {
   clientRender: true,
   serverRender: true,
   rootAttr: {},
-  defaultEntry: null,
+  defaultEntry: undefined,
   errorHtml: '',
   isBase64: false,
 }
 
 class Config {
-  private _isInit: boolean
-  private _isCheck: boolean
+  private _isInit = false
+  private _isCheck = false
   private _config: IConfig
-  private _assetsConfig: IAssetsConfig
-  private _regConfig: IRegConfig
+  private _assetsConfig!: IAssetsConfig
+  private _regConfig!: IRegConfig
 
   constructor() {
     this._config = { ...defaultConfig }
@@ -85,7 +85,7 @@ class Config {
 
   public check() {
     this._isCheck = true
-    const { dev, outputDir, errorHtmlPath } = this._config
+    const { dev, outputDir = '', errorHtmlPath } = this._config
     if (!existsSync(outputDir)) {
       printAndExit(
         `> No such directory exists as the project root: ${outputDir}`,
@@ -101,9 +101,10 @@ class Config {
   }
 
   public init(options: IOptions) {
-    const { dev, dir, output, errorHtml } = this.set(options)
+    const { dev, dir = '', output, errorHtml } = this.set(options)
     if (!output) {
       printAndExit('> "output" config is required')
+      return
     }
     const outputDir = resolve(output)
     const errorHtmlPath = errorHtml ? resolve(errorHtml) : errorHtml
@@ -143,7 +144,7 @@ class Config {
   public set(options: IConfig) {
     const { _config } = this
     // 合并操作
-    const purgeModuleRegs = _config.purgeModuleRegs.concat(
+    const purgeModuleRegs = _config.purgeModuleRegs!.concat(
       get(options, 'purgeModuleRegs', []),
     )
     this._config = { ..._config, ...options, purgeModuleRegs }
@@ -161,9 +162,9 @@ const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
     printAndExit('> Your webpack config does not use lissom/webpack wrapping')
   }
   if (dev) {
-    deleteCache(assetsManifestPath)
+    deleteCache(assetsManifestPath!)
   }
-  const assetsManifest = require(assetsManifestPath)
+  const assetsManifest = require(assetsManifestPath!)
   const { entrypoints, HtmlWebpackPlugin, outputPath, modules, chunks } =
     assetsManifest
   const routers = getRouters(entrypoints, outputPath, defaultEntry)
@@ -183,7 +184,7 @@ const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
 const getRouters = (
   entrypoints: IEntrypoints,
   outputPath: string,
-  defaultEntry: string,
+  defaultEntry?: string,
 ): IRouters => {
   return Object.keys(entrypoints).reduce(
     (p, key, i) => {
@@ -209,7 +210,7 @@ const getRouters = (
         [page]: router,
       }
     },
-    { default: null },
+    { default: null } as any,
   )
 }
 
