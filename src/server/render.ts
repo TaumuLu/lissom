@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http'
 
-import { ICtx, IRenderOpts, IRouter, ISSRData } from '../lib/types'
+import { ICtx, IRouter, IssRData } from '../lib/types'
 import config from './config'
 import createHtml from './lib/create-html'
 import ErrorDebug from './lib/error-debug'
@@ -17,6 +17,15 @@ import {
   getDynamicModule,
 } from './lib/webpack-runtime'
 import { getRouter, loadComponent } from './require'
+
+export interface IRenderOpts {
+  ctx: ICtx
+  page: string
+  pathname: string
+  router: IRouter
+  request: Request
+  ssrData: IssRData
+}
 
 export default abstract class Render {
   public renderOpts: IRenderOpts
@@ -45,7 +54,7 @@ export default abstract class Render {
       query,
       asPath: request.url,
     }
-    const ssrData: ISSRData = {
+    const ssrData: IssRData = {
       props: {},
       asyncProps: [],
       pathname,

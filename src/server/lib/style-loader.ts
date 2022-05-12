@@ -10,7 +10,7 @@ function addStyleMap(styles: any, options: any) {
     }
 
     // 每次替换新的样式
-    styleMap[item.id] = { id: item.id, parts }
+    styleMap[item.id] = parts
   }
 }
 
@@ -38,8 +38,8 @@ function createDefinition(obj: any, options: any) {
   }
   return {
     tagName: 'style',
-    attributes: getAttrs(options),
-    innerHTML: obj.css,
+    attribs: getAttrs(options),
+    children: obj.css,
   }
 }
 

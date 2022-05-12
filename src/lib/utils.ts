@@ -1,4 +1,4 @@
-import { ISSRData } from './types'
+import { IssRData } from './types'
 
 export const getType = (value: any) => {
   return Object.prototype.toString.call(value).slice(8, -1).toLowerCase()
@@ -104,7 +104,7 @@ export const set = (object: any, path: Tpath, value: any) => {
   }, object)
 }
 
-export function parseSSRData(): ISSRData {
+export function parseSSRData(): IssRData {
   const ssrData = window.__SSR_DATA__
   if (typeof ssrData === 'string') {
     // 延迟到方法调用时再引用，避免服务端被执行

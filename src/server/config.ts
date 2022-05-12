@@ -4,10 +4,11 @@ import { resolve } from 'path'
 
 import { ASSETS_MANIFEST, RUNTIME_NAME } from '../lib/constants'
 import {
-  IAssetsConfig,
+  IChunks,
   IConfig,
   IEntrypoints,
   IHtmlWebpackPlugin,
+  IModules,
   IOptions,
   IRegConfig,
   IRouters,
@@ -23,6 +24,15 @@ import {
   printAndExit,
 } from './lib/utils'
 import { setWebpackConfig } from './lib/webpack-runtime'
+
+export interface IAssetsConfig {
+  routers: IRouters
+  parseHtml: ParseHtml
+  outputPath: string
+  modules: IModules
+  chunks: IChunks
+  errorHtml?: string
+}
 
 const _DEV_ = process.env.NODE_ENV !== 'production'
 // const suffixRegs = [/\.(html|php)/, /\/[^.]*/];

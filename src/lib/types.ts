@@ -1,6 +1,3 @@
-import ParseHtml from '../server/lib/parse-html'
-import Request from '../server/lib/request'
-
 export interface IOptions {
   // isSpa?: boolean
   output?: string
@@ -26,15 +23,6 @@ export interface IOptions {
 export interface IConfig extends IOptions {
   outputDir?: string // auto generate
   errorHtmlPath?: string
-}
-
-export interface IAssetsConfig {
-  routers: IRouters
-  parseHtml: ParseHtml
-  outputPath: string
-  modules: IModules
-  chunks: IChunks
-  errorHtml?: string
 }
 
 export interface IRegConfig {
@@ -101,7 +89,7 @@ export interface ICtx {
   navigator: INavigator
 }
 
-export interface ISSRData {
+export interface IssRData {
   props: any
   asyncProps: any
   pathname: string
@@ -128,11 +116,12 @@ export interface INavigator {
   language: string
 }
 
-export interface IRenderOpts {
-  ctx: ICtx
-  page: string
-  pathname: string
-  router: IRouter
-  request: Request
-  ssrData: ISSRData
+export interface INode {
+  tagName?: string
+  attribs?: {
+    [attr: string]: string
+  }
+  children?: any
 }
+
+export type INodes = INode[]

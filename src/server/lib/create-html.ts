@@ -1,18 +1,18 @@
 import htmlescape from 'htmlescape'
 import { Base64 } from 'js-base64'
 
-import { IRouter, ISSRData } from '../../lib/types'
+import { INode, IRouter, IssRData } from '../../lib/types'
 import ParseHtml from './parse-html'
 import { getStyleMap } from './style-loader'
 import { getAsyncChunks } from './webpack-runtime'
 
-interface ICreateAssetTags {
+interface ICreateNodes {
   pageHTML?: string
   styleHTML?: string
   router: IRouter
-  ssrData: ISSRData
+  ssrData: IssRData
 }
-interface ICreateHtml extends ICreateAssetTags {
+interface ICreateHtml extends ICreateNodes {
   parseHtml: ParseHtml
 }
 
@@ -25,65 +25,76 @@ export default function createHtml({
 }: ICreateHtml): string {
   const { clientRender } = ssrData
   // 重置回初始的html
-  parseHtml.reset()
-  const assetTags = createAssetTags({
+  parseHtml.restoreDom()
+  // 删除已存在的同 id dom
+  const rootId = ssrData.rootAttr?.id
+  if (rootId) {
+    parseHtml.deleteById(rootId)
+  }
+
+  const assetTags = createNodes({
     pageHTML,
     styleHTML,
     router,
     ssrData,
   })
-  parseHtml.injectTags(assetTags)
-  // 删除script标签
+  const { head, body } = assetTags
+  parseHtml.headAddTags(head)
+  parseHtml.bodyAddTags(body, { isPrepend: true })
+  // 删除 script 标签
   if (!clientRender) {
-    parseHtml.deleteScriptTag()
+    parseHtml.deleteByTag('script')
   }
 
-  return parseHtml.get()
+  return parseHtml.serializer()
 }
 
 const cssRel = 'stylesheet'
 const scriptType = 'text/javascript'
 
-const createAssetTags = ({
+const createNodes = ({
   pageHTML = '',
   styleHTML = '',
   router,
   ssrData,
-}: ICreateAssetTags): any => {
+}: ICreateNodes) => {
   const { name } = router
-  const { rootAttr, clientRender } = ssrData
-  const { jsDefinition, cssDefinition, styleDefinition } = getDefinition(
-    styleHTML,
-    clientRender,
-  )
+  const { rootAttr } = ssrData
+  const { jsDefinition, cssDefinition, styleDefinition } = getDefinition()
+
+  if (styleHTML) {
+    styleDefinition.push({
+      children: styleHTML,
+    })
+  }
 
   return {
-    headEnd: [...cssDefinition, ...styleDefinition],
-    bodyStart: [
+    head: [...cssDefinition, ...styleDefinition] as INode[],
+    body: [
       {
-        attributes: {
+        attribs: {
           id: '__ssr_root__',
           style: 'height: 100%; display: flex',
           ...rootAttr,
         },
         tagName: 'div',
-        innerHTML: pageHTML,
+        children: pageHTML,
       },
       {
-        attributes: { type: scriptType },
+        attribs: { type: scriptType },
         tagName: 'script',
-        innerHTML: `
+        children: `
           window.__SSR_DATA__ = ${createSSRData(ssrData)}
           window.__SSR_LOADED_PAGES__ = ['${name}'];
           window.__SSR_REGISTER_PAGE__ = function(r,f) { __SSR_LOADED_PAGES__.push([r, f()]) };
         `,
       },
       ...jsDefinition,
-    ],
+    ] as INode[],
   }
 }
 
-const createSSRData = (ssrData: ISSRData) => {
+const createSSRData = (ssrData: IssRData) => {
   const code = htmlescape(ssrData)
   const { isBase64 } = ssrData
   if (isBase64) {
@@ -92,40 +103,26 @@ const createSSRData = (ssrData: ISSRData) => {
   return code
 }
 
-const getDefinition = (styleHTML: string, clientRender?: boolean) => {
-  let jsDefinition: any = []
-  let cssDefinition = []
-  let styleDefinition = []
+const getDefinition = () => {
   const { asyncJsChunks, asyncCssChunks } = getAsyncChunks()
   const styleMap = getStyleMap()
 
-  if (clientRender) {
-    jsDefinition = asyncJsChunks.map(src => {
-      return {
-        attributes: { type: scriptType, src },
-        tagName: 'script',
-      }
-    })
-  }
-  cssDefinition = asyncCssChunks.map(href => {
+  const jsDefinition = asyncJsChunks.map<INode>(src => {
     return {
-      attributes: { href, rel: cssRel },
+      attribs: { type: scriptType, src },
+      tagName: 'script',
+    }
+  })
+  const cssDefinition = asyncCssChunks.map<INode>(href => {
+    return {
+      attribs: { href, rel: cssRel },
       tagName: 'link',
     }
   })
-  styleDefinition = Object.keys(styleMap).reduce((p, key) => {
-    const { parts } = styleMap[key]
-    parts.forEach((value: any) => {
-      p.push(value)
-    })
-    return p
-  }, [] as any)
-
-  if (styleHTML) {
-    styleDefinition.push({
-      innerHTML: styleHTML,
-    })
-  }
+  const styleDefinition = Object.keys(styleMap).reduce<INode[]>(
+    (p, key) => p.concat(styleMap[key]),
+    [],
+  )
 
   return { jsDefinition, cssDefinition, styleDefinition }
 }

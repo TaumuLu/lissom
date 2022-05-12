@@ -3,12 +3,12 @@ import ReactDOM from 'react-dom'
 
 import { InitialProps, pathMap } from '../lib/async'
 import { moduleLoader } from '../lib/dynamic'
-import { ISSRData } from '../lib/types'
+import { IssRData } from '../lib/types'
 import { get, parseSSRData } from '../lib/utils'
 
 declare global {
   interface Window {
-    __SSR_DATA__: string | ISSRData
+    __SSR_DATA__: string | IssRData
     __SSR_LOADED_PAGES__: any[]
     __SSR_REGISTER_PAGE__: Function
   }

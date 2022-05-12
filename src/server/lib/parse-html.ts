@@ -1,107 +1,95 @@
-const getTagRegExp = (tag: string, isEnd = false, flags = 'i') => {
-  let tagAfter = '\\s'
-  if (tag === 'html') {
-    tagAfter = '[^>]'
-  }
-  const regStr = `(<${isEnd ? '\\/' : ''}${tag}${tagAfter}*>)`
-  return new RegExp(regStr, flags)
-}
+import render from 'dom-serializer'
+import { ElementType } from 'domelementtype'
+import { ChildNode, Element, Text } from 'domhandler'
+import { DomHandler, DomUtils, Parser } from 'htmlparser2'
 
-const tagReg = {
-  htmlReg: getTagRegExp('html'),
-  bodyStart: getTagRegExp('body'),
-  bodyEnd: getTagRegExp('body', true),
-  headEnd: getTagRegExp('head', true),
-}
+import { INodes } from '../../lib/types'
+import { printAndExit } from './utils'
 
-const scriptTagReg = /<script[^<>]*(\/\s*>|>[\s\S]*<\/script>)/gi
+interface AddTagsOptions {
+  isPrepend?: boolean
+}
 
 export default class ParseHtml {
-  private _originSource!: string
-  private _source!: string
+  private _originDom!: ChildNode[]
+  private _dom!: ChildNode[]
 
   constructor(source: string) {
-    this.set(source)
-  }
-
-  public checkHtml(source: string): string {
-    if (!tagReg.headEnd.test(source)) {
-      if (!tagReg.htmlReg.test(source)) {
-        source = `<head></head>${source}`
-      } else {
-        source = source.replace(
-          tagReg.htmlReg,
-          match => `${match}<head></head>`,
-        )
-      }
-    }
-    if (!tagReg.bodyEnd.test(source)) {
-      source = `${source}<body></body>`
-    }
-    return source
-  }
-
-  // public deleteTag(attr: string, value: string): void {
-  //   const matchReg = new RegExp(`<[a-zA-Z]*\\s*${attr}\\s*=?\\s*['"]{1}${value}['"]{1}\\s*(\\/\\s*>|>([\\s\\S]*)<\\/[a-zA-Z]*\\s*>)`, 'g')
-  //   this._source = this._source.replace(matchReg, '')
-  // }
-  public deleteScriptTag() {
-    this._source = this._source.replace(scriptTagReg, '')
-  }
-
-  public reset(): void {
-    this._source = this._originSource
-  }
-
-  public injectTags(assetTags: any) {
-    Object.keys(assetTags).forEach(key => {
-      const tags = assetTags[key]
-      const isEnd = key.includes('End')
-      const texts = tags.map(createTagTexts).join('')
-      const reg = tagReg[key]
-
-      this._source = this._source.replace(reg, match => {
-        if (isEnd) {
-          return texts + match
+    const parser = new Parser(
+      new DomHandler((error, dom) => {
+        if (error) {
+          printAndExit(`> Failed to parse html`)
         }
-        return match + texts
-      })
-    })
-    return this._source
+        this._originDom = dom
+        this.restoreDom()
+      }),
+    )
+    parser.write(source)
+    parser.end()
   }
 
-  public get(): string {
-    return this._source
+  public deleteById(id: string) {
+    const idDom = DomUtils.getElementById(id, this._dom)
+    if (idDom) {
+      DomUtils.removeElement(idDom)
+    }
   }
 
-  public set(source: string): string {
-    return (this._source = this._originSource = this.checkHtml(source))
+  public deleteByTag(tagName: string) {
+    const scriptDoms = DomUtils.getElementsByTagName(tagName, this._dom)
+    scriptDoms.map(ele => DomUtils.removeElement(ele))
   }
-}
 
-const createTagTexts = (tagDefinition: any) => {
-  const {
-    attributes,
-    voidTag = false,
-    closeTag = true,
-    tagName,
-    innerHTML,
-    selfClosingTag = false,
-  } = tagDefinition
-  if (!tagName) return innerHTML
+  public restoreDom() {
+    this._dom = this._originDom.map(item => item.cloneNode(true))
+  }
 
-  const attributeList = Object.keys(attributes || {})
-    .filter(attributeName => attributes[attributeName] !== false)
-    .map(attributeName => {
-      if (attributes[attributeName] === true) {
-        return attributeName
+  public headAddTags(nodes: INodes, options?: AddTagsOptions) {
+    const heads = DomUtils.getElementsByTagName('head', this._dom)
+    const head = heads[0]
+    if (head) {
+      this.addTags(nodes, head, options)
+    }
+  }
+
+  public bodyAddTags(nodes: INodes, options?: AddTagsOptions) {
+    const bodys = DomUtils.getElementsByTagName('body', this._dom)
+    const body = bodys[0]
+    if (body) {
+      this.addTags(nodes, body, options)
+    }
+  }
+
+  public addTags(nodes: INodes, target: Element, options: AddTagsOptions = {}) {
+    const { isPrepend } = options
+    nodes.forEach(node => {
+      const { tagName, children, attribs = {} } = node
+      let element: ChildNode
+
+      if (tagName) {
+        element = new Element(
+          tagName,
+          attribs,
+          [typeof children === 'string' ? new Text(children) : children],
+          tagName === 'script'
+            ? ElementType.Script
+            : tagName === 'style'
+            ? ElementType.Style
+            : ElementType.Tag,
+        )
+      } else {
+        element = new Text(children)
       }
-      return `${attributeName}="${tagDefinition.attributes[attributeName]}"`
-    })
 
-  const isVoidTag = voidTag !== undefined ? voidTag : !closeTag
-  const isSelfClosingTag = voidTag !== undefined ? voidTag : selfClosingTag
-  return `<${[tagName].concat(attributeList).join(' ')}${
-    isSelfClosingTag ? '/' : ''
-  }>${innerHTML || ''}${isVoidTag ? '' : `</${tagName}>`}`
+      if (isPrepend) {
+        DomUtils.prependChild(target, element)
+      } else {
+        DomUtils.appendChild(target, element)
+      }
+    })
+  }
+
+  public serializer() {
+    return render(this._dom, { decodeEntities: false })
+  }
 }
