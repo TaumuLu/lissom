@@ -22,15 +22,21 @@ export default (options: Options) => {
     fs.mkdirSync(ssgDir)
   }
 
+  const gotList = []
+
   for (const router of routers) {
-    got(new URL(router, url))
-      .then(res => {
-        const data = res.body
-        const name = `${normalizePagePath(router)}.html`
-        fs.writeFileSync(join(ssgDir, name), data)
-      })
-      .catch(error => {
-        console.log(error)
-      })
+    gotList.push(
+      got(new URL(router, url))
+        .then(res => {
+          const data = res.body
+          const name = `${normalizePagePath(router)}.html`
+          fs.writeFileSync(join(ssgDir, name), data)
+        })
+        .catch(error => {
+          console.log(error)
+        }),
+    )
   }
+
+  return Promise.all(gotList)
 }

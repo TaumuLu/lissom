@@ -2,7 +2,12 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import { InitialProps, pathMap } from '../lib/async'
-import { moduleLoader } from '../lib/dynamic'
+import {
+  SSR_LOADED_PAGES,
+  SSR_LOADER_FUNCTIONS,
+  SSR_REGISTER_PAGE,
+} from '../lib/constants'
+import { loaderFunctions, moduleLoader } from '../lib/dynamic'
 import { IssRData } from '../lib/types'
 import { get, parseSSRData } from '../lib/utils'
 
@@ -11,14 +16,19 @@ declare global {
     __SSR_DATA__: string | IssRData
     __SSR_LOADED_PAGES__: any[]
     __SSR_REGISTER_PAGE__: Function
+    __SSR_LOADER_FUNCTIONS__: string[]
   }
 }
 
 // 客户端挂载dom节点，webpack入口处注入
 if (
   typeof window !== 'undefined' &&
-  typeof window.__SSR_REGISTER_PAGE__ !== 'undefined' // 兼容非ssr使用该chunk
+  typeof window[SSR_REGISTER_PAGE] !== 'undefined' // 兼容非ssr使用该chunk
 ) {
+  // 添加动态加载函数 id
+  window[SSR_LOADER_FUNCTIONS].forEach(fun => {
+    loaderFunctions.add(fun)
+  })
   // 异步延迟至当前入口模块导出后再执行，入口模块为导出的react组件，一定会是同步执行
   Promise.resolve()
     // 等待动态加载模块完成
@@ -61,7 +71,7 @@ if (
       }
 
       const routers = {}
-      const initialRoute = window.__SSR_LOADED_PAGES__.shift()
+      const initialRoute = window[SSR_LOADED_PAGES].shift()
       const registerPage = (route: string, { page: Component }: any) => {
         routers[route] = Component
 
@@ -78,11 +88,11 @@ if (
         }
       }
 
-      window.__SSR_LOADED_PAGES__.forEach(([r, m]) => {
+      window[SSR_LOADED_PAGES].forEach(([r, m]) => {
         registerPage(r, m)
       })
-      window.__SSR_LOADED_PAGES__ = []
-      window.__SSR_REGISTER_PAGE__ = (r: string, f: any) => registerPage(r, f())
+      window[SSR_LOADED_PAGES] = []
+      window[SSR_REGISTER_PAGE] = (r: string, f: any) => registerPage(r, f())
       return
     })
 }

@@ -1,3 +1,4 @@
+import { SSR_DATA } from './constants'
 import { IssRData } from './types'
 
 export const getType = (value: any) => {
@@ -105,7 +106,7 @@ export const set = (object: any, path: Tpath, value: any) => {
 }
 
 export function parseSSRData(): IssRData {
-  const ssrData = window.__SSR_DATA__
+  const ssrData = window[SSR_DATA]
   if (typeof ssrData === 'string') {
     // 延迟到方法调用时再引用，避免服务端被执行
     // js-base64会引用全局对象导致开发模式下循环引用造成内存泄漏

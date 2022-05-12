@@ -1,10 +1,16 @@
 import htmlescape from 'htmlescape'
 import { Base64 } from 'js-base64'
 
+import {
+  SSR_DATA,
+  SSR_LOADED_PAGES,
+  SSR_LOADER_FUNCTIONS,
+  SSR_REGISTER_PAGE,
+} from '../../lib/constants'
 import { INode, IRouter, IssRData } from '../../lib/types'
 import ParseHtml from './parse-html'
 import { getStyleMap } from './style-loader'
-import { getAsyncChunks } from './webpack-runtime'
+import { getAsyncChunks, getDynamicModule } from './webpack-runtime'
 
 interface ICreateNodes {
   pageHTML?: string
@@ -67,6 +73,7 @@ const createNodes = ({
       children: styleHTML,
     })
   }
+  const loaderFunctions = getLoaderFunctions()
 
   return {
     head: [...cssDefinition, ...styleDefinition] as INode[],
@@ -84,9 +91,12 @@ const createNodes = ({
         attribs: { type: scriptType },
         tagName: 'script',
         children: `
-          window.__SSR_DATA__ = ${createSSRData(ssrData)}
-          window.__SSR_LOADED_PAGES__ = ['${name}'];
-          window.__SSR_REGISTER_PAGE__ = function(r,f) { __SSR_LOADED_PAGES__.push([r, f()]) };
+          window.${SSR_DATA} = ${createSSRData(ssrData)}
+          window.${SSR_LOADED_PAGES} = ['${name}'];
+          window.${SSR_REGISTER_PAGE} = function(r, f) { ${SSR_LOADED_PAGES}.push([r, f()]) };
+          window.${SSR_LOADER_FUNCTIONS} = [${loaderFunctions.map(
+          fun => `'${fun}'`,
+        )}]
         `,
       },
       ...jsDefinition,
@@ -125,4 +135,12 @@ const getDefinition = () => {
   )
 
   return { jsDefinition, cssDefinition, styleDefinition }
+}
+
+function getLoaderFunctions() {
+  const dynamicModule = getDynamicModule()
+  if (dynamicModule && dynamicModule.loaderFunctions) {
+    return [...dynamicModule.loaderFunctions]
+  }
+  return []
 }

@@ -1,19 +1,21 @@
-import React, { Component, ReactElement } from 'react'
+import React, { Component, isValidElement, ReactNode } from 'react'
 
 import { checkServer, interopDefault } from './utils'
 interface IState {
   DynamicComponent: any
 }
 
-export const moduleLoader = new Set()
+export const moduleLoader = new Set<Promise<any>>()
 
-let component: ReactElement
+export const loaderFunctions = new Set<string>()
+
+let component: ReactNode
 
 let defaultLoading: any = () => null
 
 interface Config {
   loader: () => Promise<any>
-  loading?: ReactElement
+  loading?: ReactNode
 }
 
 function Dynamic(config: Config | Config['loader']) {
@@ -21,9 +23,10 @@ function Dynamic(config: Config | Config['loader']) {
     config = { loader: config }
   }
   const { loader, loading = defaultLoading } = config
+  const id = loader.toString()
 
   // 服务端提前执行，支持动态组件中的异步操作，用于注册
-  if (!component) {
+  if (!component && (checkServer() || loaderFunctions.has(id))) {
     const resolve = loader()
     moduleLoader.add(resolve)
 
@@ -33,6 +36,8 @@ function Dynamic(config: Config | Config['loader']) {
 
       // 动态组件执行队列移动操作
       if (checkServer()) {
+        loaderFunctions.add(loader.toString())
+
         const asyncComponent = component as any
         if (asyncComponent.move) {
           asyncComponent.move()
@@ -98,12 +103,15 @@ function Dynamic(config: Config | Config['loader']) {
       }
 
       const Loading = loading
+      if (isValidElement(Loading)) {
+        return Loading
+      }
       return <Loading {...this.props} />
     }
   }
 }
 
-Dynamic.setDefaultLoading = (loading: ReactElement) => {
+Dynamic.setDefaultLoading = (loading: ReactNode) => {
   defaultLoading = loading
 }
 

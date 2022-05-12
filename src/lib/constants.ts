@@ -4,3 +4,8 @@ export const RUNTIME_NAME = 'webpack-runtime'
 export const HTML_WEBPACK_PLUGIN = 'HtmlWebpackPlugin'
 export const GLOBAl_VARIABLE = '__global_variable__'
 export const JSONP_FUNCTION = 'webpackJsonp'
+
+export const SSR_DATA = '__SSR_DATA__'
+export const SSR_LOADED_PAGES = '__SSR_LOADED_PAGES__'
+export const SSR_REGISTER_PAGE = '__SSR_REGISTER_PAGE__'
+export const SSR_LOADER_FUNCTIONS = '__SSR_LOADER_FUNCTIONS__'

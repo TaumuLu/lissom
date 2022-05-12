@@ -159,7 +159,7 @@ async function getAsyncProps({
 function getDynamicLoader() {
   const dynamicModule = getDynamicModule()
   if (dynamicModule && dynamicModule.moduleLoader) {
-    return dynamicModule.moduleLoader
+    return [...dynamicModule.moduleLoader]
   }
   return []
 }
