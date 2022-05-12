@@ -34,6 +34,7 @@
     "etag": "1.8.1",
     "find-up": "^4.1.0",
     "fresh": "0.5.2",
+    "got": "^11.8.3",
     "html-webpack-plugin": "^4.5.2",
     "htmlescape": "1.1.1",
     "htmlparser2": "^8.0.1",

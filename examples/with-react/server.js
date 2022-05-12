@@ -4,13 +4,14 @@ const Koa = require('koa')
 // const staticServe = require('koa-static');
 const logger = require('koa-logger')
 const lissomKoa = require('../../koa')
+const lissomSsg = require('../../ssg')
 // const lissomExpress = require('lissom/express')
 // const { createServer } = require('http');
 // const Lissom = require('lissom');
 
 const port = 9999
 // const context = process.cwd();
-const uri = `http://127.0.0.1:${port}`
+const url = `http://127.0.0.1:${port}`
 
 const config = {
   excludeRouteRegs: [/\/(api|public)\/.*/],
@@ -27,7 +28,6 @@ const config = {
     id: 'root',
     class: 'test',
   },
-  ssgRouter: ['/', '/dynamic', '/hooks'],
 }
 
 // koa
@@ -40,7 +40,12 @@ koaApp.use(lissomKoa(config))
 // koaApp.use(staticServe(path.join(context, './build')));
 
 koaApp.listen(port, () => {
-  console.log(`listening to port ${port}, open url ${uri}`)
+  console.log(`listening to port ${port}, open url ${url}`)
+
+  lissomSsg({
+    url,
+    routers: ['/', '/dynamic', '/hooks', '/async'],
+  })
 })
 
 // express

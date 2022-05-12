@@ -64,3 +64,5 @@ typings/
 
 dist/
 build/
+
+ssg/
