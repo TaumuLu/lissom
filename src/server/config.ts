@@ -238,8 +238,8 @@ const getParseHtml = (
 ): ParseHtml => {
   // 默认取第一个插件配置
   const [htmlConfig] = HtmlWebpackPlugin
-  const { childCompilationOutputName } = htmlConfig
-  const existsAt = resolve(outputPath, childCompilationOutputName)
+  const { filename } = htmlConfig
+  const existsAt = resolve(outputPath, filename)
   const source = readHtmlFile(existsAt)
   const parseHtml = new ParseHtml(source)
   return parseHtml

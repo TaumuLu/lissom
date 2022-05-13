@@ -15,6 +15,7 @@ const url = `http://127.0.0.1:${port}`
 
 const config = {
   excludeRouteRegs: [/\/(api|public)\/.*/],
+  requireModules: ['react', 'nanoid'],
   output: './build',
   errorHtml: './error.html',
   // isBase64: true,
@@ -42,10 +43,10 @@ koaApp.use(lissomKoa(config))
 koaApp.listen(port, () => {
   console.log(`listening to port ${port}, open url ${url}`)
 
-  lissomSsg({
-    url,
-    routers: ['/', '/dynamic', '/hooks', '/async'],
-  })
+  // lissomSsg({
+  //   url,
+  //   routers: ['/', '/dynamic', '/hooks', '/async'],
+  // })
 })
 
 // express

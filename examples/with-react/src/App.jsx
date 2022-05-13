@@ -1,5 +1,6 @@
 import async from 'lissom/async'
 import dynamic from 'lissom/dynamic'
+import { nanoid } from 'nanoid'
 import React, { Component } from 'react'
 import {
   BrowserRouter,
@@ -26,6 +27,8 @@ export default class App extends Component {
     // throw new Error('test');
     return { location }
   }
+
+  id = nanoid()
 
   onClick = e => {
     e.preventDefault()

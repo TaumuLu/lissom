@@ -45,7 +45,7 @@ export interface IRouters {
 
 export interface IHtmlWebpackPlugin {
   assetJson: string[]
-  childCompilationOutputName: string
+  filename: string
 }
 
 export interface IModules {

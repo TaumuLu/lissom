@@ -16,6 +16,7 @@
     "koa": "^2.13.4",
     "koa-logger": "^3.2.1",
     "lissom": "file:../../../lissom",
+    "nanoid": "^3.3.4",
     "react-router-dom": "^5.1.2"
   },
   "devDependencies": {

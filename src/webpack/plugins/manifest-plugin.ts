@@ -88,9 +88,10 @@ export default class ManifestPlugin {
           constructor: { name },
         } = plugin
         if (name === HTML_WEBPACK_PLUGIN) {
-          const { childCompilationOutputName, assetJson } = plugin as any
+          const { assetJson, options } = plugin as any
+          const { filename } = options
           stats[HTML_WEBPACK_PLUGIN].push({
-            childCompilationOutputName, // 输出html文件目录
+            filename,
             assetJson,
           })
         }
