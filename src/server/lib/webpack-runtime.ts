@@ -102,6 +102,10 @@ const clearAsyncChunks = () => {
   asyncCssChunks = []
 }
 
+let hasSvgLoader = false
+
+const getHasSvgLoader = () => hasSvgLoader
+
 // script path function
 function requireChunk(chunkId: string) {
   const { dev } = config.get()
@@ -151,6 +155,8 @@ const getName = (moduleId: string) => {
 const asyncModuleReg = /lissom\/dist\/lib\/async/
 const dynamicModuleReg = /lissom\/dist\/lib\/dynamic/
 const styleModuleReg = /node_modules\/style-loader/
+const svgBakerRuntimeReg = /svg-baker-runtime\/browser/
+const svgSpriteLoaderReg = /svg-sprite-loader\/runtime\/browser/
 
 const matchModule = (moduleId: string) => {
   const { ignoreModules, requireModules } = config.get()
@@ -166,6 +172,13 @@ const matchModule = (moduleId: string) => {
   // 记录动态模块id
   if (dynamicModuleReg.test(name)) {
     dynamicModuleId = moduleId
+  }
+  if(svgBakerRuntimeReg.test(name) || svgSpriteLoaderReg.test(name)) {
+    const modulePath = name.replace(/.*\/node_modules\//, '')
+    const moduleName = modulePath.replace('browser-', '')
+    const absPath = require.resolve(moduleName)
+    hasSvgLoader = true
+    return require(absPath)
   }
   if (name && /node_modules/.test(name)) {
     const modulePath = name.replace(/.*\/node_modules\//, '')
@@ -439,4 +452,5 @@ export {
   getAsyncModule,
   getDynamicModule,
   setWebpackConfig,
+  getHasSvgLoader
 }

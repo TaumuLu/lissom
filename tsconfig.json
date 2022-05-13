@@ -25,6 +25,6 @@
     "strict": true,
     "lib": ["esnext", "dom"]
   },
-  "include": ["src", "examples"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist", "docs"]
 }

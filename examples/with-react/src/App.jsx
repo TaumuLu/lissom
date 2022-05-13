@@ -1,6 +1,5 @@
 import async from 'lissom/async'
 import dynamic from 'lissom/dynamic'
-import { nanoid } from 'nanoid'
 import React, { Component } from 'react'
 import {
   BrowserRouter,
@@ -12,8 +11,8 @@ import {
 
 import AsyncComponent from './async'
 import ErrorBoundary from './error-boundary'
-import logo from './files/logo.svg'
 import HooksComponent from './hooks'
+import SvgIcon from './SvgIcon'
 
 import './styles/app.less'
 
@@ -28,7 +27,7 @@ export default class App extends Component {
     return { location }
   }
 
-  id = nanoid()
+  id = ''
 
   onClick = e => {
     e.preventDefault()
@@ -53,7 +52,8 @@ export default class App extends Component {
           <div className="App">
             <header className="App-header">
               <div className="App-logo">
-                <img src={logo} className="App-logo-img" alt="logo" />
+                <SvgIcon icon="logo" />
+                {/* <img src={logo} className="App-logo-img" alt="logo" /> */}
               </div>
               <ul className="link-ul">
                 <li>

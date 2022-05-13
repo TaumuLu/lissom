@@ -439,3 +439,6 @@ ssr 渲染并不是适用于所有情况，如何使用、最佳实践根据实�
 - 添加 htmlparser2 依赖，重构 html 解析生成代码
 - 添加 ssg 模块，支持 ssg 生成
 - 修复 HtmlWebpackPlugin 导出配置
+
+### 1.4.1+
+- 支持 svg-sprite-loader ssr 渲染

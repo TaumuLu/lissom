@@ -2,5 +2,5 @@ public/
 node_modules/
 build/
 vendor/
-./lib
+lib/
 dist/

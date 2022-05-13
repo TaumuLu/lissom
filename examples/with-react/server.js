@@ -15,7 +15,7 @@ const url = `http://127.0.0.1:${port}`
 
 const config = {
   excludeRouteRegs: [/\/(api|public)\/.*/],
-  requireModules: ['react', 'nanoid'],
+  requireModules: ['react'],
   output: './build',
   errorHtml: './error.html',
   // isBase64: true,

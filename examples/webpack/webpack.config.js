@@ -144,7 +144,18 @@ module.exports = lissomWebpack({
         ],
       },
       {
-        test: /\.(png|jpe?g|gif|svg)$/,
+        test: /\.svg$/,
+        use: [
+          {
+            loader: 'svg-sprite-loader',
+            options: {
+              symbolId: 'react-svg-[name]',
+            },
+          },
+        ],
+      },
+      {
+        test: /\.(png|jpe?g|gif)$/,
         use: {
           loader: 'url-loader',
         },
@@ -200,6 +211,7 @@ module.exports = lissomWebpack({
     }),
   ].filter(Boolean),
   optimization: {
+    minimize: false,
     splitChunks: {
       chunks: 'all',
       name: 'common',
