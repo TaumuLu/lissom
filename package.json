@@ -1,6 +1,6 @@
 {
   "name": "lissom",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Lightweight React Server Side Rendering Framework",
   "main": "./index.js",
   "scripts": {
@@ -53,6 +53,7 @@
     "@types/qs": "^6.9.7",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
+    "@types/react-router-dom": "^5.3.3",
     "@types/send": "^0.17.1",
     "@types/webpack": "^4.41.32",
     "@types/webpack-sources": "^3.2.0",

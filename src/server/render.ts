@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http'
 
-import { ICtx, IRouter, IssRData } from '../lib/types'
+import { ICtx, ILocation, IRouter, IssRData } from '../lib/types'
 import config from './config'
 import createHtml from './lib/create-html'
 import ErrorDebug from './lib/error-debug'
@@ -15,6 +15,7 @@ import {
   clearAsyncChunks,
   getAsyncModule,
   getDynamicModule,
+  getRouterModule,
 } from './lib/webpack-runtime'
 import { getRouter, loadComponent } from './require'
 
@@ -96,6 +97,8 @@ export default abstract class Render {
     // 清理异步操作中注册的异步chunks，这一步是必须的
     clearAsyncChunks()
     await Promise.all(getDynamicLoader())
+    // 设置 router location 对象
+    setRouterModuleLocation(ctx.location)
     // render时注册的异步chunks才是真正需要加载的
     const pageHTML = this.render(Component, props)
     // 必须放在render组件之后获取
@@ -162,4 +165,11 @@ function getDynamicLoader() {
     return [...dynamicModule.moduleLoader]
   }
   return []
+}
+
+function setRouterModuleLocation(location: ILocation) {
+  const routerModule = getRouterModule()
+  if (routerModule && routerModule.setLocation) {
+    routerModule.setLocation(location)
+  }
 }

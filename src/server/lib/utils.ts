@@ -117,7 +117,7 @@ export function isResSent(res: any) {
   return res.finished || res.headersSent
 }
 
-const loadGetInitial = (methodName: string, defaultValue: any = {}): Function =>
+const loadGetInitial = (methodName: string, defaultValue: any = {}) =>
   async function (Component: any, ctx: ICtx) {
     if (process.env.NODE_ENV !== 'production') {
       if (Component.prototype && Component.prototype[methodName]) {

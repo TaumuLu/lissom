@@ -1,5 +1,6 @@
 import htmlescape from 'htmlescape'
 import { Base64 } from 'js-base64'
+
 import {
   SSR_DATA,
   SSR_LOADED_PAGES,
@@ -9,7 +10,11 @@ import {
 import { INode, IRouter, IssRData } from '../../lib/types'
 import ParseHtml from './parse-html'
 import { getStyleMap } from './style-loader'
-import { getAsyncChunks, getDynamicModule, getHasSvgLoader } from './webpack-runtime'
+import {
+  getAsyncChunks,
+  getDynamicModule,
+  getHasSvgLoader,
+} from './webpack-runtime'
 
 interface ICreateNodes {
   pageHTML?: string
@@ -73,9 +78,9 @@ const createNodes = ({
     })
   }
   const svgDefinition = []
-  if(getHasSvgLoader()) {
+  if (getHasSvgLoader()) {
     const sprite = require('svg-sprite-loader/runtime/sprite.build')
-    const spriteContent = sprite.stringify();
+    const spriteContent = sprite.stringify()
     svgDefinition.push({
       children: spriteContent,
     })

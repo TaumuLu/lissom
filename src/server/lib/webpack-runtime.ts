@@ -86,6 +86,8 @@ const deferredModules: any[] = []
 
 let asyncModuleId: string | undefined
 let dynamicModuleId: string | undefined
+let routerModuleId: string | undefined
+
 let asyncJsChunks: string[] = []
 let asyncCssChunks: string[] = []
 
@@ -154,6 +156,8 @@ const getName = (moduleId: string) => {
 
 const asyncModuleReg = /lissom\/dist\/lib\/async/
 const dynamicModuleReg = /lissom\/dist\/lib\/dynamic/
+const routerModuleReg = /lissom\/dist\/lib\/router/
+
 const styleModuleReg = /node_modules\/style-loader/
 const svgBakerRuntimeReg = /svg-baker-runtime\/browser/
 const svgSpriteLoaderReg = /svg-sprite-loader\/runtime\/browser/
@@ -173,7 +177,11 @@ const matchModule = (moduleId: string) => {
   if (dynamicModuleReg.test(name)) {
     dynamicModuleId = moduleId
   }
-  if(svgBakerRuntimeReg.test(name) || svgSpriteLoaderReg.test(name)) {
+  if (routerModuleReg.test(name)) {
+    routerModuleId = moduleId
+  }
+
+  if (svgBakerRuntimeReg.test(name) || svgSpriteLoaderReg.test(name)) {
     const modulePath = name.replace(/.*\/node_modules\//, '')
     const moduleName = modulePath.replace('browser-', '')
     const absPath = require.resolve(moduleName)
@@ -423,6 +431,14 @@ function getDynamicModule() {
   return null
 }
 
+function getRouterModule() {
+  const routerModule = routerModuleId && installedModules[routerModuleId]
+  if (routerModule) {
+    return routerModule.exports
+  }
+  return null
+}
+
 const setWebpackConfig = ({ outputPath }: { outputPath: string }) => {
   __webpack_require__.p = getAbsPath(outputPath, false)
 }
@@ -451,6 +467,7 @@ export {
   getAsyncChunks,
   getAsyncModule,
   getDynamicModule,
+  getHasSvgLoader,
+  getRouterModule,
   setWebpackConfig,
-  getHasSvgLoader
 }
