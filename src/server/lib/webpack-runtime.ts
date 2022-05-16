@@ -186,7 +186,7 @@ const matchModule = (moduleId: string) => {
     if (ignoreModules?.includes(moduleName)) return {}
 
     if (requireModules?.includes(moduleName)) {
-      const absPath = require.resolve(moduleName)
+      const absPath = require.resolve(modulePath)
       return require(absPath)
     }
   }

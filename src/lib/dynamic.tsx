@@ -25,9 +25,10 @@ function Dynamic(config: Config | Config['loader']) {
   const { loader, loading = defaultLoading } = config
   const id = loader.toString()
 
+  let resolve: Promise<any>
   // 服务端提前执行，支持动态组件中的异步操作，用于注册
   if (!component && (checkServer() || loaderFunctions.has(id))) {
-    const resolve = loader()
+    resolve = loader()
     moduleLoader.add(resolve)
 
     resolve.then(result => {
@@ -36,8 +37,6 @@ function Dynamic(config: Config | Config['loader']) {
 
       // 动态组件执行队列移动操作
       if (checkServer()) {
-        loaderFunctions.add(loader.toString())
-
         const asyncComponent = component as any
         if (asyncComponent.move) {
           asyncComponent.move()
@@ -54,6 +53,10 @@ function Dynamic(config: Config | Config['loader']) {
       super(props)
       this.state = {
         DynamicComponent: null,
+      }
+      // 只有真正渲染的时候服务端才去添加 loader 函数用作客户端初始加载
+      if (checkServer() && loader){
+        loaderFunctions.add(loader.toString())
       }
       this.load()
     }

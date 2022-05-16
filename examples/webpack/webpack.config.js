@@ -19,7 +19,7 @@ const vendorAssets = glob.sync('./dll/vendor*.dll.js', globOptions)
 const hasDll = vendorAssets.length > 0
 
 const hasJsxRuntime = (() => {
-  return false
+  // return false
   if (process.env.DISABLE_NEW_JSX_TRANSFORM === 'true') {
     return false
   }
