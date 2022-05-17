@@ -11,34 +11,34 @@ const modules: Record<string, any> = []
 function webpackJsonpCallback(data: any[]) {
   const chunkIds = data[0]
   const moreModules = data[1]
-  const executeModules = data[2]
+  const executeModules = data[2] || []
 
   // add "moreModules" to the modules object,
   // then flag all "chunkIds" as loaded and fire callback
-  let moduleId
-  let chunkId
-  let i = 0
-  const resolves = []
-  for (; i < chunkIds.length; i++) {
-    chunkId = chunkIds[i]
-    if (installedChunks[chunkId]) {
-      resolves.push(installedChunks[chunkId][0])
-    }
+  // const resolves = []
+  for (let i = 0; i < chunkIds.length; i++) {
+    const chunkId = chunkIds[i]
+    // if (installedChunks[chunkId]) {
+    //   resolves.push(installedChunks[chunkId][0])
+    // }
     installedChunks[chunkId] = 0
   }
-  for (moduleId in moreModules) {
-    if (Object.prototype.hasOwnProperty.call(moreModules, moduleId)) {
+  for (let moduleId in moreModules) {
+    if (
+      Object.prototype.hasOwnProperty.call(moreModules, moduleId) &&
+      !modules[moduleId]
+    ) {
       modules[moduleId] = moreModules[moduleId]
     }
   }
   // if (parentJsonpFunction) parentJsonpFunction(data);
 
-  while (resolves.length) {
-    resolves.shift()()
-  }
+  // while (resolves.length) {
+  //   resolves.shift()()
+  // }
 
   // add entry modules from loaded chunk to deferred list
-  deferredModules.push(...(executeModules || []))
+  deferredModules.push(...executeModules)
 
   // run deferred modules when all chunks ready
   return checkDeferredModules()
@@ -88,20 +88,28 @@ let asyncModuleId: string | undefined
 let dynamicModuleId: string | undefined
 let routerModuleId: string | undefined
 
-let asyncJsChunks: string[] = []
-let asyncCssChunks: string[] = []
+const getAsyncChunks = (chunkIds: string[]) => {
+  let asyncJsChunks: string[] = []
+  let asyncCssChunks: string[] = []
 
-const getAsyncChunks = () => {
+  chunkIds.forEach(chunkId => {
+    const { chunks } = config.getAssetsConfig()
+    const { files } = chunks[chunkId]
+    const jsChunkAssets = filterJsAssets(files)
+    const cssChunkAssets = filterCssAssets(files)
+
+    jsChunkAssets.forEach(asset => {
+      asyncJsChunks.push(getAbsPath(asset))
+    })
+    cssChunkAssets.forEach(asset => {
+      asyncCssChunks.push(getAbsPath(asset))
+    })
+  })
+
   return {
     asyncJsChunks,
     asyncCssChunks,
   }
-}
-
-const clearAsyncChunks = () => {
-  // asyncModuleId = null; 不应该清除，这个值是不变的
-  asyncJsChunks = []
-  asyncCssChunks = []
 }
 
 let hasSvgLoader = false
@@ -116,19 +124,15 @@ function requireChunk(chunkId: string) {
   const isRequire = installedChunkData !== 0
   const { files } = chunks[chunkId]
   const jsChunkAssets = filterJsAssets(files)
-  const cssChunkAssets = filterCssAssets(files)
+
   jsChunkAssets.forEach(asset => {
     const absPath = path.join(__webpack_require__.p, asset)
     if (dev) {
       deleteCache(absPath)
     }
-    asyncJsChunks.push(getAbsPath(asset))
     if (isRequire) {
       require(absPath)
     }
-  })
-  cssChunkAssets.forEach(asset => {
-    asyncCssChunks.push(getAbsPath(asset))
   })
 }
 
@@ -312,6 +316,11 @@ __webpack_require__.e = function requireEnsure(chunkId: string) {
   //   }))
   //   promises.push(installedChunkData[2] = promise)
 
+  const dynamicModule = getDynamicModule()
+  // 向动态加载模块添加异步包
+  if (dynamicModule) {
+    dynamicModule.tempChunkIds.add(chunkId)
+  }
   // }
   requireChunk(chunkId)
   // }
@@ -454,15 +463,14 @@ const clearModuleCache = (dev?: boolean) => {
       const purgeModule =
         !excludeModuleReg.test(name) || purgeModuleReg.test(name)
       if (purgeModule) {
+        delete modules[moduleId]
         delete installedModules[moduleId]
       }
     })
   }
-  clearAsyncChunks()
 }
 
 export {
-  clearAsyncChunks,
   clearModuleCache,
   getAsyncChunks,
   getAsyncModule,

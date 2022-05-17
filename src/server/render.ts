@@ -12,7 +12,6 @@ import {
   normalizePagePath,
 } from './lib/utils'
 import {
-  clearAsyncChunks,
   getAsyncModule,
   getDynamicModule,
   getRouterModule,
@@ -94,16 +93,20 @@ export default abstract class Render {
     const props = await loadGetInitialProps(Component, ctx)
     // 查找获取所有异步组件的异步操作
     const asyncProps = await getAsyncProps({ ctx, props, pathname })
-    // 清理异步操作中注册的异步chunks，这一步是必须的
-    clearAsyncChunks()
+
     await Promise.all(getDynamicLoader())
+
+    // 清理异步操作中注册的异步chunks，这一步是必须的
+    clearDynamicLoader()
     // 设置 router location 对象
     setRouterModuleLocation(ctx.location)
+
     // render时注册的异步chunks才是真正需要加载的
     const pageHTML = this.render(Component, props)
     // 必须放在render组件之后获取
     const Styles = await loadGetInitialStyles(Component, ctx)
     const styleHTML = this.render(Styles)
+
     this.updateSsrData({ props, asyncProps })
 
     return this.renderHTML(pageHTML, styleHTML)
@@ -171,5 +174,12 @@ function setRouterModuleLocation(location: ILocation) {
   const routerModule = getRouterModule()
   if (routerModule && routerModule.setLocation) {
     routerModule.setLocation(location)
+  }
+}
+
+function clearDynamicLoader() {
+  const dynamicModule = getDynamicModule()
+  if (dynamicModule && dynamicModule.clearLoader) {
+    dynamicModule.clearLoader()
   }
 }

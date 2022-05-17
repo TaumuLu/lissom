@@ -9,6 +9,16 @@ export const moduleLoader = new Set<Promise<any>>()
 
 export const loaderFunctions = new Set<string>()
 
+// 记录本次 render 需要加载的 chunkId
+export const loaderChunkIds = new Set<number>()
+
+export const tempChunkIds = new Set<number>()
+
+export const clearLoader = () => {
+  loaderFunctions.clear()
+  loaderChunkIds.clear()
+}
+
 let defaultLoading: any = () => null
 
 interface Config {
@@ -23,11 +33,16 @@ function Dynamic(config: Config | Config['loader']) {
   const { loader, loading = defaultLoading } = config
   const id = loader.toString()
   let component: ReactNode
-
   let resolve: Promise<any>
+  let chunkIds: Set<number>
+
   // 服务端提前执行，支持动态组件中的异步操作，用于注册
   if (checkServer() || loaderFunctions.has(id)) {
+    // 交换记录单次加载产生的异步 chunkId
+    tempChunkIds.clear()
     resolve = loader()
+    chunkIds = new Set(tempChunkIds)
+
     moduleLoader.add(resolve)
 
     resolve.then(result => {
@@ -54,8 +69,16 @@ function Dynamic(config: Config | Config['loader']) {
         DynamicComponent: null,
       }
       // 只有真正渲染的时候服务端才去添加 loader 函数用作客户端初始加载
-      if (checkServer() && loader) {
-        loaderFunctions.add(loader.toString())
+      if (checkServer()) {
+        if (loader) {
+          loaderFunctions.add(loader.toString())
+        }
+        // 添加动态加载的 chunk 包
+        if (chunkIds) {
+          chunkIds.forEach(chunkId => {
+            loaderChunkIds.add(chunkId)
+          })
+        }
       }
       this.load()
     }

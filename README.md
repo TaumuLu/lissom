@@ -453,3 +453,8 @@ ssr 渲染并不是适用于所有情况，如何使用、最佳实践根据实�
 ### 1.4.3+
 - 修复动态加载始终只加载最后一个的问题
 - 添加 Router 组件
+
+### 1.4.4+
+- 修复动态加载资源文件 js/css 注入 html
+- 修复服务端 webpack_runtime modules 重复设置
+- 修复 addTags 空 children 报错

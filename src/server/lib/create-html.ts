@@ -127,7 +127,8 @@ const createSSRData = (ssrData: IssRData) => {
 }
 
 const getDefinition = () => {
-  const { asyncJsChunks, asyncCssChunks } = getAsyncChunks()
+  const chunkIds = getLoaderChunkIds()
+  const { asyncJsChunks, asyncCssChunks } = getAsyncChunks(chunkIds)
   const styleMap = getStyleMap()
 
   const jsDefinition = asyncJsChunks.map<INode>(src => {
@@ -154,6 +155,14 @@ function getLoaderFunctions() {
   const dynamicModule = getDynamicModule()
   if (dynamicModule && dynamicModule.loaderFunctions) {
     return [...dynamicModule.loaderFunctions]
+  }
+  return []
+}
+
+function getLoaderChunkIds() {
+  const dynamicModule = getDynamicModule()
+  if (dynamicModule && dynamicModule.loaderChunkIds) {
+    return [...dynamicModule.loaderChunkIds]
   }
   return []
 }

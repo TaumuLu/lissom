@@ -70,7 +70,9 @@ export default class ParseHtml {
         element = new Element(
           tagName,
           attribs,
-          [typeof children === 'string' ? new Text(children) : children],
+          children
+            ? [typeof children === 'string' ? new Text(children) : children]
+            : [],
           tagName === 'script'
             ? ElementType.Script
             : tagName === 'style'

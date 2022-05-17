@@ -1,7 +1,7 @@
 import { Compiler, Stats } from 'webpack'
 import { RawSource } from 'webpack-sources'
 
-import { ASSETS_MANIFEST, HTML_WEBPACK_PLUGIN } from '../../lib/constants'
+import { HTML_WEBPACK_PLUGIN, SSR_ASSETS_MANIFEST } from '../../lib/constants'
 
 const chunkOnlyConfig = {
   assets: false,
@@ -43,7 +43,7 @@ export default class ManifestPlugin {
     // })
     compiler.hooks.emit.tap('ManifestPlugin', compilation => {
       const {
-        options: { plugins = [] },
+        options: { plugins = [], mode },
         context,
       } = compiler
       // 输出打包清单供服务端使用
@@ -54,8 +54,10 @@ export default class ManifestPlugin {
         assets: string[]
         chunks: any
         modules: any
+        mode?: string
       }
 
+      stats.mode = mode
       stats.context = context
       stats.assets = Object.keys(compilation.assets) as any
       stats[HTML_WEBPACK_PLUGIN] = []
@@ -101,7 +103,7 @@ export default class ManifestPlugin {
           ...plugin,
         }
       })
-      compilation.assets[ASSETS_MANIFEST] = new RawSource(
+      compilation.assets[SSR_ASSETS_MANIFEST] = new RawSource(
         JSON.stringify(stats, null, 2),
       )
       // compilation.assets[CONFIG_MANIFEST] = new RawSource(JSON.stringify({ ...options, plugins }, null, 2))

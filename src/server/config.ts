@@ -2,7 +2,7 @@ import findUp from 'find-up'
 import { existsSync, readFileSync } from 'fs'
 import { resolve } from 'path'
 
-import { ASSETS_MANIFEST, RUNTIME_NAME } from '../lib/constants'
+import { RUNTIME_NAME, SSR_ASSETS_MANIFEST } from '../lib/constants'
 import {
   IChunks,
   IConfig,
@@ -32,6 +32,7 @@ export interface IAssetsConfig {
   modules: IModules
   chunks: IChunks
   errorHtml?: string
+  mode: string
 }
 
 const _DEV_ = process.env.NODE_ENV !== 'production'
@@ -167,7 +168,9 @@ export default new Config()
 
 const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
   const { dev, defaultEntry, outputDir, errorHtmlPath } = config
-  const assetsManifestPath = findUp.sync(ASSETS_MANIFEST, { cwd: outputDir })
+  const assetsManifestPath = findUp.sync(SSR_ASSETS_MANIFEST, {
+    cwd: outputDir,
+  })
   if (!assetsManifestPath || !assetsManifestPath.length) {
     printAndExit('> Your webpack config does not use lissom/webpack wrapping')
   }
@@ -175,13 +178,14 @@ const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
     deleteCache(assetsManifestPath!)
   }
   const assetsManifest = require(assetsManifestPath!)
-  const { entrypoints, HtmlWebpackPlugin, outputPath, modules, chunks } =
+  const { entrypoints, HtmlWebpackPlugin, outputPath, modules, chunks, mode } =
     assetsManifest
   const routers = getRouters(entrypoints, outputPath, defaultEntry)
   const parseHtml = getParseHtml(HtmlWebpackPlugin, outputPath)
   const errorHtml = errorHtmlPath ? readHtmlFile(errorHtmlPath) : errorHtmlPath
 
   return {
+    mode,
     routers,
     parseHtml,
     outputPath,
