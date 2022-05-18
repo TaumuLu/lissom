@@ -97,6 +97,7 @@ export interface IssRData {
   serverRender?: boolean
   rootAttr: IConfig['rootAttr']
   isBase64?: boolean
+  publicPath?: string
 }
 
 export interface ILocation {

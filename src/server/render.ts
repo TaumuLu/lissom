@@ -42,7 +42,7 @@ export default abstract class Render {
     const { clientRender, serverRender, rootAttr, isBase64 } = config.get()
     const request = new Request(req)
     const { location, navigator, pathname, query } = request
-    const { routers } = config.getAssetsConfig()
+    const { routers, publicPath } = config.getAssetsConfig()
     const page = normalizePagePath(pathname)
     const router = getRouter(page, routers)
     // 保持兼容next
@@ -63,6 +63,7 @@ export default abstract class Render {
       serverRender,
       rootAttr,
       isBase64,
+      publicPath,
     }
 
     return {

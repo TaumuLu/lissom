@@ -10,6 +10,7 @@ import {
 import { INode, IRouter, IssRData } from '../../lib/types'
 import ParseHtml from './parse-html'
 import { getStyleMap } from './style-loader'
+import { joinPath } from './utils'
 import {
   getAsyncChunks,
   getDynamicModule,
@@ -90,8 +91,9 @@ const createNodes = ({
   ssrData,
 }: ICreateNodes) => {
   const { name } = router
-  const { rootAttr } = ssrData
-  const { jsDefinition, cssDefinition, styleDefinition } = getDefinition()
+  const { rootAttr, publicPath } = ssrData
+  const { jsDefinition, cssDefinition, styleDefinition } =
+    getDefinition(publicPath)
 
   if (styleHTML) {
     styleDefinition.push({
@@ -147,20 +149,20 @@ const createSSRData = (ssrData: IssRData) => {
   return code
 }
 
-const getDefinition = () => {
+const getDefinition = (publicPath = '') => {
   const chunkIds = getLoaderChunkIds()
   const { asyncJsChunks, asyncCssChunks } = getAsyncChunks(chunkIds)
   const styleMap = getStyleMap()
 
-  const jsDefinition = asyncJsChunks.map<INode>(src => {
+  const jsDefinition = asyncJsChunks.map<INode>(jsPath => {
     return {
-      attribs: { type: scriptType, src },
+      attribs: { type: scriptType, src: joinPath(publicPath, jsPath) },
       tagName: 'script',
     }
   })
   const cssDefinition = asyncCssChunks.map<INode>(href => {
     return {
-      attribs: { href, rel: cssRel },
+      attribs: { href: joinPath(publicPath, href), rel: cssRel },
       tagName: 'link',
     }
   })

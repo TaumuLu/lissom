@@ -463,3 +463,6 @@ ssr 渲染并不是适用于所有情况，如何使用、最佳实践根据实�
 - 增加 getInitialHead 方法添加 head 标签内的 dom
 - 修改 getInitialStyles 方法名为 getInitialStyle
 - 修复服务端 webpack_runtime dev 模式报错
+
+### 1.4.6+
+- 异步加载 chunk 资源添加 publicPath 前缀

@@ -155,3 +155,22 @@ export const loadGetInitialStyle = loadGetInitial('getInitialStyle')
 export const loadGetInitialHead = loadGetInitial('getInitialHead')
 
 export * from '../../lib/utils'
+
+export const joinPath = (...paths: string[]) => {
+  const [first = '', ...other] = paths
+  return other.reduce(
+    (p, c) => {
+      if (c && c !== '/') {
+        if (!c.startsWith('/')) c = `/${c}`
+
+        return p + c
+      }
+      return p
+    },
+    first && first !== '/'
+      ? first.endsWith('/')
+        ? first.slice(0, -1)
+        : first
+      : '',
+  )
+}

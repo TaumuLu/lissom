@@ -33,6 +33,7 @@ export interface IAssetsConfig {
   chunks: IChunks
   errorHtml?: string
   mode: string
+  publicPath?: string
 }
 
 const _DEV_ = process.env.NODE_ENV !== 'production'
@@ -178,8 +179,15 @@ const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
     deleteCache(assetsManifestPath!)
   }
   const assetsManifest = require(assetsManifestPath!)
-  const { entrypoints, HtmlWebpackPlugin, outputPath, modules, chunks, mode } =
-    assetsManifest
+  const {
+    entrypoints,
+    HtmlWebpackPlugin,
+    outputPath,
+    modules,
+    chunks,
+    mode,
+    publicPath,
+  } = assetsManifest
   const routers = getRouters(entrypoints, outputPath, defaultEntry)
   const parseHtml = getParseHtml(HtmlWebpackPlugin, outputPath)
   const errorHtml = errorHtmlPath ? readHtmlFile(errorHtmlPath) : errorHtmlPath
@@ -192,6 +200,7 @@ const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
     modules,
     chunks,
     errorHtml,
+    publicPath,
   }
 }
 
