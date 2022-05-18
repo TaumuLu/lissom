@@ -2,13 +2,14 @@ import { IncomingMessage, ServerResponse } from 'http'
 
 import { ICtx, ILocation, IRouter, IssRData } from '../lib/types'
 import config from './config'
-import createHtml from './lib/create-html'
+import createHtml, { HTMLs } from './lib/create-html'
 import ErrorDebug from './lib/error-debug'
 import Request from './lib/request'
 import {
   isResSent,
+  loadGetInitialHead,
   loadGetInitialProps,
-  loadGetInitialStyles,
+  loadGetInitialStyle,
   normalizePagePath,
 } from './lib/utils'
 import {
@@ -104,12 +105,15 @@ export default abstract class Render {
     // render时注册的异步chunks才是真正需要加载的
     const pageHTML = this.render(Component, props)
     // 必须放在render组件之后获取
-    const Styles = await loadGetInitialStyles(Component, ctx)
-    const styleHTML = this.render(Styles)
+    const Style = await loadGetInitialStyle(Component, ctx)
+    const styleHTML = this.render(Style, props)
+
+    const Head = await loadGetInitialHead(Component, ctx)
+    const headHTML = this.render(Head, props)
 
     this.updateSsrData({ props, asyncProps })
 
-    return this.renderHTML(pageHTML, styleHTML)
+    return this.renderHTML({ pageHTML, styleHTML, headHTML })
   }
 
   public renderError(error: any): string {
@@ -120,10 +124,10 @@ export default abstract class Render {
     // 停止客户端渲染
     this.updateSsrData({ clientRender: false })
     const pageHTML = ErrorDebug({ error, dev })
-    return this.renderHTML(pageHTML)
+    return this.renderHTML({ pageHTML })
   }
 
-  public renderHTML(pageHTML?: string, styleHTML?: string): string {
+  public renderHTML({ pageHTML, styleHTML, headHTML }: HTMLs = {}) {
     const { res } = this.renderOpts.ctx
     if (isResSent(res)) return ''
 
@@ -133,6 +137,7 @@ export default abstract class Render {
     const html = createHtml({
       pageHTML,
       styleHTML,
+      headHTML,
       parseHtml,
       router,
       ssrData,

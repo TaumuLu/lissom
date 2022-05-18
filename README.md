@@ -458,3 +458,8 @@ ssr 渲染并不是适用于所有情况，如何使用、最佳实践根据实�
 - 修复动态加载资源文件 js/css 注入 html
 - 修复服务端 webpack_runtime modules 重复设置
 - 修复 addTags 空 children 报错
+
+### 1.4.5+
+- 增加 getInitialHead 方法添加 head 标签内的 dom
+- 修改 getInitialStyles 方法名为 getInitialStyle
+- 修复服务端 webpack_runtime dev 模式报错

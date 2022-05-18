@@ -27,6 +27,28 @@ export default class App extends Component {
     return { location }
   }
 
+  static getInitialHead() {
+    return props => {
+      const { location } = props
+      const { pathname } = location
+
+      if (pathname === '/') {
+        return <title>首页</title>
+      } else if (pathname === '/dynamic') {
+        return <title>动态加载</title>
+      } else if (pathname === '/async') {
+        return <title>异步加载</title>
+      }
+
+      return (
+        <>
+          <title>测试标题</title>
+          <meta name="theme-color" content="#ffffff"></meta>
+        </>
+      )
+    }
+  }
+
   id = ''
 
   onClick = e => {

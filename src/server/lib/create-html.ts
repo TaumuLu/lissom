@@ -16,9 +16,13 @@ import {
   getHasSvgLoader,
 } from './webpack-runtime'
 
-interface ICreateNodes {
+export interface HTMLs {
   pageHTML?: string
   styleHTML?: string
+  headHTML?: string
+}
+
+interface ICreateNodes extends HTMLs {
   router: IRouter
   ssrData: IssRData
 }
@@ -26,20 +30,37 @@ interface ICreateHtml extends ICreateNodes {
   parseHtml: ParseHtml
 }
 
+const titleTagReg = /<title[^<>]*(\/\s*>|>[\s\S]*<\/title>)/gi
+
 export default function createHtml({
   pageHTML,
   styleHTML,
+  headHTML,
   parseHtml,
   router,
   ssrData,
 }: ICreateHtml): string {
-  const { clientRender } = ssrData
   // 重置回初始的html
   parseHtml.restoreDom()
+  const { clientRender } = ssrData
   // 删除已存在的同 id dom
   const rootId = ssrData.rootAttr?.id
   if (rootId) {
     parseHtml.deleteById(rootId)
+  }
+  if (headHTML) {
+    if (titleTagReg.test(headHTML)) {
+      parseHtml.deleteByTag('title')
+    }
+    // 添加 header
+    parseHtml.headAddTags(
+      [
+        {
+          children: headHTML,
+        },
+      ],
+      { isPrepend: true },
+    )
   }
 
   const assetTags = createNodes({

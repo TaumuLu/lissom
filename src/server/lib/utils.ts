@@ -117,7 +117,7 @@ export function isResSent(res: any) {
   return res.finished || res.headersSent
 }
 
-const loadGetInitial = (methodName: string, defaultValue: any = {}) =>
+const loadGetInitial = (methodName: string, defaultValue: any = null) =>
   async function (Component: any, ctx: ICtx) {
     if (process.env.NODE_ENV !== 'production') {
       if (Component.prototype && Component.prototype[methodName]) {
@@ -141,15 +141,17 @@ const loadGetInitial = (methodName: string, defaultValue: any = {}) =>
 
     if (!props) {
       const compName = getDisplayName(Component)
-      const message = `'${compName}.${methodName}()' should resolve to an object. But found '${props}' instead.`
+      const message = `'${compName}.${methodName}()' should resolve to an object/function. But found '${props}' instead.`
       printAndExit(message)
     }
 
     return props
   }
 
-export const loadGetInitialProps = loadGetInitial('getInitialProps')
+export const loadGetInitialProps = loadGetInitial('getInitialProps', {})
 
-export const loadGetInitialStyles = loadGetInitial('getInitialStyles', null)
+export const loadGetInitialStyle = loadGetInitial('getInitialStyle')
+
+export const loadGetInitialHead = loadGetInitial('getInitialHead')
 
 export * from '../../lib/utils'

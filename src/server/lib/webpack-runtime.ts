@@ -24,10 +24,7 @@ function webpackJsonpCallback(data: any[]) {
     installedChunks[chunkId] = 0
   }
   for (let moduleId in moreModules) {
-    if (
-      Object.prototype.hasOwnProperty.call(moreModules, moduleId) &&
-      !modules[moduleId]
-    ) {
+    if (Object.prototype.hasOwnProperty.call(moreModules, moduleId)) {
       modules[moduleId] = moreModules[moduleId]
     }
   }
@@ -463,7 +460,6 @@ const clearModuleCache = (dev?: boolean) => {
       const purgeModule =
         !excludeModuleReg.test(name) || purgeModuleReg.test(name)
       if (purgeModule) {
-        delete modules[moduleId]
         delete installedModules[moduleId]
       }
     })
