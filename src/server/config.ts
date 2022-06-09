@@ -6,7 +6,7 @@ import { RUNTIME_NAME, SSR_ASSETS_MANIFEST } from '../lib/constants'
 import {
   IChunks,
   IConfig,
-  IEntrypoints,
+  IEntryPoints,
   IHtmlWebpackPlugin,
   IModules,
   IOptions,
@@ -180,7 +180,7 @@ const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
   }
   const assetsManifest = require(assetsManifestPath!)
   const {
-    entrypoints,
+    entryPoints,
     HtmlWebpackPlugin,
     outputPath,
     modules,
@@ -188,7 +188,7 @@ const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
     mode,
     publicPath,
   } = assetsManifest
-  const routers = getRouters(entrypoints, outputPath, defaultEntry)
+  const routers = getRouters(entryPoints, outputPath, defaultEntry)
   const parseHtml = getParseHtml(HtmlWebpackPlugin, outputPath)
   const errorHtml = errorHtmlPath ? readHtmlFile(errorHtmlPath) : errorHtmlPath
 
@@ -205,13 +205,13 @@ const parseAssetsManifest = (config: IConfig): IAssetsConfig => {
 }
 
 const getRouters = (
-  entrypoints: IEntrypoints,
+  entryPoints: IEntryPoints,
   outputPath: string,
   defaultEntry?: string,
 ): IRouters => {
-  return Object.keys(entrypoints).reduce(
+  return Object.keys(entryPoints).reduce(
     (p, key, i) => {
-      const { chunks, assets: originAssets } = entrypoints[key]
+      const { chunks, assets: originAssets } = entryPoints[key]
       const assets = filterJsAssets(originAssets)
 
       const router = {

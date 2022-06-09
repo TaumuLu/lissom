@@ -65,7 +65,7 @@ export interface IChunks {
   }
 }
 
-export interface IEntrypoints {
+export interface IEntryPoints {
   [entry: string]: {
     chunks: string[]
     assets: string[]
