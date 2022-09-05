@@ -6,6 +6,9 @@ import styleLoader from './style-loader'
 import { deleteCache, filterCssAssets, filterJsAssets } from './utils'
 
 const modules: Record<string, any> = []
+
+const deferredModules: any[] = []
+
 // let parentJsonpFunction;
 // install a JSONP callback for chunk loading
 function webpackJsonpCallback(data: any[]) {
@@ -66,6 +69,9 @@ function checkDeferredModules() {
 // The module cache
 const installedModules = {}
 
+const getInstalledModule = (moduleId?: string) =>
+  moduleId && installedModules[moduleId]
+
 // 服务端不考虑css按需加载
 // // object to store loaded CSS chunks
 // const installedCssChunks = {
@@ -78,12 +84,6 @@ const installedModules = {}
 const installedChunks = {
   [RUNTIME_NAME]: 0,
 }
-
-const deferredModules: any[] = []
-
-let asyncModuleId: string | undefined
-let dynamicModuleId: string | undefined
-let routerModuleId: string | undefined
 
 const getAsyncChunks = (chunkIds: string[]) => {
   let asyncJsChunks: string[] = []
@@ -135,7 +135,6 @@ function requireChunk(chunkId: string) {
 
 // requireModules 服务单需要从node_modules require的模块，解决一些提供服务端和客户端的包，如superagent
 // ignoreModules 服务端排除执行模块
-
 const getModuleName = (modulePath: string) => {
   const modulePathList = modulePath.split('/')
   if (modulePath.charAt(0) === '@') {
@@ -158,30 +157,40 @@ const getName = (moduleId: string) => {
 const asyncModuleReg = /lissom\/dist\/lib\/async/
 const dynamicModuleReg = /lissom\/dist\/lib\/dynamic/
 const routerModuleReg = /lissom\/dist\/lib\/router/
-
 const styleModuleReg = /node_modules\/style-loader/
 const svgBakerRuntimeReg = /svg-baker-runtime\/browser/
 const svgSpriteLoaderReg = /svg-sprite-loader\/runtime\/browser/
 
+const matchModuleIds = {
+  asyncModuleId: '',
+  dynamicModuleId: '',
+  routerModuleId: '',
+}
+
 const matchModule = (moduleId: string) => {
   const { ignoreModules, requireModules } = config.get()
+  // 换取模块名
   const name = getName(moduleId)
+  if (!name) return null
+
   // 处理webpack style-loader
   if (styleModuleReg.test(name)) {
     return styleLoader
   }
+
   // 记录异步模块id
   if (asyncModuleReg.test(name)) {
-    asyncModuleId = moduleId
+    matchModuleIds.asyncModuleId = moduleId
   }
   // 记录动态模块id
   if (dynamicModuleReg.test(name)) {
-    dynamicModuleId = moduleId
+    matchModuleIds.dynamicModuleId = moduleId
   }
   if (routerModuleReg.test(name)) {
-    routerModuleId = moduleId
+    matchModuleIds.routerModuleId = moduleId
   }
 
+  // 服务端 svg 模块替换
   if (svgBakerRuntimeReg.test(name) || svgSpriteLoaderReg.test(name)) {
     const modulePath = name.replace(/.*\/node_modules\//, '')
     const moduleName = modulePath.replace('browser-', '')
@@ -189,7 +198,8 @@ const matchModule = (moduleId: string) => {
     hasSvgLoader = true
     return require(absPath)
   }
-  if (name && /node_modules/.test(name)) {
+
+  if (/node_modules/.test(name)) {
     const modulePath = name.replace(/.*\/node_modules\//, '')
     const moduleName = getModuleName(modulePath)
     if (ignoreModules?.includes(moduleName)) return {}
@@ -273,7 +283,7 @@ function __webpack_require__(moduleId: string) {
     exports: {},
   })
 
-  // 缓存进installedModules里，提高性能
+  // 缓存进 installedModules，提高性能，服务端先匹配处理一把
   const result = matchModule(moduleId)
   if (result) {
     _module.exports = result
@@ -421,29 +431,19 @@ function getAbsPath(originPath: string, head = true) {
   return originPath
 }
 
-function getAsyncModule() {
-  const asyncModule = asyncModuleId && installedModules[asyncModuleId]
-  if (asyncModule) {
-    return asyncModule.exports
+const getInstallModuleExports = (moduleId?: string) => {
+  const findModule = getInstalledModule(moduleId)
+  if (findModule) {
+    return findModule.exports
   }
   return null
 }
 
-function getDynamicModule() {
-  const dynamicModule = dynamicModuleId && installedModules[dynamicModuleId]
-  if (dynamicModule) {
-    return dynamicModule.exports
-  }
-  return null
-}
+const getAsyncModule = getInstallModuleExports(matchModuleIds.asyncModuleId)
 
-function getRouterModule() {
-  const routerModule = routerModuleId && installedModules[routerModuleId]
-  if (routerModule) {
-    return routerModule.exports
-  }
-  return null
-}
+const getDynamicModule = getInstallModuleExports(matchModuleIds.dynamicModuleId)
+
+const getRouterModule = getInstallModuleExports(matchModuleIds.routerModuleId)
 
 const setWebpackConfig = ({ outputPath }: { outputPath: string }) => {
   __webpack_require__.p = getAbsPath(outputPath, false)
